@@ -381,7 +381,9 @@ void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufna
 	    {
 	      _rlm = _rlm.Define("pugenWeight", [this](float x, float y){
 		  return x*y;
-		}, {"genWeight", "puWeight"});
+		},{"Generator_weight","puWeight"});
+		//  {"genWeight", "puWeight"});
+
 	    }
 	}
 	_jerctag = jerctag;
@@ -477,7 +479,7 @@ ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateMuSF(RNode _rlm, std::vector<s
     //Muon MediumID ISO UL type: NUM_TightRelIso_DEN_MediumID && thightID:NUM_TightRelIso_DEN_TightIDandIPCut --> the type can be found in json file
     //--> As an example Medium wp is used 
     //===============================================================================================================================================//
-    //cout<<"muon HLT SF for MC "<<endl;
+    cout<<"muon HLT SF for MC "<<endl;
   auto muon_weightgenerator = [this](const std::string& muon_type, const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts, const std::string& variation) -> float {
       double muonHLT_w = 1.0;
 
@@ -807,8 +809,10 @@ void NanoAODAnalyzerrdframe::run(bool saveAll, string outtreename)
 			for (auto bname: _varstostorepertree[nodename])
 			{
 				cout << bname << endl;
+				cout << "-----branch stored" << endl;
 			}
 			arnode->Snapshot(outtreename, outname, _varstostorepertree[nodename]);
+
 		}
 		std::cout<< "-------------------------------------------------------------------" << std::endl;
 		cout << "Creating output root file :  " << endl;
@@ -895,7 +899,8 @@ void NanoAODAnalyzerrdframe::setParams(int year, string runtype, int datatype)
 		std::cout<< "Default root version :checking out gen branches! "<< std::endl;
         std::cout<< "-------------------------------------------------------------------" << std::endl;
 
-		if (_atree->GetBranch("genWeight") == nullptr) {
+		// if (_atree->GetBranch("genWeight") == nullptr)
+		if (_atree->GetBranch("Generator_weight")==nullptr) {
 			_isData = true;
 			cout << "input file is DATA" <<endl;
 		}

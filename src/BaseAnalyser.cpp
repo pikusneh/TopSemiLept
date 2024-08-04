@@ -17,13 +17,14 @@ BaseAnalyser::BaseAnalyser(TTree *t, std::string outfilename)
 :NanoAODAnalyzerrdframe(t, outfilename)
 {
     //initiliaze the HLT names in your analyzer class
-    HLT2018Names= {"HLT_PFHT380_SixJet32_DoubleBTagCSV_p075",
-                    "HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0",
-                    "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5",
-                    "HLT_PFJet550","HLT_PFHT400_FivePFJet_100_100_60_30_30_DoublePFBTagDeepCSV_4p5",
-                    "HLT_PFHT400_FivePFJet_120_120_60_30_30_DoublePFBTagDeepCSV_4p5"};
-	HLT2017Names= {"Name1","Name2"};
-    HLT2016Names= {"Name1","Name2"};
+    // HLT2018Names= {"HLT_PFHT380_SixJet32_DoubleBTagCSV_p075",
+    //                 "HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0",
+    //                 "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5",
+    //                 "HLT_PFJet550","HLT_PFHT400_FivePFJet_100_100_60_30_30_DoublePFBTagDeepCSV_4p5",
+    //                 "HLT_PFHT400_FivePFJet_120_120_60_30_30_DoublePFBTagDeepCSV_4p5"};
+	// HLT2017Names= {"Name1","Name2"};
+     HLT2017Names= {"HLT_IsoMu24","HLT_IsoMu24_eta2p1","HLT_IsoMu27","HLT_Mu50","HLT_OldMu100","HLT_TkMu100","HLT_Ele32_WPTight_Gsf_L1DoubleEG","HLT_Ele32_WPTight_Gsf","HLT_Ele35_WPTight_Gsf","HLT_Ele115_CaloIdVT_GsfTrkIdT"};
+    // HLT2016Names= {"Name1","Name2"};
 }
 
 // Define your cuts here
@@ -45,10 +46,10 @@ void BaseAnalyser::defineCuts()
 	std::cout<< "-------------------------------------------------------------------" << std::endl;
 
 	//MinimalSelection to filter events
-    addCuts("nMuon > 2 && nElectron > 0 && nJet>0", "0");
-    addCuts("NgoodMuons>=2","00");
+    addCuts("nMuon > 0 && nElectron > 0 && nJet>0", "0");
+    addCuts("NgoodMuons>=1","00");
     //addCuts("ncleanjetspass>0","00");
-	//addCuts(setHLT(),"1"); //HLT cut buy checking HLT names in the root file
+	// addCuts(setHLT(),"1"); //HLT cut buy checking HLT names in the root file
 
 }
 //===============================Find Good Electrons===========================================//
@@ -244,13 +245,13 @@ void BaseAnalyser::selectMET()
         std::cout<< "================================//=================================" << std::endl;
     }
 
-    _rlm = _rlm.Define("goodMET_sumET","MET_sumEt>800")
-                .Define("goodMET_pt","MET_pt>5");
-                //.Define("goodMET_eta","MET_eta[goodMET]")
-                //.Define("goodMET_phi","MET_phi[goodMET]")
-                //.Define("NgoodMET","int(goodMET_pt.size())");
-    //_rlm = _rlm.Define("goodMet", "MET_sumEt>600 && MET_pt>5");
-    //_rlm = _rlm.Define("goodMet_pt", "MET_pt[goodMet]");
+    // _rlm = _rlm.Define("goodMET_sumET","MET_sumEt>800")
+            _rlm = _rlm.Define("goodMET_pt","MET_pt>5");
+    //             .Define("goodMET_eta","MET_eta[goodMET]")
+    //             .Define("goodMET_phi","MET_phi[goodMET]")
+    //             .Define("NgoodMET","int(goodMET_pt.size())");
+    // _rlm = _rlm.Define("goodMet", "MET_sumEt>600 && MET_pt>5");
+    // _rlm = _rlm.Define("goodMet_pt", "MET_pt[goodMet]");
 
     
 }
@@ -280,8 +281,8 @@ void BaseAnalyser::defineMoreVars()
     addVartoStore("event");
     addVartoStore("evWeight");
 
-    //addVartoStore("genWeight");
-    //addVartoStore("genEventSumw");
+    // addVartoStore("genWeight");
+    // addVartoStore("genEventSumw");
 
     //electron
     addVartoStore("nElectron");
@@ -335,7 +336,7 @@ void BaseAnalyser::defineMoreVars()
 	addVartoStore("muon_SF_id_systdown");
 	//addVartoStore("muonISO_SF");
 	addVartoStore("muon_SF_iso_sf");
-	addVartoStore("evWeight");   
+	// addVartoStore("evWeight");   
 
 }
 void BaseAnalyser::bookHists()
@@ -445,7 +446,8 @@ void BaseAnalyser::setupAnalysis()
         
        //std::cout<<"Using evWeight = genWeight"<<std::endl;
 
-        auto sumgenweight = _rd.Sum("genWeight");
+        // auto sumgenweight = _rd.Sum("genWeight");
+        auto sumgenweight = _rd.Sum("Generator_weight");
         string sumofgenweight = Form("%f",*sumgenweight);
         _rlm = _rlm.Define("genEventSumw",sumofgenweight.c_str());
         std::cout<<"Sum of genWeights = "<<sumofgenweight.c_str()<<std::endl;

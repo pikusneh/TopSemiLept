@@ -95,18 +95,19 @@ procflags = {
         }
 
 # input directory where your input root tree resides
-data='/eos/lyoeos.in2p3.fr/grid/cms/store/data/'
-mc17 = '/eos/lyoeos.in2p3.fr/grid/cms/store/mc/RunIISummer20UL17NanoAODv9'
+# data='/eos/lyoeos.in2p3.fr/grid/cms/store/data/'
+filepath = '/eos/uscms/store/user/snehshuc/2017/'
+# mc17 = '/eos/lyoeos.in2p3.fr/grid/cms/store/mc/RunIISummer20UL17NanoAODv9'
 #outDir = '/eos/lyoeos.in2p3.fr/grid/cms/store/user/apurohit/SingleTop_Data_Oct2023_Results'
 #outDir = '/eos/lyoeos.in2p3.fr/grid/cms/store/user/apurohit/SingleTop_MC_Results_Oct2023'
-outDir = '.'
+outDir = '/eos/uscms/store/user/snehshuc/test/2017'
 # output directory where your output should go
 # dump of stderr/stdout to file
-nanoaod_inputdir_outputdir_pairs = [
+nanoaod_inputdir_outputdir_pairs = [[filepath + 'DYjetsM10to50_2017_skim.root', 'test.root', 'outputest.root']]
 
     # ['/eos/lyoeos.in2p3.fr/grid/cms/store/mc/RunIISummer20UL17NanoAODv9/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/30000/2D19CD0F-4A29-4D43-8414-82BDCCA04783.root', 'test.root', 'outputTest.out'],
         
-         [mc17 + '/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8 ', outDir + '/PROC_ST_t-channel_top_UL17.root', outDir +  '/PROC_ST_t-channel_top_UL17.out' ], #197
+        #  [mc17 + '/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8 ', outDir + '/PROC_ST_t-channel_top_UL17.root', outDir +  '/PROC_ST_t-channel_top_UL17.out' ], #197
         # [mc17 + '/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8', outDir +  '/PROC_ST_t-channel_antitop_UL17.root', outDir +  '/PROC_ST_t-channel_antitop_UL17.out'], #60
 
         # [mc17 + '/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8', outDir + '/PROC_ST_tW-channel_top_UL17.root', outDir + '/PROC_ST_tW-channel_top_UL17.out'], #43
@@ -164,4 +165,4 @@ nanoaod_inputdir_outputdir_pairs = [
         # [data + '/Run2017E/SingleMuon/NANOAOD' ,  outDir + '/Run2017E_UL_SingleMuon.root' ,  outDir + '/Run2017E_UL_SingleMuon.out'],
         # [data + '/Run2017F/SingleMuon/NANOAOD' ,  outDir + '/Run2017F_UL_SingleMuon.root' ,  outDir + '/Run2017F_UL_SingleMuon.out'], #115
 
-]
+# ]

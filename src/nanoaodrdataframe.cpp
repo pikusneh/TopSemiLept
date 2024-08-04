@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <string>
 #include "NanoAODAnalyzerrdframe.h"
-#include "BaseAnalyser.h"
+#include "TopSemiLeptAnalyzer.h"
 //#include "SkimEvents.h"
 #include "TChain.h"
 
@@ -22,19 +22,20 @@ int main(void) {
 	TChain c1("Events");
 	//c1.Add("testinputdata/data/JetHT_2017C_DA05CA1A-3265-EE47-84F9-10CB09D22BDA.root"); //data
 	//c1.Add("testinputdata/MC/2017/ttJets-2017MC-A258F579-5EC0-D840-95D7-4327595FC3DE.root"); // MC
-	c1.Add("testinputdata/MC/2018/BG/TTbarBKGMC.root"); // MC
-	BaseAnalyser nanoaodrdf(&c1, "testout.root");
+	c1.Add("/eos/uscms/store/user/snehshuc/2017/DYjetsM10to50_2017_skim.root"); // MC
+	// c1.Add("root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/1B8826D8-B589-424C-98EB-3D6857980317.root");
+	TopSemiLeptAnalyzer nanoaodrdf(&c1, "testout.root");
 
 	string goodjsonfname = "data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt";
-	string pileupfname = "'data/LUM/2018_UL/puWeights.json";
-	string pileuptag = "Collisions18_UltraLegacy_goldenJSON";
-	string btvfname = "data/BTV/2018_UL/btagging.json";
+	string pileupfname = "data/LUM/2017_UL/puWeights.json";
+	string pileuptag = "Collisions17_UltraLegacy_goldenJSON";
+	string btvfname = "data/BTV/2017_UL/btagging.json";
 	string btvtype = "deepJet_shape";
 	//string electron_fname = "data/ELECTRON/2018_UL/electron_Z.json";
 	//string electrontype = "UL-Electron-ID-SF";
-	string jercfname = "data/JERC/UL18_jerc.json";
-	string jerctag = "Summer19UL18_V5_MC_L1L2L3Res_AK4PFchs";
-	string jercunctag = "Summer19UL18_V5_MC_Total_AK4PFchs";
+	string jercfname = "data/JERC/UL17_jerc.json";
+	string jerctag = "Summer19UL17_V5_MC_L1L2L3Res_AK4PFchs";
+	string jercunctag = "Summer19UL17_V5_MC_Total_AK4PFchs";
 	string muon_roch_fname = "data/MUO/2017_UL/RoccoR2017UL.txt";
 	string muon_fname = "data/MUO/2017_UL/muon_Z.json.gz";
 	string muonHLTtype = "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight";

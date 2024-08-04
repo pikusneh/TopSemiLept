@@ -45,7 +45,7 @@ if __name__=='__main__':
     print("Inside process one file..!!")
 
     #aproc = ROOT.FourtopAnalyzer(t, outfile)
-    aproc = ROOT.BaseAnalyser(t, outfile)
+    aproc = ROOT.TopSemiLeptAnalyzer(t, outfile)
     aproc.setParams(config['year'], config['runtype'],config['datatype'])
 
   
