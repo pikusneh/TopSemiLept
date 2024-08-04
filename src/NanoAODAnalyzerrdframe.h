@@ -10,18 +10,17 @@
 
 #include "TTree.h"
 #include "TFile.h"
-
 #include "ROOT/RDataFrame.hxx"
 #include "ROOT/RVec.hxx"
 
-//#include "Math/Vector4D.h"
+#include "Math/Vector4D.h"
 
 #include "correction.h"
 
 #include <string>
 #include <vector>
 #include <map>
-//#include "rapidjson/document.h"
+// #include "rapidjson/document.h"
 #include "nlohmann/json.hpp"
 
 #include "utility.h" // floats, etc are defined here
@@ -52,7 +51,7 @@ public:
 	// object selectors
 	// RNode is in namespace ROOT::RDF
 	bool readgoodjson(string goodjsonfname); // get ready for applying golden JSON
-	void selectFatJets();
+	// void selectFatJets();
 
 	void setupCorrections(string goodjsonfname, string pufname, string putag, string btvfname, string btvtype, string muon_roch_fname, string muon_fname, string muon_hlt_type, string muon_reco_type, string muon_id_type, string muon_iso_type, string electron_fname, string electron_reco_type, string electron_id_type, string jercfname, string jerctag, string jercunctag);
 	void setupJetMETCorrection(string fname, string jettag);
@@ -78,9 +77,10 @@ public:
 	ROOT::RDF::RNode calculateBTagSF(RNode _rlm, std::vector<std::string> Jets_vars, int _case, std::string output_var);
 
 	ROOT::RDF::RNode calculateMuSF(RNode _rlm, std::vector<std::string> Muon_vars, std::string output_var);
+
 	ROOT::RDF::RNode calculateEleSF(RNode _rlm, std::vector<std::string> Ele_vars, std::string output_var);
 
-	void setupCuts_and_Hists();
+	// void setupCuts_and_Hists();
 	void drawHists(RNode t);
 	void run(bool saveAll=true, string outtreename="outputTree");
 

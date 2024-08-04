@@ -15,7 +15,7 @@ import ROOT
 from importlib import import_module
 from argparse import ArgumentParser
 
-if __name__=='__main__':
+if __name__ == '__main__':
     parser = ArgumentParser(usage="%prog inputfile outputfile jobconfmod")
     parser.add_argument("infile")
     parser.add_argument("outfile")
@@ -25,38 +25,69 @@ if __name__=='__main__':
     outfile = args.outfile
     jobconfmod = args.jobconfmod
 
-    # load job configuration python module and get bjects
+    # load job configuration python module and get objects
     mod = import_module(jobconfmod)
     config = getattr(mod, 'config')
     procflags = getattr(mod, 'procflags')
-    print(config)
+    print("Job Configuration:", config)
 
     intreename = config['intreename']
     outtreename = config['outtreename']
     saveallbranches = procflags['saveallbranches']
 
-
     # load compiled C++ library into ROOT/python
     cppyy.load_reflection_info("libcorrectionlib.so")
     cppyy.load_reflection_info("libMathMore.so")
     cppyy.load_reflection_info("libnanoadrdframe.so")
+
     t = ROOT.TChain(intreename)
     t.Add(infile)
-    print("Inside process one file..!!")
+    print(f"Inside process one file..!! Added file: {infile}")
 
-    #aproc = ROOT.FourtopAnalyzer(t, outfile)
+    # Print the TChain to verify it's correctly set up
+    # t.Print()
+
+    nevents = t.GetEntries()
+    print("-------------------------------------------------------------------")
+    print("Total Number of Entries:")
+    print(nevents)
+    print("-------------------------------------------------------------------")
+
+    # Initialize the analyzer
     aproc = ROOT.TopSemiLeptAnalyzer(t, outfile)
-    aproc.setParams(config['year'], config['runtype'],config['datatype'])
+    aproc.setParams(config['year'], config['runtype'], config['datatype'])
 
-  
-    #skipcorrections = True
-    #if not skipcorrections:
-    print("setup corrections ")
-    aproc.setupCorrections(config['goodjson'], config['pileupfname'], config['pileuptag'], config['btvfname'], config['btvtype'], config['muon_roch_fname'], config['muon_fname'], config['muon_HLT_type'], config['muon_RECO_type'], config['muon_ID_type'], config['muon_ISO_type'], config['electron_fname'], config['electron_reco_type'], config['electron_id_type'], config['jercfname'], config['jerctag'], config['jercunctag'])    
-    
-    sys.stdout.flush() #to force printout in right order 
-    # prepare for processing
+    print("Setting up corrections...")
+    aproc.setupCorrections(
+        config['goodjson'], 
+        config['pileupfname'], 
+        config['pileuptag'], 
+        config['btvfname'], 
+        config['btvtype'], 
+        config['muon_roch_fname'], 
+        config['muon_fname'], 
+        config['muon_HLT_type'], 
+        config['muon_RECO_type'], 
+        config['muon_ID_type'], 
+        config['muon_ISO_type'], 
+        config['electron_fname'], 
+        config['electron_reco_type'], 
+        config['electron_id_type'], 
+        config['jercfname'], 
+        config['jerctag'], 
+        config['jercunctag']
+    )
+
+    sys.stdout.flush()  # to force printout in right order
+
+    # Prepare for processing
+    print("Setting up objects...")
     aproc.setupObjects()
+
+    print("Setting up analysis...")
     aproc.setupAnalysis()
+
+    print("Running the analysis...")
     aproc.run(saveallbranches, outtreename)
-    
+
+    print("Processing complete.")

@@ -16,15 +16,8 @@ using correction::CorrectionSet;
 TopSemiLeptAnalyzer::TopSemiLeptAnalyzer(TTree *t, std::string outfilename)
 :NanoAODAnalyzerrdframe(t, outfilename)
 {
-    //initiliaze the HLT names in your analyzer class
-    // HLT2018Names= {"HLT_PFHT380_SixJet32_DoubleBTagCSV_p075",
-    //                 "HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0",
-    //                 "HLT_PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5",
-    //                 "HLT_PFJet550","HLT_PFHT400_FivePFJet_100_100_60_30_30_DoublePFBTagDeepCSV_4p5",
-    //                 "HLT_PFHT400_FivePFJet_120_120_60_30_30_DoublePFBTagDeepCSV_4p5"};
-	// HLT2017Names= {"Name1","Name2"};
      HLT2017Names= {"HLT_IsoMu24","HLT_IsoMu24_eta2p1","HLT_IsoMu27","HLT_Mu50","HLT_OldMu100","HLT_TkMu100","HLT_Ele32_WPTight_Gsf_L1DoubleEG","HLT_Ele32_WPTight_Gsf","HLT_Ele35_WPTight_Gsf","HLT_Ele115_CaloIdVT_GsfTrkIdT"};
-    // HLT2016Names= {"Name1","Name2"};
+    
 }
 
 // Define your cuts here
@@ -45,7 +38,7 @@ void TopSemiLeptAnalyzer::defineCuts() {
     std::cout << "-------------------------------------------------------------------" << std::endl;
 
     // Apply HLT trigger cuts for both electron and muon channels
-    addCuts("HLT_Ele32_WPTight_Gsf || HLT_IsoMu24", "1");  // Example HLT triggers
+    // addCuts("HLT_Ele32_WPTight_Gsf || HLT_IsoMu24", "1");  // Example HLT triggers
 
     // Ensure at least one muon or electron
     addCuts("nMuon > 0 || nElectron > 0", "2");
@@ -53,11 +46,11 @@ void TopSemiLeptAnalyzer::defineCuts() {
     // Ensure exactly one good lepton
     addCuts("NgoodMuons + NgoodElectrons == 1", "3");
 
-    // Ensure at least three jets
-    addCuts("NgoodJets >= 3", "4");
+    // // Ensure at least three jets
+    // addCuts("NgoodJets >= 3", "4");
 
-    // Ensure at least one b-jet
-    addCuts("Ngood_bjets >= 1", "5");
+    // // Ensure at least one b-jet
+    // addCuts("Ngood_bjets >= 1", "5");
 }
 
 //===============================Find Good Electrons===========================================//

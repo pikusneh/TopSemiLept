@@ -20,10 +20,9 @@ using namespace ROOT;
 int main(void) {
 
 	TChain c1("Events");
-	//c1.Add("testinputdata/data/JetHT_2017C_DA05CA1A-3265-EE47-84F9-10CB09D22BDA.root"); //data
-	//c1.Add("testinputdata/MC/2017/ttJets-2017MC-A258F579-5EC0-D840-95D7-4327595FC3DE.root"); // MC
-	c1.Add("/eos/uscms/store/user/snehshuc/2017/DYjetsM10to50_2017_skim.root"); // MC
+	// c1.Add("/eos/uscms/store/user/snehshuc/2017/DYjetsM10to50_2017_skim.root"); // MC
 	// c1.Add("root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/1B8826D8-B589-424C-98EB-3D6857980317.root");
+	c1.Add("/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/GJets_HT100To200_2017_skim.root");
 	TopSemiLeptAnalyzer nanoaodrdf(&c1, "testout.root");
 
 	string goodjsonfname = "data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt";
@@ -45,8 +44,6 @@ int main(void) {
 	string electron_fname = "data/EGM/2017_UL/electron.json.gz";
 	string electron_reco_type = "RecoAbove20";
 	string electron_id_type = "Tight";
-
-
 
 	nanoaodrdf.setupCorrections(goodjsonfname, pileupfname, pileuptag, btvfname, btvtype, muon_roch_fname, muon_fname, muonHLTtype, muonRECOtype, muonIDtype, muonISOtype, electron_fname, electron_reco_type, electron_id_type, jercfname, jerctag, jercunctag);
 

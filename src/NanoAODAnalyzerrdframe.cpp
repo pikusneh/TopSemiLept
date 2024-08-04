@@ -146,17 +146,17 @@ bool NanoAODAnalyzerrdframe::readgoodjson(string goodjsonfname)
 	}
 }
 
-void NanoAODAnalyzerrdframe::selectFatJets()
-{
-	_rlm = _rlm.Define("fatjetcuts", "FatJet_pt>400.0 && abs(FatJet_eta)<2.4 && FatJet_tau1>0.0 && FatJet_tau2>0.0 && FatJet_tau3>0.0 && FatJet_tau3/FatJet_tau2<0.5")
-				.Define("Sel_fatjetpt", "FatJet_pt[fatjetcuts]")
-				.Define("Sel_fatjeteta", "FatJet_eta[fatjetcuts]")
-				.Define("Sel_fatjetphi", "FatJet_phi[fatjetcuts]")
-				.Define("Sel_fatjetmass", "FatJet_mass[fatjetcuts]")
-				.Define("nfatjetspass", "int(Sel_fatjetpt.size())")
-				.Define("Sel_fatjetweight", "std::vector<double>(nfatjetspass, evWeight)")
-				.Define("Sel_fatjet4vecs", ::generate_4vec, {"Sel_fatjetpt", "Sel_fatjeteta", "Sel_fatjetphi", "Sel_fatjetmass"});
-}
+// void NanoAODAnalyzerrdframe::selectFatJets()
+// {
+// 	_rlm = _rlm.Define("fatjetcuts", "FatJet_pt>400.0 && abs(FatJet_eta)<2.4 && FatJet_tau1>0.0 && FatJet_tau2>0.0 && FatJet_tau3>0.0 && FatJet_tau3/FatJet_tau2<0.5")
+// 				.Define("Sel_fatjetpt", "FatJet_pt[fatjetcuts]")
+// 				.Define("Sel_fatjeteta", "FatJet_eta[fatjetcuts]")
+// 				.Define("Sel_fatjetphi", "FatJet_phi[fatjetcuts]")
+// 				.Define("Sel_fatjetmass", "FatJet_mass[fatjetcuts]")
+// 				.Define("nfatjetspass", "int(Sel_fatjetpt.size())")
+// 				.Define("Sel_fatjetweight", "std::vector<double>(nfatjetspass, evWeight)")
+// 				.Define("Sel_fatjet4vecs", ::generate_4vec, {"Sel_fatjetpt", "Sel_fatjeteta", "Sel_fatjetphi", "Sel_fatjetmass"});
+// }
 
 
 void NanoAODAnalyzerrdframe::setupJetMETCorrection(string fname, string jettag) //data
@@ -357,6 +357,7 @@ void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufna
 	  cout<< "ELECTRON JSON FILE : " << electron_fname << endl;
 	  cout<< "ELECTRON RECO type in JSON  : " << _electron_reco_type << endl;
 	  cout<< "ELECTRONID type in JSON  : " << _electron_id_type << endl;
+	  cout<< "================================//=================================" << std::endl;
 	  assert(_correction_electron->validate());
 	  
 	  // btag corrections
@@ -370,7 +371,7 @@ void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufna
 	  _putag = putag;
 	  auto punominal = [this](float x) { return pucorrection(_correction_pu, _putag, "nominal", x); };
 	  auto puplus = [this](float x) { return pucorrection(_correction_pu, _putag, "up", x); };
-	  auto puminus = [this](float x) { return pucorrection(_correction_pu, _putag, "down", x); };
+	  auto puminus = [this](float x) { return pucorrectFcheion(_correction_pu, _putag, "down", x); };
 	  
 	  if (!isDefined("puWeight")) _rlm = _rlm.Define("puWeight", punominal, {"Pileup_nTrueInt"});
 	  if (!isDefined("puWeight_plus")) _rlm = _rlm.Define("puWeight_plus", puplus, {"Pileup_nTrueInt"});
@@ -884,8 +885,6 @@ void NanoAODAnalyzerrdframe::setParams(int year, string runtype, int datatype)
         std::cout<< "Default run version : UL or ReReco is not selected! "<< std::endl;
         std::cout<< "-------------------------------------------------------------------" << std::endl;
     }
-
-
 	if (_datatype==0){
 		_isData = false;
         std::cout << " MC input files Selected!! "<<std::endl;
@@ -901,6 +900,8 @@ void NanoAODAnalyzerrdframe::setParams(int year, string runtype, int datatype)
 
 		// if (_atree->GetBranch("genWeight") == nullptr)
 		if (_atree->GetBranch("Generator_weight")==nullptr) {
+			//add print statement
+			std::cout<< "Generator_weight branch is not found in the input file!! "<< std::endl;
 			_isData = true;
 			cout << "input file is DATA" <<endl;
 		}
