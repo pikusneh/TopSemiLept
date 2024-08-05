@@ -371,7 +371,7 @@ void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufna
 	  _putag = putag;
 	  auto punominal = [this](float x) { return pucorrection(_correction_pu, _putag, "nominal", x); };
 	  auto puplus = [this](float x) { return pucorrection(_correction_pu, _putag, "up", x); };
-	  auto puminus = [this](float x) { return pucorrectFcheion(_correction_pu, _putag, "down", x); };
+	  auto puminus = [this](float x) { return pucorrection(_correction_pu, _putag, "down", x); };
 	  
 	  if (!isDefined("puWeight")) _rlm = _rlm.Define("puWeight", punominal, {"Pileup_nTrueInt"});
 	  if (!isDefined("puWeight_plus")) _rlm = _rlm.Define("puWeight_plus", puplus, {"Pileup_nTrueInt"});
@@ -474,86 +474,78 @@ ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateBTagSF(RNode _rlm, std::vector
 
 ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateMuSF(RNode _rlm, std::vector<std::string> Muon_vars, std::string output_var="muon_SF_")
 {
-
     //=====================================================Muon SF and eventweight============================================================// 
     //muontype= for thight: NUM_TightID_DEN_genTracks //for medium: NUM_MediumID_DEN_TrackerMuons
     //Muon MediumID ISO UL type: NUM_TightRelIso_DEN_MediumID && thightID:NUM_TightRelIso_DEN_TightIDandIPCut --> the type can be found in json file
     //--> As an example Medium wp is used 
     //===============================================================================================================================================//
-    cout<<"muon HLT SF for MC "<<endl;
-  auto muon_weightgenerator = [this](const std::string& muon_type, const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts, const std::string& variation) -> float {
-      double muonHLT_w = 1.0;
+    cout << "muon HLT SF for MC " << endl;
+    auto muon_weightgenerator = [this](const std::string& muon_type, const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts, const std::string& variation) -> float {
+        double muonHLT_w = 1.0;
+		// std::cout << "Year: " << _year << " Runtype: " << _runtype << std::endl;  // Debug print
 
-      for (std::size_t i = 0; i < pts.size(); i++) {
-	//std::cout << "Muon abs_eta:" << std::fabs(etas[i]) << " pt: " << pts[i] << std::endl;
-	double w = _correction_muon->at(muon_type)->evaluate({std::to_string(_year)+"_"+_runtype, std::fabs(etas[i]), pts[i], variation}); 
-	muonHLT_w *= w;
-	//std::cout << "Individual HLT weight (muon " << i << "): " << w << std::endl;
-	//std::cout << "Cumulative HLT weight after muon " << i << ": " << muonHLT_w << std::endl;
-      }
-      return muonHLT_w;
+        for (std::size_t i = 0; i < pts.size(); i++) {
+			// std::cout << "Muon abs_eta:" << std::fabs(etas[i]) << " pt: " << pts[i] << std::endl;
+            try {
+                double w = _correction_muon->at(muon_type)->evaluate({std::to_string(_year) + "_" + _runtype, std::fabs(etas[i]), pts[i], variation}); 
+                muonHLT_w *= w;
+                // std::cout << "Muon type: " << muon_type << " Eta: " << etas[i] << " Pt: " << pts[i] << " Weight: " << w << std::endl;
+            } catch (const std::out_of_range& e) {
+                std::cerr << "Error in muon weight generation: " << e.what() << " for Eta: " << etas[i] << " Pt: " << pts[i] << " Year: " << _year << " Runtype: " << _runtype << std::endl;
+                // throw;
+				continue;
+            }
+        }
+        return muonHLT_w;
     };
 
     //'sf' is nominal, and 'systup' and 'systdown' are up/down variations with total stat+-syst uncertainties. Individual systs are also available (in these cases syst only, not sf +/- syst
-    std::vector<std::string> variations = {"sf", "systup", "systdown","syst"};
+    std::vector<std::string> variations = {"sf", "systup", "systdown", "syst"};
 
-
-    //cout<<"Generate MUONHLT weight"<<endl;
-    //muonHLT sf and systematics with up/down variations
-    //===========//===========//===========//===========//===========
-    // define muon HLT weight sf/systs for each variation individually
+    // Generate MUON HLT weight
     for (const std::string& variation : variations) {
-      std::string column_name_hlt = output_var+"hlt_" + variation;
-      _rlm = _rlm.Define(column_name_hlt, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
-	  float weight = muon_weightgenerator(_muon_hlt_type, etas, pts, variation); // Get the weight for the corresponding variation
-	  //std::cout << "Muon HLT weight (" << variation << "): " << weight << std::endl;
-	  return weight;
-	}, Muon_vars);
+        std::string column_name_hlt = output_var + "hlt_" + variation;
+        _rlm = _rlm.Define(column_name_hlt, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+            float weight = muon_weightgenerator(_muon_hlt_type, etas, pts, variation); // Get the weight for the corresponding variation
+            return weight;
+        }, Muon_vars);
 
+        std::string column_name_reco = output_var + "reco_" + variation;
+        _rlm = _rlm.Define(column_name_reco, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+            float weight = muon_weightgenerator(_muon_reco_type, etas, pts, variation); // Get the weight for the corresponding variation
+            return weight;
+        }, Muon_vars);
 
-      std::string column_name_reco = output_var+"reco_" + variation;
-      _rlm = _rlm.Define(column_name_reco, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
-	  float weight = muon_weightgenerator(_muon_reco_type, etas, pts, variation); // Get the weight for the corresponding variation
-	  //std::cout << "Muon HLT weight (" << variation << "): " << weight << std::endl;
-	  return weight;
-	}, Muon_vars);
+        std::string column_name_id = output_var + "id_" + variation;
+        _rlm = _rlm.Define(column_name_id, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+            float weight = muon_weightgenerator(_muon_id_type, etas, pts, variation); // Get the weight for the corresponding variation
+            return weight;
+        }, Muon_vars);
 
+        std::string column_name_iso = output_var + "iso_" + variation;
+        _rlm = _rlm.Define(column_name_iso, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+            float weight = muon_weightgenerator(_muon_iso_type, etas, pts, variation); // Get the weight for the corresponding variation
+            return weight;
+        }, Muon_vars);
 
-      std::string column_name_id = output_var+"id_" + variation;
-      _rlm = _rlm.Define(column_name_id, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
-	  float weight = muon_weightgenerator(_muon_id_type, etas, pts, variation); // Get the weight for the corresponding variation
-	  //std::cout << "Muon HLT weight (" << variation << "): " << weight << std::endl;
-	  return weight;
-	}, Muon_vars);
+        std::string column_name = output_var;
+        if (variation == "sf") {
+            column_name += "central";
+        } else if (variation == "systup") {
+            column_name += "up";
+        } else if (variation == "systdown") {
+            column_name += "down";
+        } else {
+            column_name += "syst";
+        }
 
-
-      std::string column_name_iso = output_var+"iso_" + variation;
-      _rlm = _rlm.Define(column_name_iso, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
-	  float weight = muon_weightgenerator(_muon_iso_type, etas, pts, variation); // Get the weight for the corresponding variation
-	  //std::cout << "Muon HLT weight (" << variation << "): " << weight << std::endl;
-	  return weight;
-	}, Muon_vars);
-
-      std::string column_name = output_var;
-      if(variation=="sf"){
-	column_name += "central";
-      }
-      else if(variation=="systup"){
-	column_name += "up";
-      }
-      else if(variation=="systdown"){
-	column_name += "down";
-      }
-      else{
-	column_name += "syst";
-      }
-
-	std::string sf_definition = column_name_hlt+" * "+column_name_reco+" * "+column_name_id+" * "+column_name_iso;
-	_rlm = _rlm.Define(column_name, sf_definition);
-	std::cout<< "Muon SF column name: " << column_name << std::endl;
+        std::string sf_definition = column_name_hlt + " * " + column_name_reco + " * " + column_name_id + " * " + column_name_iso;
+        _rlm = _rlm.Define(column_name, sf_definition);
+        std::cout << "Muon SF column name: " << column_name << std::endl;
     }
     return _rlm;
 }
+
 
 
 ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateEleSF(RNode _rlm, std::vector<std::string> Ele_vars, std::string output_var="ele_SF_")
@@ -620,6 +612,7 @@ ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateEleSF(RNode _rlm, std::vector<
 }
 
 
+
 bool NanoAODAnalyzerrdframe::helper_1DHistCreator(std::string hname, std::string title, const int nbins, const double xlow, const double xhi, std::string rdfvar, std::string evWeight, RNode *anode)
 {
 	//cout << "1DHistCreator " << hname  << endl;
@@ -645,11 +638,21 @@ bool NanoAODAnalyzerrdframe::helper_2DHistCreator(std::string hname, std::string
 void NanoAODAnalyzerrdframe::setupCuts_and_Hists()
 {
 	cout << "setting up definitions, cuts, and histograms" <<endl;
+	// if (this == nullptr) {
+    //     std::cerr << "Error: NanoAODAnalyzerrdframe::setupCuts_and_Hists called on a null pointer!" << std::endl;
+    //     return;
+    // }
 
-	for ( auto &c : _varinfovector)
-	{
-		if (c.mincutstep.length()==0) _rlm = _rlm.Define(c.varname, c.vardefinition);
-	}
+	// for ( auto &c : _varinfovector)
+	// {
+	// 	if (c.mincutstep.length()==0) _rlm = _rlm.Define(c.varname, c.vardefinition);
+	// }
+	// Define variables without cuts
+    for (auto &c : _varinfovector) {
+        if (c.mincutstep.length() == 0) {
+            _rlm = _rlm.Define(c.varname, c.vardefinition);
+        }
+    }
 
 	for (auto &x : _hist1dinfovector)
 	{
@@ -671,15 +674,24 @@ void NanoAODAnalyzerrdframe::setupCuts_and_Hists()
 			helper_2DHistCreator(std::string(x.hmodel.fName)+hpost,  std::string(x.hmodel.fTitle)+hpost, x.hmodel.fNbinsX, x.hmodel.fXLow, x.hmodel.fXUp, x.hmodel.fNbinsY, x.hmodel.fYLow, x.hmodel.fYUp, x.varname1, x.varname2, x.weightname, &_rlm);
 		}
 	}
-
-
+   
 	_rnt.setRNode(&_rlm);
 
 	for (auto acut : _cutinfovector)
 	{
 		std::string cutname = "cut"+ acut.idx;
 		std::string hpost = "_"+cutname;
+		auto parentNode = _rnt.getParent(acut.idx);
+        
+        if (!parentNode) {
+            std::cerr << "Error: Parent node for cut index " << acut.idx << " is null!" << std::endl;
+            continue;
+        }
 		RNode *r = _rnt.getParent(acut.idx)->getRNode();
+		if (!r) {
+            std::cerr << "Error: RNode for parent node of cut index " << acut.idx << " is null!" << std::endl;
+            continue;
+        }
 		auto rnext = new RNode(r->Define(cutname, acut.cutdefinition));
 		*rnext = rnext->Filter(cutname);
 
@@ -783,14 +795,10 @@ void NanoAODAnalyzerrdframe::addCuts(string cut, string idx)
 
 void NanoAODAnalyzerrdframe::run(bool saveAll, string outtreename)
 {
-
-
 	vector<RNodeTree *> rntends;
 	_rnt.getRNodeLeafs(rntends);
 	//_rnt.Print();
     //cout << rntends.size() << endl;
-
-
 	for (auto arnt: rntends)
 	{
 		string nodename = arnt->getIndex();
@@ -810,7 +818,7 @@ void NanoAODAnalyzerrdframe::run(bool saveAll, string outtreename)
 			for (auto bname: _varstostorepertree[nodename])
 			{
 				cout << bname << endl;
-				cout << "-----branch stored" << endl;
+				// cout << "-----branch stored" << endl;
 			}
 			arnode->Snapshot(outtreename, outname, _varstostorepertree[nodename]);
 
@@ -838,8 +846,6 @@ void NanoAODAnalyzerrdframe::run(bool saveAll, string outtreename)
 				h.second.GetPtr()->Write();
 			}
 		}
-
-
 		/*TH1F* hPDFWeights = new TH1F("LHEPdfWeightSum", "LHEPdfWeightSum", 103, 0, 1);
         for (size_t i=0; i<PDFWeights.size(); i++){
             hPDFWeights->SetBinContent(i+1, PDFWeights[i]);
@@ -862,7 +868,12 @@ void NanoAODAnalyzerrdframe::setParams(int year, string runtype, int datatype)
 	_year=year;
 	_runtype=runtype;
 	_datatype=datatype;
-	
+	// // debug
+	// if (_runtype.empty()) {
+    //     std::cerr << "Error: runtype is empty!" << std::endl;
+    //     throw std::invalid_argument("Invalid runtype");
+    // }
+	// // 
 
 	if(_year==2016) {
         cout << "Analysing through Run 2016" << endl;

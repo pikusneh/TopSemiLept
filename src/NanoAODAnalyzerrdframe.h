@@ -80,7 +80,7 @@ public:
 
 	ROOT::RDF::RNode calculateEleSF(RNode _rlm, std::vector<std::string> Ele_vars, std::string output_var);
 
-	// void setupCuts_and_Hists();
+	void setupCuts_and_Hists();
 	void drawHists(RNode t);
 	void run(bool saveAll=true, string outtreename="outputTree");
 
@@ -174,7 +174,6 @@ public:
 
 	// btag correction
 	std::unique_ptr<correction::CorrectionSet> _correction_btag1;
-
 
 	RNodeTree _rnt;
 

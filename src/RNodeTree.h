@@ -19,8 +19,12 @@ using namespace ROOT::RDF;
 class RNodeTree
 {
 public:
-	RNodeTree(RNode *rn);
-	~RNodeTree();
+	// RNodeTree(RNode *rn);
+	// Default constructor
+    // Constructor with RNode parameter
+    RNodeTree(RNode *rn) : thisnode(rn), parenttree(nullptr) {}  // Constructor defined inline
+    ~RNodeTree();
+
 	RNodeTree *addDaughter(RNode *rn, string asidx);
 	RNodeTree *getParent(string asidx);
 

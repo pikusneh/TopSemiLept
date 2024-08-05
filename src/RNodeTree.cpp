@@ -5,12 +5,13 @@
  *      Author: suyong
  */
 #include "RNodeTree.h"
+#include <iostream>
 
-RNodeTree::RNodeTree(RNode *rn)
-:thisnode(rn), parenttree(NULL), _idx(""), daughters(0)
-{
+// RNodeTree::RNodeTree(RNode *rn)
+// :thisnode(rn), parenttree(NULL), _idx(""), daughters(0)
+// {
 
-}
+// }
 
 RNodeTree::~RNodeTree()
 {
@@ -33,11 +34,14 @@ RNodeTree *RNodeTree::addDaughter(RNode *rn, string asidx)
 	RNodeTree *rnt = NULL;
 	if (parentnode != NULL)
 	{
-		if (parentnode->daughters.size() == std::stoi(asidx.substr(asidx.length()-1, 1)))
+		auto daughters_size = parentnode->daughters.size();
+        auto asidx_last_char = std::stoi(asidx.substr(asidx.length() - 1, 1));
+		// if (parentnode->daughters.size() == std::stoi(asidx.substr(asidx.length()-1, 1)))
+		if (daughters_size == static_cast<std::vector<RNodeTree*>::size_type>(asidx_last_char)) {
 		rnt = new RNodeTree(rn);
 		rnt->setParent(parentnode);
 		rnt->_idx = asidx;
-		parentnode->daughters.push_back(rnt);
+		parentnode->daughters.push_back(rnt);}
 	}
 	else
 	{
@@ -66,7 +70,6 @@ void RNodeTree::setParent(RNodeTree *rnt)
 RNodeTree *RNodeTree::getRNodeTree(int d)
 {
 	RNodeTree *result = NULL;
-
 	RNodeTree *rootnode=this;
 	while(rootnode->parenttree!=NULL)
 	{
