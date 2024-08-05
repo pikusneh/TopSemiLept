@@ -22,10 +22,11 @@ int main(void) {
 	TChain c1("Events");
 	// c1.Add("/eos/uscms/store/user/snehshuc/2017/DYjetsM10to50_2017_skim.root"); // MC
 	// c1.Add("root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/1B8826D8-B589-424C-98EB-3D6857980317.root");
-	// c1.Add("/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/GJets_HT100To200_2017_skim.root");
-	c1.Add("/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/Data_SingleEle_d_2017_skim_10of10.root");
+	c1.Add("/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/GJets_HT100To200_2017_skim.root");
+	// c1.Add("/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/Data_SingleEle_d_2017_skim_10of10.root");
 	
-	TopSemiLeptAnalyzer nanoaodrdf(&c1, "testout_data.root");
+	// TopSemiLeptAnalyzer nanoaodrdf(&c1, "testout_data.root");
+	TopSemiLeptAnalyzer nanoaodrdf(&c1, "testout.root");
 	nanoaodrdf.setParams(2017, "UL", -1);
 	nanoaodrdf.setHLT();
 
@@ -34,8 +35,6 @@ int main(void) {
 	string pileuptag = "Collisions17_UltraLegacy_goldenJSON";
 	string btvfname = "data/BTV/2017_UL/btagging.json";
 	string btvtype = "deepJet_shape";
-	//string electron_fname = "data/ELECTRON/2018_UL/electron_Z.json";
-	//string electrontype = "UL-Electron-ID-SF";
 	string jercfname = "data/JERC/UL17_jerc.json";
 	string jerctag = "Summer19UL17_V5_MC_L1L2L3Res_AK4PFchs";
 	string jercunctag = "Summer19UL17_V5_MC_Total_AK4PFchs";
@@ -50,10 +49,11 @@ int main(void) {
 	string electron_id_type = "Tight";
 
 	nanoaodrdf.setupCorrections(goodjsonfname, pileupfname, pileuptag, btvfname, btvtype, muon_roch_fname, muon_fname, muonHLTtype, muonRECOtype, muonIDtype, muonISOtype, electron_fname, electron_reco_type, electron_id_type, jercfname, jerctag, jercunctag);
-	
+
 	nanoaodrdf.setupObjects();
 	nanoaodrdf.setupAnalysis();
 	nanoaodrdf.run(false, "outputTree");
+	// nanoaodrdf.run(true, "outputTree");
 
 	return EXIT_SUCCESS;
 }

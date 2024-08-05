@@ -44,7 +44,6 @@ public:
 	NanoAODAnalyzerrdframe(TTree *t, string outfilename);
 	virtual ~NanoAODAnalyzerrdframe();
 
-
 	virtual void setupAnalysis();
 	virtual void setTree(TTree *t, string outfilename);
 

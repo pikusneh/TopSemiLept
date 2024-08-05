@@ -38,7 +38,7 @@ void TopSemiLeptAnalyzer::defineCuts() {
     std::cout << "-------------------------------------------------------------------" << std::endl;
 
     // Apply HLT trigger cuts for both electron and muon channels
-    // addCuts("HLT_Ele32_WPTight_Gsf || HLT_IsoMu24", "1");  // Example HLT triggers
+    addCuts("HLT_Ele32_WPTight_Gsf || HLT_IsoMu24", "1");  
 
     // Ensure at least one muon or electron
     addCuts("nMuon > 0 || nElectron > 0", "2");
@@ -74,25 +74,19 @@ void TopSemiLeptAnalyzer::selectElectrons()
                 .Define("goodElectrons_mass", "Electron_mass[goodElectrons]")
                 .Define("goodElectrons_idx", ::good_idx, {"goodElectrons"})
                 .Define("NgoodElectrons", "int(goodElectrons_pt.size())");
-
-    //-------------------------------------------------------
-    //generate electron 4vector from selected good Electrons
-    //-------------------------------------------------------
     _rlm = _rlm.Define("goodElectron_4Vecs", ::generate_4vec, {"goodElectrons_pt", "goodElectrons_eta", "goodElectrons_phi", "goodElectrons_mass"});
 
 }
-//===============================Find Good Muons===============================================//
-//: Define Good Muons in rdata frame
-//=============================================================================================//
+
 void TopSemiLeptAnalyzer::selectMuons()
 {
 
     cout << "select good muons" << endl;
-    if (debug){
-        std::cout<< "================================//=================================" << std::endl;
-        std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
-        std::cout<< "================================//=================================" << std::endl;
-    }
+    // if (debug){
+    //     std::cout<< "================================//=================================" << std::endl;
+    //     std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+    //     std::cout<< "================================//=================================" << std::endl;
+    // }
 
     _rlm = _rlm.Define("goodMuonsID", MuonID(2)); //loose muons
     _rlm = _rlm.Define("goodMuons","goodMuonsID && Muon_pt > 30 && abs(Muon_eta) < 2.4 && Muon_miniPFRelIso_all < 0.40");
@@ -104,9 +98,6 @@ void TopSemiLeptAnalyzer::selectMuons()
                 .Define("goodMuons_idx", ::good_idx, {"goodMuons"})
                 .Define("NgoodMuons", "int(goodMuons_pt.size())");
 
-    //-------------------------------------------------------
-    //generate muon 4vector from selected good Muons
-    //-------------------------------------------------------
     _rlm = _rlm.Define("goodMuons_4vecs", ::generate_4vec, {"goodMuons_pt", "goodMuons_eta", "goodMuons_phi", "goodMuons_mass"});
    
 
@@ -119,13 +110,12 @@ void TopSemiLeptAnalyzer::selectMuons()
 //=============================================================================================//
 void TopSemiLeptAnalyzer::selectJets()
 {
-
     cout << "select good jets" << endl;
-    if (debug){
-        std::cout<< "================================//=================================" << std::endl;
-        std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
-        std::cout<< "================================//=================================" << std::endl;
-    }
+    // if (debug){
+    //     std::cout<< "================================//=================================" << std::endl;
+    //     std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+    //     std::cout<< "================================//=================================" << std::endl;
+    // }
    
     // Check if the Jet_hadronFlavour branch exists
     if (_atree->GetBranch("Jet_hadronFlavour") == nullptr) {
@@ -134,7 +124,6 @@ void TopSemiLeptAnalyzer::selectJets()
     } else {
         std::cout << "Jet_hadronFlavour branch is found in the input file." << std::endl;
     }
-
     // Define goodJetsID, goodJets and other goodJets-related variables
     _rlm = _rlm.Define("goodJetsID", JetID(6)); // without pt-eta cuts
     _rlm = _rlm.Define("goodJets", "goodJetsID && Jet_pt > 30.0 && abs(Jet_eta) < 2.4");
@@ -149,21 +138,17 @@ void TopSemiLeptAnalyzer::selectJets()
         _rlm = _rlm.Define("goodJets_hadflav", "Jet_hadronFlavour[goodJets]");
     }
 
-    //goot jets deep-b tag          
-	_rlm = _rlm.Define("goodJets_jetdeepbtag", "Jet_btagDeepB[goodJets]")
-                .Define("goodJets_deepjetbtag", "Jet_btagDeepFlavB[goodJets]") 
-                .Define("NgoodJets", "int(goodJets_pt.size())")
+      _rlm = _rlm.Define("goodJets_btag","Jet_btagCSVV2[goodJets]")
+                .Define("NgoodJets","int(goodJets_pt.size())")
                 .Define("goodJets_4vecs", ::generate_4vec, {"goodJets_pt", "goodJets_eta", "goodJets_phi", "goodJets_mass"});
 
-	//select b jest within goodjets 
-    _rlm = _rlm.Define("btagcuts", "goodJets_deepjetbtag>0.2783") //0.2783 -medium, 0.7 - tight 
+      _rlm = _rlm.Define("btagcuts", "goodJets_btag>0.4506") 
 			.Define("good_bjetpt", "goodJets_pt[btagcuts]")
 			.Define("good_bjeteta", "goodJets_eta[btagcuts]")
 			.Define("good_bjetphi", "goodJets_phi[btagcuts]")
 			.Define("good_bjetmass", "goodJets_mass[btagcuts]")
-			.Define("good_bjetdeepjet", "goodJets_deepjetbtag[btagcuts]");
+			.Define("good_bjetdeepcsvjet", "goodJets_btag[btagcuts]");
 	
-	// _rlm = _rlm.Define("good_bjethadflav", "goodJets_hadflav[btagcuts]");
     if (_atree->GetBranch("Jet_hadronFlavour") != nullptr) {
         _rlm = _rlm.Define("good_bjethadflav", "goodJets_hadflav[btagcuts]");
     }
@@ -207,30 +192,25 @@ void TopSemiLeptAnalyzer::removeOverlaps()
 		.Define("Selected_jeteta", "goodJets_eta[muonjetoverlap]")
 		.Define("Selected_jetphi", "goodJets_phi[muonjetoverlap]")
 		.Define("Selected_jetmass", "goodJets_mass[muonjetoverlap]")
-	
-		.Define("Selected_jetbtag", "goodJets_deepjetbtag[muonjetoverlap]") //
-		// .Define("Selected_jethadflav", "goodJets_hadflav[muonjetoverlap]") 
+        .Define("Selected_jetbtag", "goodJets_btag[muonjetoverlap]")
 		.Define("ncleanjetspass", "int(Selected_jetpt.size())")
 		.Define("cleanjet4vecs", ::generate_4vec, {"Selected_jetpt", "Selected_jeteta", "Selected_jetphi", "Selected_jetmass"})
 		.Define("Selected_jetHT", "Sum(Selected_jetpt)");
 
-        // Conditionally define Selected_jethadflav if the branch exists
         if (hasJetHadronFlavour) {
              _rlm = _rlm.Define("Selected_jethadflav", "goodJets_hadflav[muonjetoverlap]");}
     
      //==============================Clean b-Jets==============================================// 
 	 //--> after remove overlap: use requested btaggedJets for btag-weight SFs && weight_generator. 
 	 //=====================================================================================//
-	_rlm = _rlm.Define("btagcuts2", "Selected_jetbtag>0.2783") //medium wp -->as an example. 
+	_rlm = _rlm.Define("btagcuts2", "Selected_jetbtag>0.4506") //medium wp 
 			.Define("Selected_bjetpt", "Selected_jetpt[btagcuts2]")
 			.Define("Selected_bjeteta", "Selected_jeteta[btagcuts2]")
 			.Define("Selected_bjetphi", "Selected_jetphi[btagcuts2]")
 			.Define("Selected_bjetmass", "Selected_jetmass[btagcuts2]")
 			.Define("ncleanbjetspass", "int(Selected_bjetpt.size())")
 			.Define("Selected_bjetHT", "Sum(Selected_bjetpt)")
-			// .Define("Selected_bjethadflav", "Selected_jethadflav[btagcuts2]") 
 			.Define("cleanbjet4vecs", ::generate_4vec, {"Selected_bjetpt", "Selected_bjeteta", "Selected_bjetphi", "Selected_bjetmass"});    
-
 
     if (hasJetHadronFlavour) {
     _rlm = _rlm.Define("Selected_bjethadflav", "Selected_jethadflav[btagcuts2]");   }    
@@ -298,8 +278,6 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVar({"good_jet1mass", "goodJets_mass[0]", ""});
 
     //================================Store variables in tree=======================================//
-    // define variables that you want to store
-    //==============================================================================================//
     addVartoStore("run");
     addVartoStore("luminosityBlock");
     addVartoStore("event");
@@ -335,22 +313,15 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVartoStore("goodJets_pt");
     addVartoStore("Selected_jetpt");
 	addVartoStore("Selected_jeteta");
+
 	addVartoStore("Selected_jetbtag");
-
-
-	// addVartoStore("Selected_jethadflav");
-	// addVartoStore("Selected_bjethadflav");//after overlap and btag cut
-
-	addVartoStore("good_bjetdeepjet");
+    addVartoStore("good_bjetdeepcsvjet");
     if (_atree->GetBranch("Jet_hadronFlavour") != nullptr) {
         addVartoStore("Selected_jethadflav");
         addVartoStore("goodJets_hadflav");
         addVartoStore("good_bjethadflav");
         addVartoStore("Selected_bjethadflav");
     }
-	// addVartoStore("good_bjethadflav");
-	// addVartoStore("goodJets_hadflav");
-	
 	//jetmet corr
     addVartoStore("Jet_pt_corr");
 	addVartoStore("Jet_pt_corr_up");
@@ -358,6 +329,8 @@ void TopSemiLeptAnalyzer::defineMoreVars()
 	addVartoStore("Jet_pt_relerror");
     addVartoStore("MET_pt_corr");
     addVartoStore("MET_pt");
+    addVartoStore("MET_phi");
+    // addVartoStore("Photon_pt");
     
 	//case1 btag correction- fixed wp	
 	addVartoStore("btag_SF_central");
@@ -366,7 +339,6 @@ void TopSemiLeptAnalyzer::defineMoreVars()
 	
 	//case3 shape correction
 	//addVartoStore("btagWeight_case3");
-
 
 	//MUONID - ISO SF & WEIGHT	
 	addVartoStore("muon_SF_central");
@@ -377,14 +349,22 @@ void TopSemiLeptAnalyzer::defineMoreVars()
 	addVartoStore("muon_SF_id_systdown");
 	//addVartoStore("muonISO_SF");
 	addVartoStore("muon_SF_iso_sf");
+
+    addVartoStore("ele_SF_central");
+    addVartoStore("ele_SF_id_sf");
+    addVartoStore("ele_SF_id_sfup");
+    addVartoStore("ele_SF_id_sfdown");
+
 	addVartoStore("evWeight");  
 
-    if (!_isData) { // Only add gen-level information for MC data
-        addVartoStore("GenPart_pt");
-        addVartoStore("GenPart_eta");
-        addVartoStore("GenPart_phi");
-        addVartoStore("GenPart_mass");
-        addVartoStore("GenPart_pdgId");
+    if (!_isData) { // Only add gen-level information for MC data, gen-level name is changed to avoid conflict
+        addVartoStore("GenPartpt");
+        addVartoStore("GenParteta");
+        addVartoStore("GenPartphi");
+        addVartoStore("GenPartmass");
+        addVartoStore("GenPartpdgId");
+        addVartoStore("nGenPart");
+        std::cout << "Gen-level variables added." << std::endl;
     } 
 
 }
@@ -499,15 +479,6 @@ void TopSemiLeptAnalyzer::setupAnalysis()
         _rlm = _rlm.Define("genEventSumw",sumofgenweight.c_str());
         std::cout<<"Sum of genWeights = "<<sumofgenweight.c_str()<<std::endl;
 	}
-
-    // Define generator-level variables
-    if (!_isData) {
-        _rlm = _rlm.Define("GenPart_pt", "GenPart_pt")
-                   .Define("GenPart_eta", "GenPart_eta")
-                   .Define("GenPart_phi", "GenPart_phi")
-                   .Define("GenPart_mass", "GenPart_mass")
-                   .Define("GenPart_pdgId", "GenPart_pdgId");
-    }
    
 	defineCuts();
 	defineMoreVars();

@@ -386,6 +386,12 @@ void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufna
 		//  {"genWeight", "puWeight"});
 
 	    }
+		 _rlm = _rlm.Define("GenPartpt", "GenPart_pt")
+                   .Define("GenParteta", "GenPart_eta")
+                   .Define("GenPartphi", "GenPart_phi")
+                   .Define("GenPartmass", "GenPart_mass")
+                   .Define("GenPartpdgId", "GenPart_pdgId");
+                //    .Define("nGenPart", "nGenPart");
 	}
 	_jerctag = jerctag;
 	_jercunctag = jercunctag;
@@ -606,6 +612,7 @@ ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateEleSF(RNode _rlm, std::vector<
       std::string sf_definition = column_name_reco+" * "+column_name_id;
 
       _rlm = _rlm.Define(column_name, sf_definition); 
+	  
 
     }
     return _rlm;
@@ -792,7 +799,6 @@ void NanoAODAnalyzerrdframe::addCuts(string cut, string idx)
 	_cutinfovector.push_back({cut, idx});
 }
 
-
 void NanoAODAnalyzerrdframe::run(bool saveAll, string outtreename)
 {
 	vector<RNodeTree *> rntends;
@@ -820,6 +826,7 @@ void NanoAODAnalyzerrdframe::run(bool saveAll, string outtreename)
 				cout << bname << endl;
 				// cout << "-----branch stored" << endl;
 			}
+			
 			arnode->Snapshot(outtreename, outname, _varstostorepertree[nodename]);
 
 		}
@@ -868,12 +875,6 @@ void NanoAODAnalyzerrdframe::setParams(int year, string runtype, int datatype)
 	_year=year;
 	_runtype=runtype;
 	_datatype=datatype;
-	// // debug
-	// if (_runtype.empty()) {
-    //     std::cerr << "Error: runtype is empty!" << std::endl;
-    //     throw std::invalid_argument("Invalid runtype");
-    // }
-	// // 
 
 	if(_year==2016) {
         cout << "Analysing through Run 2016" << endl;
@@ -1020,8 +1021,6 @@ std::string NanoAODAnalyzerrdframe::ctrlBranchName(std::string str_Branch){
     }
     return output;
 }
-
-
 
 //cut-based ID Fall17 V2 (0:fail, 1:veto, 2:loose, 3:medium, 4:tight)
 std::string NanoAODAnalyzerrdframe::ElectronID(int cutbasedID){
