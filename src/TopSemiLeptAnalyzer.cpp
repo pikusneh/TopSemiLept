@@ -43,8 +43,8 @@ void TopSemiLeptAnalyzer::defineCuts() {
     // Ensure at least one muon or electron
     addCuts("nMuon > 0 || nElectron > 0", "2");
 
-    // Ensure exactly one good lepton
-    addCuts("NgoodMuons + NgoodElectrons == 1", "3");
+    // Ensure exactly one tight lepton
+    addCuts("NtightMuons + NtightElectrons == 1", "3");
 
     // // Ensure at least three jets
     addCuts("NgoodJets >= 3", "4");
@@ -61,7 +61,40 @@ void TopSemiLeptAnalyzer::selectElectrons()
     std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
     std::cout<< "================================//=================================" << std::endl;
     }
-   
+    _rlm = _rlm.Define("ElectronSC","abs(Electron_eta+Electron_deltaEtaSC)<1.442 || abs(Electron_eta+Electron_deltaEtaSC)>1.566");
+    
+        // Define tightElectronsD0DzCut based on Dxy and Dz cuts for barrel and endcap
+    _rlm = _rlm.Define("ElectronsD0DzCut", 
+        "passDxy = (ElectronSC < 1.479 && abs(Electron_dxy) < 0.05) || (ElectronSC >= 1.479 && abs(Electron_dxy) < 0.1);"
+        "passDz = (ElectronSC < 1.479 && abs(Electron_dz) < 0.1) || (ElectronSC >= 1.479 && abs(Electron_dz) < 0.2);"
+        "return passDxy && passDz;"
+    );
+
+    // Tight electrons definition
+    _rlm = _rlm.Define("tightElectronsID", ElectronID(4))
+               .Define("tightElectrons", "Electron_pt>=35.0 && abs(Electron_eta)<2.4 && tightElectronsID && ElectronsD0DzCut ")
+               .Define("tightElectrons_pt", "Electron_pt[tightElectrons]")
+               .Define("tightElectrons_eta", "Electron_eta[tightElectrons]")
+               .Define("tightElectrons_phi", "Electron_phi[tightElectrons]")
+               .Define("tightElectrons_mass", "Electron_mass[tightElectrons]")
+               .Define("tightElectrons_idx", ::good_idx, {"tightElectrons"})
+               .Define("NtightElectrons", "int(tightElectrons_pt.size())")
+               .Define("tightElectrons_charge", "Electron_charge[tightElectrons]")
+               .Define("ElectronIsOSSF", "(NtightElectrons - abs(Sum(tightElectrons_charge)))/2")
+               .Define("tightElectron_4Vecs", ::generate_4vec, {"tightElectrons_pt", "tightElectrons_eta", "tightElectrons_phi", "tightElectrons_mass"});
+
+
+   // Veto electrons definition
+    _rlm = _rlm.Define("vetoElectronsID", ElectronID(1))
+               .Define("vetoElectrons", " Electron_pt>15.0 && abs(Electron_eta)<2.4 && vetoElectronsID && ElectronsD0DzCut ")
+               .Define("vetoElectrons_pt", "Electron_pt[vetoElectrons]")
+               .Define("vetoElectrons_eta", "Electron_eta[vetoElectrons]")
+               .Define("vetoElectrons_phi", "Electron_phi[vetoElectrons]")
+               .Define("vetoElectrons_mass", "Electron_mass[vetoElectrons]")
+               .Define("NvetoElectrons", "int(vetoElectrons_pt.size())")
+               .Define("vetoElectrons_4Vecs", ::generate_4vec, {"vetoElectrons_pt", "vetoElectrons_eta", "vetoElectrons_phi", "vetoElectrons_mass"});
+  
+    
     _rlm = _rlm.Define("goodElectronsID", ElectronID(2)); //without pt-eta cuts
 	_rlm = _rlm.Define("goodElectrons", "goodElectronsID && Electron_pt>30.0 && abs(Electron_eta)<2.4 && Electron_pfRelIso03_all<0.15");
     _rlm = _rlm.Define("goodElectrons_pt", "Electron_pt[goodElectrons]")
@@ -84,6 +117,31 @@ void TopSemiLeptAnalyzer::selectMuons()
     //     std::cout<< "================================//=================================" << std::endl;
     // }
 
+    // Tight muon selection
+    _rlm = _rlm.Define("tightMuonsID", MuonID(4));
+    _rlm = _rlm.Define("tightMuons", "Muon_pt>30.0 && abs(Muon_eta)<2.4 && tightMuonsID && Muon_miniPFRelIso_all <= 0.15")
+               .Define("tightMuons_pt", "Muon_pt[tightMuons]")
+               .Define("tightMuons_eta", "Muon_eta[tightMuons]")
+               .Define("tightMuons_phi", "Muon_phi[tightMuons]")
+               .Define("tightMuons_mass", "Muon_mass[tightMuons]")
+               .Define("tightMuons_charge", "Muon_charge[tightMuons]")
+               .Define("tightMuons_idx", ::good_idx, {"tightMuons"})
+               .Define("NtightMuons", "int(tightMuons_pt.size())")
+               .Define("MuonIsOSSF", "(NtightMuons - abs(Sum(tightMuons_charge)))/2")
+               .Define("tightMuons_4vecs", ::generate_4vec, {"tightMuons_pt", "tightMuons_eta", "tightMuons_phi", "tightMuons_mass"});
+
+
+    // Veto muon selection
+    _rlm = _rlm.Define("vetoMuonsID", MuonID(1));
+    _rlm = _rlm.Define("vetoMuons", "Muon_pt>15.0 && abs(Muon_eta)<2.4 && vetoMuonsID && Muon_miniPFRelIso_all <= 0.25")
+               .Define("vetoMuons_pt", "Muon_pt[vetoMuons]")
+               .Define("vetoMuons_eta", "Muon_eta[vetoMuons]")
+               .Define("vetoMuons_phi", "Muon_phi[vetoMuons]")
+               .Define("vetoMuons_mass", "Muon_mass[vetoMuons]")
+               .Define("NvetoMuons", "int(vetoMuons_pt.size())")
+               .Define("vetoMuons_4vecs", ::generate_4vec, {"vetoMuons_pt", "vetoMuons_eta", "vetoMuons_phi", "vetoMuons_mass"});
+
+    // Good muon selection
     _rlm = _rlm.Define("goodMuonsID", MuonID(2)); //loose muons
     _rlm = _rlm.Define("goodMuons","goodMuonsID && Muon_pt > 30 && abs(Muon_eta) < 2.4 && Muon_miniPFRelIso_all < 0.40");
     _rlm = _rlm.Define("goodMuons_pt", "Muon_pt[goodMuons]") 
@@ -107,14 +165,13 @@ void TopSemiLeptAnalyzer::selectMuons()
 void TopSemiLeptAnalyzer::selectJets()
 {
     cout << "select good jets" << endl;
-   
     // Check if the Jet_hadronFlavour branch exists
     if (_atree->GetBranch("Jet_hadronFlavour") == nullptr) {
         std::cout << "Jet_hadronFlavour branch is not found in the input file!!" << std::endl;
-        // Handle the case where Jet_hadronFlavour does not exist (e.g., data file)
     } else {
         std::cout << "Jet_hadronFlavour branch is found in the input file." << std::endl;
     }
+
     // Define goodJetsID, goodJets and other goodJets-related variables
     _rlm = _rlm.Define("goodJetsID", JetID(6)); // without pt-eta cuts
     _rlm = _rlm.Define("goodJets", "goodJetsID && Jet_pt > 30.0 && abs(Jet_eta) < 2.4");
@@ -129,11 +186,11 @@ void TopSemiLeptAnalyzer::selectJets()
         _rlm = _rlm.Define("goodJets_hadflav", "Jet_hadronFlavour[goodJets]");
     }
 
-      _rlm = _rlm.Define("goodJets_btag","Jet_btagCSVV2[goodJets]")
+      _rlm = _rlm.Define("goodJets_btag","Jet_btagDeepB[goodJets]")  //JetDeepCSV
                 .Define("NgoodJets","int(goodJets_pt.size())")
                 .Define("goodJets_4vecs", ::generate_4vec, {"goodJets_pt", "goodJets_eta", "goodJets_phi", "goodJets_mass"});
 
-      _rlm = _rlm.Define("btagcuts", "goodJets_btag>0.4506") 
+      _rlm = _rlm.Define("btagcuts", "goodJets_btag>0.4506") //medium wp for 2017
 			.Define("good_bjetpt", "goodJets_pt[btagcuts]")
 			.Define("good_bjeteta", "goodJets_eta[btagcuts]")
 			.Define("good_bjetphi", "goodJets_phi[btagcuts]")
@@ -178,7 +235,7 @@ void TopSemiLeptAnalyzer::removeOverlaps()
     //=====================================================================================//
      bool hasJetHadronFlavour = (_atree->GetBranch("Jet_hadronFlavour") != nullptr);
 
-    _rlm = _rlm.Define("muonjetoverlap", checkoverlap, {"goodJets_4vecs","goodMuons_4vecs"});
+    _rlm = _rlm.Define("muonjetoverlap", checkoverlap, {"goodJets_4vecs","tightMuons_4vecs"});
 	_rlm =	_rlm.Define("Selected_jetpt", "goodJets_pt[muonjetoverlap]")
 		.Define("Selected_jeteta", "goodJets_eta[muonjetoverlap]")
 		.Define("Selected_jetphi", "goodJets_phi[muonjetoverlap]")
@@ -216,18 +273,26 @@ void TopSemiLeptAnalyzer::calculateEvWeight(){
     Jets_vars_names.emplace_back("Selected_jetbtag");
   }
   std::string output_btag_column_name = "btag_SF_";
-  _rlm = calculateBTagSF(_rlm, Jets_vars_names, _case, output_btag_column_name);
+  _rlm = calculateBTagSF(_rlm, Jets_vars_names, _case, 0.4506,"M",output_btag_column_name);
  
-  std::vector<std::string> Muon_vars_names = {"goodMuons_eta", "goodMuons_pt"};
+//   std::vector<std::string> Muon_vars_names = {"goodMuons_eta", "goodMuons_pt"};
+std::vector<std::string> Muon_vars_names = {"tightMuons_eta", "tightMuons_pt"};
   std::string output_mu_column_name = "muon_SF_";
   _rlm = calculateMuSF(_rlm, Muon_vars_names, output_mu_column_name);
 
-  std::vector<std::string> Electron_vars_names = {"goodElectrons_eta", "goodElectrons_pt"};
+//   std::vector<std::string> Electron_vars_names = {"goodElectrons_eta", "goodElectrons_pt"};
+  std::vector<std::string> Electron_vars_names = {"tightElectrons_eta", "tightElectrons_pt"};
   std::string output_ele_column_name = "ele_SF_";
   _rlm = calculateEleSF(_rlm, Electron_vars_names, output_ele_column_name);
+  _rlm = _rlm.Define("evWeight_wobtagSF", " pugenWeight * muon_SF_central * ele_SF_central"); 
+  _rlm = _rlm.Define("totbtagSF", "btag_SF_bcflav_central * btag_SF_lflav_central"); 
+
+
+  //Prefiring Weight for 2016 and 2017
+  _rlm = applyPrefiringWeight(_rlm);
 
   //Total event Weight:
-  _rlm = _rlm.Define("evWeight", " pugenWeight * btag_SF_central * muon_SF_central * ele_SF_central"); 
+  _rlm = _rlm.Define("evWeight", " pugenWeight *prefiring_SF_central * btag_SF_bcflav_central * btag_SF_lflav_central * muon_SF_central * ele_SF_central"); 
 
 }
 //MET
@@ -261,6 +326,7 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     }
 
     addVar({"good_muon1pt", "goodMuons_pt[0]", ""});
+    addVar({"tight_muon1pt", "tightMuons_pt[0]", ""});
 
     //selected jet candidates
     addVar({"good_jet1pt", "(goodJets_pt.size()>0) ? goodJets_pt[0] : -1", ""});
@@ -285,6 +351,9 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVartoStore("NgoodElectrons");
     addVartoStore("goodElectrons_pt");
     addVartoStore("goodElectrons_eta");
+    addVartoStore("NtightElectrons");
+    addVartoStore("tightElectrons_pt");
+    addVartoStore("tightElectrons_eta");
 
 
     //muon
@@ -296,6 +365,9 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVartoStore("NgoodMuons");
     addVartoStore("goodMuons_pt");
     addVartoStore("goodMuons_eta");
+    addVartoStore("NtightMuons");
+    addVartoStore("tightMuons_pt");
+    addVartoStore("tightMuons_eta");
 
     //jet
     addVartoStore("nJet");
@@ -304,10 +376,11 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVartoStore("goodJets_pt");
     addVartoStore("Selected_jetpt");
 	addVartoStore("Selected_jeteta");
-
 	addVartoStore("Selected_jetbtag");
+
     addVartoStore("good_bjetdeepcsvjet");
     addVartoStore("Ngood_bjets");
+
     if (_atree->GetBranch("Jet_hadronFlavour") != nullptr) {
         addVartoStore("Selected_jethadflav");
         addVartoStore("goodJets_hadflav");
@@ -324,10 +397,15 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVartoStore("MET_phi");
     // addVartoStore("Photon_pt");
     
+    if (!_isData) {
 	//case1 btag correction- fixed wp	
-	addVartoStore("btag_SF_central");
-	addVartoStore("btag_SF_up");
-	addVartoStore("btag_SF_down");
+	// addVartoStore("btag_SF_central");
+    addVartoStore("btag_SF_bcflav_central");
+    addVartoStore("btag_SF_lflav_central");
+    addVartoStore("totbtagSF");
+    addVartoStore("evWeight_wobtagSF");
+	// addVartoStore("btag_SF_up");
+	// addVartoStore("btag_SF_down");
 	
 	//case3 shape correction
 	//addVartoStore("btagWeight_case3");
@@ -347,7 +425,7 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVartoStore("ele_SF_id_sfup");
     addVartoStore("ele_SF_id_sfdown");
 
-	addVartoStore("evWeight");  
+	addVartoStore("evWeight");  }
 
     if (!_isData) { // Only add gen-level information for MC data, gen-level name is changed to avoid conflict
         addVartoStore("GenPartpt");
@@ -387,9 +465,11 @@ void TopSemiLeptAnalyzer::bookHists()
     add1DHist( {"hnevents", "Number of Events", 2, -0.5, 1.5}, "one", "evWeight", "");
 	add1DHist( {"hnevents_no_weight", "Number of Events w/o", 2, -0.5, 1.5}, "one", "one", "");
    
-    add1DHist( {"hNgoodElectrons", "NumberofGoodElectrons", 5, 0.0, 5.0}, "NgoodElectrons", "evWeight", "");
+    // add1DHist( {"hNgoodElectrons", "NumberofGoodElectrons", 5, 0.0, 5.0}, "NgoodElectrons", "evWeight", "");
+    add1DHist( {"hNtightElectrons", "NumberofTightElectrons", 5, 0.0, 5.0}, "NtightElectrons", "evWeight", "");
     
-    add1DHist( {"hNgoodMuons", "# of good Muons ", 5, 0.0, 5.0}, "NgoodMuons", "evWeight", "");
+    // add1DHist( {"hNgoodMuons", "# of good Muons ", 5, 0.0, 5.0}, "NgoodMuons", "evWeight", "");
+    add1DHist( {"hNtightMuons", "# of tight Muons ", 5, 0.0, 5.0}, "NtightMuons", "evWeight", "");
     
     add1DHist( {"hgood_jetpt_with weight", "Good Jet pt with weight " , 100, 0, 1000} , "goodJets_pt", "evWeight", "");
 	add1DHist( {"hgood_jetpt_NOWeight", "Good Jet pt no weihght " , 100, 0, 1000} , "goodJets_pt", "one", "");

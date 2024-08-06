@@ -57,7 +57,14 @@ public:
 	void applyJetMETCorrections();
     
 	//virtual void applyJetMETCorrections();
-
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    TH2D* l_eff = nullptr;
+    TH2D* c_eff = nullptr;
+    TH2D* b_eff = nullptr;
+    // TFile* _correction_btag1 = nullptr;
+	std::unique_ptr<correction::CorrectionSet> _correction_btag1 = nullptr; // Update declaration
+    
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	void addVar(varinfo v);
 
@@ -73,11 +80,15 @@ public:
 	void add1DHist(TH1DModel histdef, string variable, string weight, string mincutstep="");
 	void add2DHist(TH2DModel histdef, string variable1, string variable2, string weight, string mincutstep="");
 
-	ROOT::RDF::RNode calculateBTagSF(RNode _rlm, std::vector<std::string> Jets_vars, int _case, std::string output_var);
-
+	// ROOT::RDF::RNode calculateBTagSF(RNode _rlm, std::vector<std::string> Jets_vars, int _case, std::string output_var);
 	ROOT::RDF::RNode calculateMuSF(RNode _rlm, std::vector<std::string> Muon_vars, std::string output_var);
-
 	ROOT::RDF::RNode calculateEleSF(RNode _rlm, std::vector<std::string> Ele_vars, std::string output_var);
+	ROOT::RDF::RNode applyPrefiringWeight(RNode _rlm, std::string output_var="prefiring_SF_");
+
+	void loadBtagEff(const std::string& sampleName, const std::string& year);
+    double getBTaggingEff(double hadflav, double eta, double pt);
+    ROOT::RDF::RNode calculateBTagSF(ROOT::RDF::RNode _rlm, std::vector<std::string> Jets_vars_names, int _case, const double btag_cut, std::string _BTaggingWP, std::string output_var);
+
 
 	void setupCuts_and_Hists();
 	void drawHists(RNode t);
@@ -172,7 +183,7 @@ public:
 	std::shared_ptr<const correction::Correction> _jetCorrectionUnc; // for uncertainty corresponding to the jet corrector
 
 	// btag correction
-	std::unique_ptr<correction::CorrectionSet> _correction_btag1;
+	// std::unique_ptr<correction::CorrectionSet> _correction_btag1;
 
 	RNodeTree _rnt;
 

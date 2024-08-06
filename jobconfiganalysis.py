@@ -53,8 +53,7 @@ config = {
         'electron_fname': 'data/EGM/2017_UL/electron.json.gz', 
         'electron_reco_type': 'RecoAbove20',
         'electron_id_type': 'Tight',#'Tight ID UL scale factor',
-        #'muontype': 'NUM_TightRelIso_DEN_MediumID',#'Medium ISO UL scale factor',
-
+     
         # json file name for JERC 2017
         'jercfname': 'data/JERC/UL17_jerc.json',
 
@@ -91,7 +90,7 @@ procflags = {
         # if False then only selected branches which is done in the .cpp file will be saved
         'saveallbranches': False,
         #How many input files?
-        'nrootfiles': 2,
+        'nrootfiles':10,
         }
 
 # input directory where your input root tree resides
@@ -106,7 +105,7 @@ outDir = '/eos/uscms/store/user/snehshuc/test/2017'
 # nanoaod_inputdir_outputdir_pairs = [[filepath + 'DYjetsM10to50_2017_skim.root', 'test.root', 'outputest.root']]
 # nanoaod_inputdir_outputdir_pairs = [['root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/1B8826D8-B589-424C-98EB-3D6857980317.root', 'analyzed/', 'stderr.out']]
 
-nanoaod_inputdir_outputdir_pairs = [['/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/GJets_HT100To200_2017_skim.root', 'analyzed/output.root', 'stderr.out']]
+nanoaod_inputdir_outputdir_pairs = [['/eos/uscms/store/user/snehshuc/2017/TTGamma', '/eos/uscms/store/user/snehshuc/test/2017/TTGamma_output.root', 'stderr.out']]
  
 # 1B8826D8-B589-424C-98EB-3D6857980317.root
 
