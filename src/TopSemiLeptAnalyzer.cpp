@@ -47,15 +47,11 @@ void TopSemiLeptAnalyzer::defineCuts() {
     addCuts("NgoodMuons + NgoodElectrons == 1", "3");
 
     // // Ensure at least three jets
-    // addCuts("NgoodJets >= 3", "4");
+    addCuts("NgoodJets >= 3", "4");
 
     // // Ensure at least one b-jet
-    // addCuts("Ngood_bjets >= 1", "5");
+    addCuts("Ngood_bjets >= 1", "5");
 }
-
-//===============================Find Good Electrons===========================================//
-//: Define Good Electrons in rdata frame
-//=============================================================================================//
 
 void TopSemiLeptAnalyzer::selectElectrons()
 {
@@ -111,11 +107,6 @@ void TopSemiLeptAnalyzer::selectMuons()
 void TopSemiLeptAnalyzer::selectJets()
 {
     cout << "select good jets" << endl;
-    // if (debug){
-    //     std::cout<< "================================//=================================" << std::endl;
-    //     std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
-    //     std::cout<< "================================//=================================" << std::endl;
-    // }
    
     // Check if the Jet_hadronFlavour branch exists
     if (_atree->GetBranch("Jet_hadronFlavour") == nullptr) {
@@ -316,6 +307,7 @@ void TopSemiLeptAnalyzer::defineMoreVars()
 
 	addVartoStore("Selected_jetbtag");
     addVartoStore("good_bjetdeepcsvjet");
+    addVartoStore("Ngood_bjets");
     if (_atree->GetBranch("Jet_hadronFlavour") != nullptr) {
         addVartoStore("Selected_jethadflav");
         addVartoStore("goodJets_hadflav");

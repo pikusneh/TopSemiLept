@@ -612,7 +612,7 @@ ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateEleSF(RNode _rlm, std::vector<
       std::string sf_definition = column_name_reco+" * "+column_name_id;
 
       _rlm = _rlm.Define(column_name, sf_definition); 
-	  
+
 
     }
     return _rlm;
@@ -645,16 +645,7 @@ bool NanoAODAnalyzerrdframe::helper_2DHistCreator(std::string hname, std::string
 void NanoAODAnalyzerrdframe::setupCuts_and_Hists()
 {
 	cout << "setting up definitions, cuts, and histograms" <<endl;
-	// if (this == nullptr) {
-    //     std::cerr << "Error: NanoAODAnalyzerrdframe::setupCuts_and_Hists called on a null pointer!" << std::endl;
-    //     return;
-    // }
-
-	// for ( auto &c : _varinfovector)
-	// {
-	// 	if (c.mincutstep.length()==0) _rlm = _rlm.Define(c.varname, c.vardefinition);
-	// }
-	// Define variables without cuts
+	
     for (auto &c : _varinfovector) {
         if (c.mincutstep.length() == 0) {
             _rlm = _rlm.Define(c.varname, c.vardefinition);
