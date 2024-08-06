@@ -29,8 +29,8 @@ void TopSemiLeptAnalyzer::defineCuts() {
     }
 
     auto Nentry = _rlm.Count();
-    // _rlm = _rlm.Range(0, 100000);
-    auto Nentry_100 = _rlm.Count();
+    _rlm = _rlm.Range(0, 100000);
+    // auto Nentry_100 = _rlm.Count();
     std::cout << "-------------------------------------------------------------------" << std::endl;
     std::cout << "Usage of ranges:\n"
               << " - All entries: " << *Nentry << std::endl;
@@ -46,11 +46,11 @@ void TopSemiLeptAnalyzer::defineCuts() {
     // Ensure exactly one tight lepton
     addCuts("NtightMuons + NtightElectrons == 1", "3");
 
-    // // Ensure at least three jets
-    addCuts("NgoodJets >= 3", "4");
+    // // // Ensure at least three jets
+    // addCuts("NgoodJets >= 3", "4");
 
-    // // Ensure at least one b-jet
-    addCuts("Ngood_bjets >= 1", "5");
+    // // // Ensure at least one b-jet
+    // addCuts("Ngood_bjets >= 1", "5");
 }
 
 void TopSemiLeptAnalyzer::selectElectrons()
@@ -61,18 +61,44 @@ void TopSemiLeptAnalyzer::selectElectrons()
     std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
     std::cout<< "================================//=================================" << std::endl;
     }
-    _rlm = _rlm.Define("ElectronSC","abs(Electron_eta+Electron_deltaEtaSC)<1.442 || abs(Electron_eta+Electron_deltaEtaSC)>1.566");
-    
-        // Define tightElectronsD0DzCut based on Dxy and Dz cuts for barrel and endcap
-    _rlm = _rlm.Define("ElectronsD0DzCut", 
-        "passDxy = (ElectronSC < 1.479 && abs(Electron_dxy) < 0.05) || (ElectronSC >= 1.479 && abs(Electron_dxy) < 0.1);"
-        "passDz = (ElectronSC < 1.479 && abs(Electron_dz) < 0.1) || (ElectronSC >= 1.479 && abs(Electron_dz) < 0.2);"
-        "return passDxy && passDz;"
-    );
+    // _rlm = _rlm.Define("ElectronSC","abs(Electron_eta+Electron_deltaEtaSC)<1.442 || abs(Electron_eta+Electron_deltaEtaSC)>1.566");
+    _rlm = _rlm.Define("ElectronSC", [](const ROOT::VecOps::RVec<float>& eta, const ROOT::VecOps::RVec<float>& deltaEtaSC) {
+        ROOT::VecOps::RVec<float> sc(eta.size());
+        for (size_t i = 0; i < eta.size(); ++i) {
+            sc[i] = std::abs(eta[i] + deltaEtaSC[i]);
+        }
+        return sc;
+    }, {"Electron_eta", "Electron_deltaEtaSC"});
+     
+      // Define a condition to select electrons based on the supercluster eta
+    auto scCondition = [](const ROOT::VecOps::RVec<float>& sc) {
+        ROOT::VecOps::RVec<bool> passCondition(sc.size(), false);
+        for (size_t i = 0; i < sc.size(); ++i) {
+            passCondition[i] = sc[i] < 1.442 || sc[i] > 1.566;
+        }
+        return passCondition;
+    };
+
+    _rlm = _rlm.Define("ElectronSCCondition", scCondition, {"ElectronSC"});
+
+
+   // Define ElectronsD0DzCut based on Dxy and Dz cuts for barrel and endcap
+    auto d0dzCut = [](const ROOT::VecOps::RVec<float>& ElectronSC, const ROOT::VecOps::RVec<float>& Electron_dxy, const ROOT::VecOps::RVec<float>& Electron_dz) {
+        ROOT::VecOps::RVec<bool> passCuts(ElectronSC.size(), false);
+        for (size_t i = 0; i < ElectronSC.size(); ++i) {
+            bool passDxy = (ElectronSC[i] < 1.479 && std::abs(Electron_dxy[i]) < 0.05) || (ElectronSC[i] >= 1.479 && std::abs(Electron_dxy[i]) < 0.1);
+            bool passDz = (ElectronSC[i] < 1.479 && std::abs(Electron_dz[i]) < 0.1) || (ElectronSC[i] >= 1.479 && std::abs(Electron_dz[i]) < 0.2);
+            passCuts[i] = passDxy && passDz;
+        }
+        return passCuts;
+    };
+
+    _rlm = _rlm.Define("ElectronsD0DzCut", d0dzCut, {"ElectronSC", "Electron_dxy", "Electron_dz"});
+
 
     // Tight electrons definition
     _rlm = _rlm.Define("tightElectronsID", ElectronID(4))
-               .Define("tightElectrons", "Electron_pt>=35.0 && abs(Electron_eta)<2.4 && tightElectronsID && ElectronsD0DzCut ")
+               .Define("tightElectrons", "Electron_pt>=35.0 && abs(Electron_eta)<2.4 && tightElectronsID && ElectronsD0DzCut && ElectronSCCondition ")
                .Define("tightElectrons_pt", "Electron_pt[tightElectrons]")
                .Define("tightElectrons_eta", "Electron_eta[tightElectrons]")
                .Define("tightElectrons_phi", "Electron_phi[tightElectrons]")
@@ -268,7 +294,7 @@ void TopSemiLeptAnalyzer::removeOverlaps()
 void TopSemiLeptAnalyzer::calculateEvWeight(){
 	
   int _case = 1;
-    std::vector<std::string> Jets_vars_names = {"Selected_jethadflav", "Selected_jeteta",  "Selected_jetpt"};  
+    std::vector<std::string> Jets_vars_names = {"Selected_jethadflav", "Selected_jeteta",  "Selected_jetpt", "Selected_jetbtag"};  
   if(_case !=1){
     Jets_vars_names.emplace_back("Selected_jetbtag");
   }
@@ -284,15 +310,16 @@ std::vector<std::string> Muon_vars_names = {"tightMuons_eta", "tightMuons_pt"};
   std::vector<std::string> Electron_vars_names = {"tightElectrons_eta", "tightElectrons_pt"};
   std::string output_ele_column_name = "ele_SF_";
   _rlm = calculateEleSF(_rlm, Electron_vars_names, output_ele_column_name);
-  _rlm = _rlm.Define("evWeight_wobtagSF", " pugenWeight * muon_SF_central * ele_SF_central"); 
-  _rlm = _rlm.Define("totbtagSF", "btag_SF_bcflav_central * btag_SF_lflav_central"); 
+//   _rlm = _rlm.Define("evWeight", " pugenWeight * muon_SF_central * ele_SF_central"); 
+//   _rlm = _rlm.Define("totbtagSF", "btag_SF_bcflav_central * btag_SF_lflav_central"); 
 
 
   //Prefiring Weight for 2016 and 2017
   _rlm = applyPrefiringWeight(_rlm);
 
   //Total event Weight:
-  _rlm = _rlm.Define("evWeight", " pugenWeight *prefiring_SF_central * btag_SF_bcflav_central * btag_SF_lflav_central * muon_SF_central * ele_SF_central"); 
+//   _rlm = _rlm.Define("evWeight", " pugenWeight *prefiring_SF_central * btag_SF_bcflav_central * btag_SF_lflav_central * muon_SF_central * ele_SF_central");
+_rlm = _rlm.Define("evWeight", " pugenWeight * prefiring_SF_central * btag_central * muon_SF_central * ele_SF_central");
 
 }
 //MET
@@ -399,13 +426,13 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     
     if (!_isData) {
 	//case1 btag correction- fixed wp	
-	// addVartoStore("btag_SF_central");
-    addVartoStore("btag_SF_bcflav_central");
-    addVartoStore("btag_SF_lflav_central");
-    addVartoStore("totbtagSF");
-    addVartoStore("evWeight_wobtagSF");
-	// addVartoStore("btag_SF_up");
-	// addVartoStore("btag_SF_down");
+	addVartoStore("btag_SF_central");
+    // addVartoStore("btag_SF_bcflav_central");
+    // addVartoStore("btag_SF_lflav_central");
+    // addVartoStore("totbtagSF");
+    // addVartoStore("evWeight_wobtagSF");
+	addVartoStore("btag_SF_up");
+	addVartoStore("btag_SF_down");
 	
 	//case3 shape correction
 	//addVartoStore("btagWeight_case3");

@@ -53,18 +53,17 @@ public:
 	// void selectFatJets();
 
 	void setupCorrections(string goodjsonfname, string pufname, string putag, string btvfname, string btvtype, string muon_roch_fname, string muon_fname, string muon_hlt_type, string muon_reco_type, string muon_id_type, string muon_iso_type, string electron_fname, string electron_reco_type, string electron_id_type, string jercfname, string jerctag, string jercunctag);
+	// void setupCorrections(string goodjsonfname, string pufname, string putag, string btvfname, string btvtype, string fname_btagEff, string hname_btagEff_bcflav, string hname_btagEff_lflav, string muon_roch_fname, string muon_fname, string muonhlttype, string muonrecotype,string muonidtype,string muonisotype,string electron_fname, string electron_reco_type, string electron_id_type, string jercfname, string jerctag, string jercunctag);
+    // void setupJetMETCorrection(string fname, string jettag);
 	void setupJetMETCorrection(string fname, string jettag);
 	void applyJetMETCorrections();
     
 	//virtual void applyJetMETCorrections();
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    TH2D* l_eff = nullptr;
-    TH2D* c_eff = nullptr;
-    TH2D* b_eff = nullptr;
+
+    // TH2D* l_eff = nullptr;
+    // TH2D* c_eff = nullptr;
+    // TH2D* b_eff = nullptr;
     // TFile* _correction_btag1 = nullptr;
-	std::unique_ptr<correction::CorrectionSet> _correction_btag1 = nullptr; // Update declaration
-    
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	void addVar(varinfo v);
 
@@ -79,16 +78,13 @@ public:
 	void addCuts(string cut, string idx);
 	void add1DHist(TH1DModel histdef, string variable, string weight, string mincutstep="");
 	void add2DHist(TH2DModel histdef, string variable1, string variable2, string weight, string mincutstep="");
+	
 
-	// ROOT::RDF::RNode calculateBTagSF(RNode _rlm, std::vector<std::string> Jets_vars, int _case, std::string output_var);
+	ROOT::RDF::RNode calculateBTagSF(RNode _rlm, std::vector<std::string> Jets_vars, int _case, std::string output_var);
 	ROOT::RDF::RNode calculateMuSF(RNode _rlm, std::vector<std::string> Muon_vars, std::string output_var);
 	ROOT::RDF::RNode calculateEleSF(RNode _rlm, std::vector<std::string> Ele_vars, std::string output_var);
 	ROOT::RDF::RNode applyPrefiringWeight(RNode _rlm, std::string output_var="prefiring_SF_");
-
-	void loadBtagEff(const std::string& sampleName, const std::string& year);
-    double getBTaggingEff(double hadflav, double eta, double pt);
-    ROOT::RDF::RNode calculateBTagSF(ROOT::RDF::RNode _rlm, std::vector<std::string> Jets_vars_names, int _case, const double btag_cut, std::string _BTaggingWP, std::string output_var);
-
+	
 
 	void setupCuts_and_Hists();
 	void drawHists(RNode t);
@@ -183,7 +179,7 @@ public:
 	std::shared_ptr<const correction::Correction> _jetCorrectionUnc; // for uncertainty corresponding to the jet corrector
 
 	// btag correction
-	// std::unique_ptr<correction::CorrectionSet> _correction_btag1;
+	std::unique_ptr<correction::CorrectionSet> _correction_btag1;
 
 	RNodeTree _rnt;
 
