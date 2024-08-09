@@ -1,2 +1,6 @@
 testout.root
 testout_data.root
+./analyzed/output.root  
+./analyzed/output_DY.root
+./analyzed/TTgamma_output.root 
+./analyzed/TTgamma_output1.root
