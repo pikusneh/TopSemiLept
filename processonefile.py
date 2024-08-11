@@ -40,12 +40,16 @@ if __name__ == '__main__':
     cppyy.load_reflection_info("libMathMore.so")
     cppyy.load_reflection_info("libnanoadrdframe.so")
 
+     # Ensure infile is fully qualified if it is a remote file
+    if infile.startswith('/store/'):
+        infile = 'root://cmsxrootd.fnal.gov/' + infile
+
     t = ROOT.TChain(intreename)
     t.Add(infile)
     print(f"Inside process one file..!! Added file: {infile}")
 
     # Print the TChain to verify it's correctly set up
-    # t.Print()
+    t.Print()
 
     nevents = t.GetEntries()
     print("-------------------------------------------------------------------")

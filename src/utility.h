@@ -97,12 +97,10 @@ TLorentzVector generate_TLorentzVector(double &pt, double &eta, double &phi, dou
 
 /*=====================================BJets SF============================================*/
 floats btvcorrection(std::unique_ptr<correction::CorrectionSet> &cset, std::string name, std::string syst, ints &hadflav, floats &etas,floats &pts,  floats &btags);
-
 floats btv_case1(std::unique_ptr<correction::CorrectionSet> &cset, std::string type, std::string sys,std::string wp, ints &hadflav, floats &etas, floats &pts );
 floats btv_case2(std::unique_ptr<correction::CorrectionSet> &cset, std::string type, std::string sys,std::string wp, ints &hadflav, floats &etas, floats &pts );
 
 floats btv_casetest(std::unique_ptr<correction::CorrectionSet>& cset, std::string type1, std::string sys, std::string wp, ints& hadflav, floats& etas, floats& pts);
-
 
 /*=====================================Muons SF============================================*/
 //floats muoncorrection(std::unique_ptr<correction::CorrectionSet> &cset, std::string type, std::string year, floats &etas, floats &pts, std::string sys);

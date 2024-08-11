@@ -133,3 +133,84 @@ std::string output_btag_column_name = "btag_SF_";
 
   //Total event Weight:
   _rlm = _rlm.Define("evWeight", " pugenWeight *prefiring_SF_central * btag_SF_bcflav_central * btag_SF_lflav_central * muon_SF_central * ele_SF_central"); 
+
+
+
+
+
+"""
+File contains job options 
+"""
+
+
+config = {
+     
+        'intreename': "Events",
+        'outtreename': "outputTree2",
+        'year': 2017,
+        'runtype': 'UL',
+        'datatype': -1,
+        'goodjson': 'data/Legacy_RunII/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt', #UL_2017
+        'pileupfname': 'data/LUM/2017_UL/puWeights.json',
+
+        'pileuptag': 'Collisions17_UltraLegacy_goldenJSON',
+
+        'btvfname': 'data/BTV/2017_UL/btagging.json',
+    
+        'btvtype': 'deepJet_mujets', #for fixed wp : case1 
+
+        # Muon Correction #2017
+        'muon_roch_fname': 'data/MUO/2017_UL/RoccoR2017UL.txt', 
+        'muon_fname': 'data/MUO/2017_UL/muon_Z.json.gz', 
+        'muon_HLT_type': 'NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight',#'HLT UL scale factor',
+        'muon_RECO_type': 'NUM_TrackerMuons_DEN_genTracks',#'RECO UL scale factor',
+        'muon_ID_type': 'NUM_MediumID_DEN_TrackerMuons',#'ID UL scale factor',
+        'muon_ISO_type': 'NUM_TightRelIso_DEN_MediumID',#'ISO UL scale factor',
+
+
+         # Electron Correction 2017
+        'electron_fname': 'data/EGM/2017_UL/electron.json.gz', 
+        'electron_reco_type': 'RecoAbove20',
+        'electron_id_type': 'Tight',#'Tight ID UL scale factor',
+     
+        # json file name for JERC 2017
+        'jercfname': 'data/JERC/UL17_jerc.json',
+
+        # conbined correction type for jets
+        'jerctag': 'Summer19UL17_V5_MC_L1L2L3Res_AK4PFchs', 
+
+        # jet uncertainty 
+        'jercunctag': 'Summer19UL17_V5_MC_Total_AK4PFchs', 
+
+
+        # json file name for JERC 2018
+        # 'jercfname': 'data/JERC/jetUL18_jerc.json',
+
+
+        # 'jerctag': 'Summer19UL18_V5_MC_L1L2L3Res_AK4PFchs', 
+        # JER/jet resolution : Summer19UL18_JRV2_MC_PtResolution_AK4PFchs
+        # jet uncertainty 
+        # 'jercunctag': 'Summer19UL18_V5_MC_Total_AK4PFchs', 
+        # JER/jetresolution scale factor: Summer19UL18_JRV2_MC_ScaleFactor_AK4PFchs
+        
+        }
+
+# processing options
+procflags = {
+        # how many jobs?
+        'split': 1,
+        # if False, one output file per input file, if True then one output file for everything
+        'allinone': True, 
+        # if True then skip existing analyzed files
+        'skipold': True,
+        # travel through the subdirectories and their subdirecties when processing.
+        # becareful not to mix MC and real DATA in them.
+        'recursive': True,
+        # if False then only selected branches which is done in the .cpp file will be saved
+        'saveallbranches': False,
+        #How many input files?
+        'nrootfiles':10,
+        }
+
+nanoaod_inputdir_outputdir_pairs = [['/eos/uscms/store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/20UL17JMENano_106X_mc2017_realistic_v9-v1/40000', 'analyzed/output_DY.root', 'stderr.out']]
+

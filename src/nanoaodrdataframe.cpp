@@ -21,8 +21,8 @@ int main(void) {
 
 	TChain c1("Events");
 	// c1.Add("/eos/uscms/store/user/snehshuc/2017/DYjetsM10to50_2017_skim.root"); // MC
-	// c1.Add("root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/1B8826D8-B589-424C-98EB-3D6857980317.root");
-	c1.Add("/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/GJets_HT100To200_2017_skim.root");
+	c1.Add("root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/");
+	// c1.Add("/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/GJets_HT100To200_2017_skim.root");
 	// c1.Add("/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/Data_SingleEle_d_2017_skim_10of10.root");
 	
 	// TopSemiLeptAnalyzer nanoaodrdf(&c1, "testout_data.root");

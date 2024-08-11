@@ -29,12 +29,12 @@ void TopSemiLeptAnalyzer::defineCuts() {
     }
 
     auto Nentry = _rlm.Count();
-    _rlm = _rlm.Range(0, 100000);
+    // _rlm = _rlm.Range(0, 100000);
     // auto Nentry_100 = _rlm.Count();
     std::cout << "-------------------------------------------------------------------" << std::endl;
     std::cout << "Usage of ranges:\n"
               << " - All entries: " << *Nentry << std::endl;
-              // << " - Entries from 0 to 100: " << *Nentry_100 << std::endl;
+            //   << " - Entries from 0 to 100: " << *Nentry_100 << std::endl;
     std::cout << "-------------------------------------------------------------------" << std::endl;
 
     // Apply HLT trigger cuts for both electron and muon channels
@@ -294,12 +294,12 @@ void TopSemiLeptAnalyzer::removeOverlaps()
 void TopSemiLeptAnalyzer::calculateEvWeight(){
 	
   int _case = 1;
-    std::vector<std::string> Jets_vars_names = {"Selected_jethadflav", "Selected_jeteta",  "Selected_jetpt", "Selected_jetbtag"};  
+    std::vector<std::string> Jets_vars_names = {"Selected_jethadflav", "Selected_jeteta",  "Selected_jetpt"};  
   if(_case !=1){
     Jets_vars_names.emplace_back("Selected_jetbtag");
   }
   std::string output_btag_column_name = "btag_SF_";
-  _rlm = calculateBTagSF(_rlm, Jets_vars_names, _case, 0.4506,"M",output_btag_column_name);
+  _rlm = calculateBTagSF(_rlm, Jets_vars_names, _case ,output_btag_column_name);
  
 //   std::vector<std::string> Muon_vars_names = {"goodMuons_eta", "goodMuons_pt"};
 std::vector<std::string> Muon_vars_names = {"tightMuons_eta", "tightMuons_pt"};
@@ -315,11 +315,11 @@ std::vector<std::string> Muon_vars_names = {"tightMuons_eta", "tightMuons_pt"};
 
 
   //Prefiring Weight for 2016 and 2017
-  _rlm = applyPrefiringWeight(_rlm);
+//   _rlm = applyPrefiringWeight(_rlm);
 
   //Total event Weight:
 //   _rlm = _rlm.Define("evWeight", " pugenWeight *prefiring_SF_central * btag_SF_bcflav_central * btag_SF_lflav_central * muon_SF_central * ele_SF_central");
-_rlm = _rlm.Define("evWeight", " pugenWeight * prefiring_SF_central * btag_central * muon_SF_central * ele_SF_central");
+_rlm = _rlm.Define("evWeight", " pugenWeight * btag_SF_central * muon_SF_central * ele_SF_central");
 
 }
 //MET
@@ -572,8 +572,9 @@ void TopSemiLeptAnalyzer::setupAnalysis()
     {
         //_rlm = _rlm.Define("evWeight", "genWeight"); 
        //std::cout<<"Using evWeight = genWeight"<<std::endl;
-        // auto sumgenweight = _rd.Sum("genWeight");
-        auto sumgenweight = _rd.Sum("Generator_weight");
+        
+        // auto sumgenweight = _rd.Sum("Generator_weight");
+        auto sumgenweight = _rd.Sum("genWeight");
         string sumofgenweight = Form("%f",*sumgenweight);
         _rlm = _rlm.Define("genEventSumw",sumofgenweight.c_str());
         std::cout<<"Sum of genWeights = "<<sumofgenweight.c_str()<<std::endl;

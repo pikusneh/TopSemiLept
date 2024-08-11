@@ -13,7 +13,11 @@ def submit(jobconfmod):
 
     # job configuation module name is to be passed to the skim namoaod main 
     for indir,outdir,outfile in nanoaod_inputdir_outputdir_pairs:
-        os.system('./skimnanoaod.py '+ indir + ' ' + outdir + ' ' + jobconfmod  + ' > ' + outfile + ' 2>&1 &') # submit background jobs
+        command = f'./skimnanoaod.py {indir} {outdir} {jobconfmod} > {outfile} 2>&1 &'
+        # os.system('./skimnanoaod.py '+ indir + ' ' + outdir + ' ' + jobconfmod  + ' > ' + outfile + ' 2>&1 &') # submit background jobs
+        print(f"Submitting job: {command}")
+        # subprocess.run(command, shell=True)
+        os.system(command)
     pass
 
 if __name__=="__main__":

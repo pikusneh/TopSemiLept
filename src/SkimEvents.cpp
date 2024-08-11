@@ -20,7 +20,10 @@ void SkimEvents::defineCuts()
 	// Cuts to be applied in order
 	// These will be passed to Filter method of RDF
 	// check for good json event is defined earlier
-	addCuts("HLT_PFHT450_SixJet40_BTagCSV_p056 || HLT_PFHT400_SixJet30_DoubleBTagCSV_p056 || HLT_PFHT900", "0"); // 2016 triggers
+	// addCuts("HLT_PFHT450_SixJet40_BTagCSV_p056 || HLT_PFHT400_SixJet30_DoubleBTagCSV_p056 || HLT_PFHT900", "0"); // 2016 triggers
+
+	addCuts("HLT_IsoMu24||HLT_IsoMu24_eta2p1||HLT_IsoMu27||HLT_Mu50 || HLT_OldMu100 || HLT_TkMu100 || HLT_Ele32_WPTight_Gsf_L1DoubleEG || HLT_Ele32_WPTight_Gsf || HLT_Ele35_WPTight_Gsf || HLT_Ele115_CaloIdVT_GsfTrkIdT || HLT_Photon200", "0"); //2017 triggers
+
 	//addCuts("HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0 || HLT_PFHT380_SixPFJet32_DoublePFBTagCSV_2p2 || HLT_PFHT430_SixPFJet40_PFBTagCSV_1p5 ||  HLT_PFHT380_SixPFJet32_DoublePFBTagDeepCSV_2p2 || HLT_PFHT1050", "0");
 	//addCuts("HLT_PFHT300PT30_QuadPFJet_75_60_45_40_TriplePFBTagCSV_3p0 || HLT_PFHT380_SixPFJet32_DoublePFBTagCSV_2p2", "0");
 }
@@ -40,22 +43,47 @@ void SkimEvents::defineMoreVars()
 	addVartoStore("Jet_.*");
 	addVartoStore("MET.*");
 
-/*
-	addVartoStore("nFatJet");
-	addVartoStore("FatJet_.*");
-	addVartoStore("Puppi.*");
+	if(!_isData){
+		addVartoStore("Pileup_nPu");
+		addVartoStore("Pileup_nTrueInt");
+	}
+
+	// addVartoStore("nFatJet");
+	// addVartoStore("FatJet_.*");
+	// addVartoStore("Puppi.*");
 	addVartoStore("nElectron");
 	addVartoStore("Electron_.*");
 	addVartoStore("nMuon");
 	addVartoStore("Muon_.*");
-	addVartoStore("nSubJet");
-	addVartoStore("SubJet.*");
-	*/
+	addVartoStore("nPhoton");
+	addVartoStore("Photon_.*");
+	
 	addVartoStore("PV.*");
 	addVartoStore("nOtherPV");
 	addVartoStore("OtherPV_z");
-	addVartoStore("HLT_PFHT.*");
+	// addVartoStore("HLT_PFHT.*");
 	addVartoStore("Flag.*");
+
+	if (!_isData){
+		addVartoStore("nGenPart");
+		addVartoStore("GenPart_.*");
+		addVartoStore("nLHEPart");
+		addVartoStore("LHEPart_.*");
+		addVartoStore("nGenJet");
+		addVartoStore("GenJet_.*");
+		addVartoStore("nPSWeight");
+		addVartoStore("PSWeight");
+		addVartoStore("nLHEPdfWeight");
+		addVartoStore("LHEPdfWeight");
+
+	}
+
+	addVartoStore("L1PreFiringWeight*");
+	addVartoStore("L1*");
+	addVartoStore("HLT_Ele*");
+	addVartoStore("HLT_IsoMu*");
+	addVartoStore("HLT_TkMu*");
+	addVartoStore("HLT_Photon*");
 
 	// corrected and cleaned up objects
 	addVartoStore("evWeight.*");
