@@ -16,3 +16,15 @@ __pycache__/jobconfigskim.cpython-36.pyc
 .gitignore
 stderrSkimDY.out
 stderr_TTGamma_Had_ptgamma100-200.out
+analyzed/TTGamma_Hadronic_Skim_output1.root
+stderr_TTGamma_Had_Skim.out
+stderr_TTbar_Had.out
+stderr_TTGamma_Had_.out
+analyzed/TTGamma_Hadronic_pt_gamma100-200_output1.root
+.nfs0000004023ec921b0000928a
+.nfs0000004023ef500400009282
+.nfs0000004023f11adb00009283
+PROCESSNANOAOD.py
+stderr_TTbar_Had_fewfiles.out
+stderr_TTGamma_Had_few_.out
+stderr_TTGamma_Had_few.out
