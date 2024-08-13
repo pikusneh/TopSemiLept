@@ -1,4 +1,3 @@
-# FLY for Lyon CMS top group 
 #### Original Repository https://gitlab.cern.ch/fly/fly.git
 #### fly project nanoaodframework tutorial: https://codimd.web.cern.ch/fIIXNRDmQqqQhgpKPNnlqg?view
 
