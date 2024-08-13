@@ -619,7 +619,6 @@ ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateEleSF(RNode _rlm, std::vector<
 }
 
 
-
 bool NanoAODAnalyzerrdframe::helper_1DHistCreator(std::string hname, std::string title, const int nbins, const double xlow, const double xhi, std::string rdfvar, std::string evWeight, RNode *anode)
 {
 	//cout << "1DHistCreator " << hname  << endl;
@@ -1011,6 +1010,36 @@ std::string NanoAODAnalyzerrdframe::ctrlBranchName(std::string str_Branch){
 
         exit(1);
     }
+    return output;
+}
+
+//cut-based ID bitmap, Fall17V2, (0:fail, 1:loose, 2:medium, 3:tight)
+std::string NanoAODAnalyzerrdframe::PhotonID(int cutbasedID) {
+
+    if(debug){
+        std::cout<< "================================//=================================" << std::endl;
+        std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+        std::cout<< "================================//=================================" << std::endl;
+    }
+
+    // Print debug information based on the Photon ID
+    if (cutbasedID == 1) std::cout << "LOOSE Photon ID requested   == " << cutbasedID << std::endl;
+    if (cutbasedID == 2) std::cout << "MEDIUM Photon ID requested  == " << cutbasedID << std::endl;
+    if (cutbasedID == 3) std::cout << "TIGHT Photon ID requested   == " << cutbasedID << std::endl;
+    std::cout << "-------------------------------------------------------------------" << std::endl;
+
+    // Validate the cutbasedID input
+    if (cutbasedID < 0 || cutbasedID > 3) {
+        std::cout << "ERROR!! Wrong Photon ID requested  == " << cutbasedID << "!! Can't be applied" << std::endl;
+        std::cout << "Please select PhotonID from 1 to 3 " << std::endl;
+        std::cout << "-------------------------------------------------------------------" << std::endl;
+        std::cout << "EXITING PROGRAM!!" << std::endl;
+        exit(1);
+    }
+
+    // Construct the selection string based on the cut-based ID
+    std::string output = Form("Photon_cutBased == %d ", cutbasedID);
+    
     return output;
 }
 

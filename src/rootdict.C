@@ -36,6 +36,7 @@
 
 // Header files passed as explicit arguments
 #include "src/NanoAODAnalyzerrdframe.h"
+#include "src/SkimEvents.h"
 #include "src/TopSemiLeptAnalyzer.h"
 
 // Header files passed via #pragma extra_include
@@ -80,6 +81,47 @@ namespace ROOT {
    }
 
    static void NanoAODAnalyzerrdframe_TClassManip(TClass* ){
+   }
+
+} // end of namespace ROOT
+
+namespace ROOT {
+   static TClass *SkimEvents_Dictionary();
+   static void SkimEvents_TClassManip(TClass*);
+   static void delete_SkimEvents(void *p);
+   static void deleteArray_SkimEvents(void *p);
+   static void destruct_SkimEvents(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const ::SkimEvents*)
+   {
+      ::SkimEvents *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(::SkimEvents));
+      static ::ROOT::TGenericClassInfo 
+         instance("SkimEvents", "SkimEvents.h", 15,
+                  typeid(::SkimEvents), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &SkimEvents_Dictionary, isa_proxy, 4,
+                  sizeof(::SkimEvents) );
+      instance.SetDelete(&delete_SkimEvents);
+      instance.SetDeleteArray(&deleteArray_SkimEvents);
+      instance.SetDestructor(&destruct_SkimEvents);
+      return &instance;
+   }
+   TGenericClassInfo *GenerateInitInstance(const ::SkimEvents*)
+   {
+      return GenerateInitInstanceLocal((::SkimEvents*)0);
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::SkimEvents*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+
+   // Dictionary for non-ClassDef classes
+   static TClass *SkimEvents_Dictionary() {
+      TClass* theClass =::ROOT::GenerateInitInstanceLocal((const ::SkimEvents*)0x0)->GetClass();
+      SkimEvents_TClassManip(theClass);
+   return theClass;
+   }
+
+   static void SkimEvents_TClassManip(TClass* ){
    }
 
 } // end of namespace ROOT
@@ -138,6 +180,20 @@ namespace ROOT {
       ((current_t*)p)->~current_t();
    }
 } // end of namespace ROOT for class ::NanoAODAnalyzerrdframe
+
+namespace ROOT {
+   // Wrapper around operator delete
+   static void delete_SkimEvents(void *p) {
+      delete ((::SkimEvents*)p);
+   }
+   static void deleteArray_SkimEvents(void *p) {
+      delete [] ((::SkimEvents*)p);
+   }
+   static void destruct_SkimEvents(void *p) {
+      typedef ::SkimEvents current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class ::SkimEvents
 
 namespace ROOT {
    // Wrapper around operator delete
@@ -742,6 +798,7 @@ namespace {
   void TriggerDictionaryInitialization_rootdict_Impl() {
     static const char* headers[] = {
 "src/NanoAODAnalyzerrdframe.h",
+"src/SkimEvents.h",
 "src/TopSemiLeptAnalyzer.h",
 0
     };
@@ -765,6 +822,7 @@ namespace ROOT{namespace Math{template <class CoordSystem> class __attribute__((
 namespace std{template <typename _Tp> class __attribute__((annotate("$clingAutoload$bits/allocator.h")))  __attribute__((annotate("$clingAutoload$string")))  allocator;
 }
 class __attribute__((annotate("$clingAutoload$src/NanoAODAnalyzerrdframe.h")))  NanoAODAnalyzerrdframe;
+class __attribute__((annotate("$clingAutoload$src/SkimEvents.h")))  SkimEvents;
 class __attribute__((annotate("$clingAutoload$src/TopSemiLeptAnalyzer.h")))  TopSemiLeptAnalyzer;
 )DICTFWDDCLS";
     static const char* payloadCode = R"DICTPAYLOAD(
@@ -774,12 +832,14 @@ class __attribute__((annotate("$clingAutoload$src/TopSemiLeptAnalyzer.h")))  Top
 #define _BACKWARD_BACKWARD_WARNING_H
 // Inline headers
 #include "src/NanoAODAnalyzerrdframe.h"
+#include "src/SkimEvents.h"
 #include "src/TopSemiLeptAnalyzer.h"
 
 #undef  _BACKWARD_BACKWARD_WARNING_H
 )DICTPAYLOAD";
     static const char* classesHeaders[] = {
 "NanoAODAnalyzerrdframe", payloadCode, "@",
+"SkimEvents", payloadCode, "@",
 "TopSemiLeptAnalyzer", payloadCode, "@",
 nullptr
 };

@@ -214,3 +214,70 @@ procflags = {
 
 nanoaod_inputdir_outputdir_pairs = [['/eos/uscms/store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/20UL17JMENano_106X_mc2017_realistic_v9-v1/40000', 'analyzed/output_DY.root', 'stderr.out']]
 
+TTGamma_Dilepton,/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+TTGamma_Hadronic,/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+TTGamma_SingleLept,/TTGamma_SingleLept_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+
+TTGamma_Dilepton_Pt100,/TTGamma_Dilept_ptGamma100-200_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v3/NANOAODSIM
+TTGamma_Dilepton_Pt200,/TTGamma_Dilept_ptGamma200inf_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM
+TTGamma_SingleLept_Pt100,/TTGamma_SingleLept_ptGamma100-200_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM
+TTGamma_SingleLept_Pt200,/TTGamma_SingleLept_ptGamma200inf_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM
+TTGamma_Hadronic_Pt100,/TTGamma_Hadronic_ptGamma100-200_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM
+TTGamma_Hadronic_Pt200,/TTGamma_Hadronic_ptGamma200inf_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v3/NANOAODSIM
+
+TTbarPowheg_Dilepton,/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+TTbarPowheg_Hadronic,/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+TTbarPowheg_Semilept,/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+
+W1jets,/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+W2jets,/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+W3jets,/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+W4jets,/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM
+
+DYjetsM10to50,/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+DYjetsM50,/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+
+ST_s_channel,/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+ST_t_channel,/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+ST_tbar_channel,/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+ST_tW_channel,/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM
+ST_tbarW_channel,/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v2/NANOAODSIM
+
+Data_SingleMu_b,/SingleMuon/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+Data_SingleMu_c,/SingleMuon/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+Data_SingleMu_d,/SingleMuon/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+Data_SingleMu_e,/SingleMuon/Run2017E-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+Data_SingleMu_f,/SingleMuon/Run2017F-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+
+Data_SingleEle_b,/SingleElectron/Run2017B-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+Data_SingleEle_c,/SingleElectron/Run2017C-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+Data_SingleEle_d,/SingleElectron/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+Data_SingleEle_e,/SingleElectron/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
+Data_SingleEle_f,/SingleElectron/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD  
+
+
+
+
+
+# input directory where your input root tree resides
+# data='/eos/lyoeos.in2p3.fr/grid/cms/store/data/'
+# filepath = '/eos/uscms/store/user/snehshuc/2017/'
+# mc17 = '/eos/lyoeos.in2p3.fr/grid/cms/store/mc/RunIISummer20UL17NanoAODv9'
+#outDir = '/eos/lyoeos.in2p3.fr/grid/cms/store/user/apurohit/SingleTop_Data_Oct2023_Results'
+#outDir = '/eos/lyoeos.in2p3.fr/grid/cms/store/user/apurohit/SingleTop_MC_Results_Oct2023'
+# outDir = '/eos/uscms/store/user/snehshuc/test/2017'
+# output directory where your output should go
+# dump of stderr/stdout to file
+# nanoaod_inputdir_outputdir_pairs = [[filepath + 'DYjetsM10to50_2017_skim.root', 'test.root', 'outputest.root']]
+
+# nanoaod_inputdir_outputdir_pairs = [['root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/1B24CC21-60B4-894D-975A-E81AB88C1AE5.root', 'analyzed/TTgamma_output.root', 'stderr1.out']]
+
+# nanoaod_inputdir_outputdir_pairs = [['root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000', '/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Hadronic_output1.root', 'stderr_TTGamma_Had.out']]
+
+# nanoaod_inputdir_outputdir_pairs = [['/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM','analyzed/TTGamma_Hadronic_pt_gamma100-200_output1.root', 'stderr_TTGamma_Had_ptgamma100-200.out']]
+
+# nanoaod_inputdir_outputdir_pairs = [['/eos/uscms/store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/20UL17JMENano_106X_mc2017_realistic_v9-v1/40000', 'analyzed/output_DY.root', 'stderr.out']]
+
+# nanoaod_inputdir_outputdir_pairs = [['/eos/uscms/store/user/snehshuc/2017/TTGamma', '/eos/uscms/store/user/snehshuc/test/2017/TTGamma_output_100k.root', 'stderr2.out']]
+
+# ['/eos/lyoeos.in2p3.fr/grid/cms/store/mc/RunIISummer20UL17NanoAODv9/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/80000/','analyzed/testcorrection_muon.root', 'stderr.out' ],

@@ -8,18 +8,23 @@
 
 #include "Math/GenVector/VectorUtil.h"
 #include "TopSemiLeptAnalyzer.h"
+#include "overlapRemoval.h"
 #include "utility.h"
 #include <fstream>
 #include "correction.h"
 using correction::CorrectionSet;
 
-TopSemiLeptAnalyzer::TopSemiLeptAnalyzer(TTree *t, std::string outfilename)
-:NanoAODAnalyzerrdframe(t, outfilename)
+// TopSemiLeptAnalyzer::TopSemiLeptAnalyzer(TTree *t, std::string outfilename
+
+TopSemiLeptAnalyzer::TopSemiLeptAnalyzer(TTree* tree, std::string outFileName, std::string sampleName)
+: NanoAODAnalyzerrdframe(tree, outFileName), sample_name(sampleName) // Initialize base class and sample_name
 {
-     HLT2017Names= {"HLT_IsoMu24","HLT_IsoMu24_eta2p1","HLT_IsoMu27","HLT_Mu50","HLT_OldMu100","HLT_TkMu100","HLT_Ele32_WPTight_Gsf_L1DoubleEG","HLT_Ele32_WPTight_Gsf","HLT_Ele35_WPTight_Gsf","HLT_Ele115_CaloIdVT_GsfTrkIdT"};
+    HLT2017Names= {"HLT_IsoMu24","HLT_IsoMu24_eta2p1","HLT_IsoMu27","HLT_Mu50","HLT_OldMu100","HLT_TkMu100","HLT_Ele32_WPTight_Gsf_L1DoubleEG","HLT_Ele32_WPTight_Gsf","HLT_Ele35_WPTight_Gsf","HLT_Ele115_CaloIdVT_GsfTrkIdT"};
     
 }
-
+void TopSemiLeptAnalyzer::setSampleName(const std::string &sampleName) {
+    sample_name = sampleName;
+}
 // Define your cuts here
 void TopSemiLeptAnalyzer::defineCuts() {
     if (debug) {
@@ -51,6 +56,19 @@ void TopSemiLeptAnalyzer::defineCuts() {
 
     // // // Ensure at least one b-jet
     // addCuts("Ngood_bjets >= 1", "5");
+}
+
+void TopSemiLeptAnalyzer::selectChannel(){
+    if (debug){
+    std::cout<<std::endl;
+    std::cout<< "================================//=================================" << std::endl;
+    std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+    std::cout<< "================================//=================================" << std::endl;
+    }
+
+    _rlm = _rlm.Define("muonChannel","(NtightMuons == 1) && (NvetoMuons ==1) ? 1 : 0");
+    _rlm = _rlm.Define("electronChannel","(NtightElectrons == 1) && (NvetoElectrons ==1) ? 1 : 0");
+
 }
 
 void TopSemiLeptAnalyzer::selectElectrons()
@@ -131,6 +149,23 @@ void TopSemiLeptAnalyzer::selectElectrons()
                 .Define("NgoodElectrons", "int(goodElectrons_pt.size())");
     _rlm = _rlm.Define("goodElectron_4Vecs", ::generate_4vec, {"goodElectrons_pt", "goodElectrons_eta", "goodElectrons_phi", "goodElectrons_mass"});
 
+}
+
+void TopSemiLeptAnalyzer::selectPhotons() 
+{
+    cout << "Select good photons" << endl;
+    // Define Good Photon Selection
+    _rlm = _rlm.Define("goodPhotonsID", PhotonID(2)); // Medium ID for good photons
+    _rlm = _rlm.Define("goodPhotons", 
+                        "goodPhotonsID && Photon_pt > 20.0 && abs(Photon_eta) <= 1.4442 && Photon_pixelSeed == 0");
+    _rlm = _rlm.Define("goodPhotons_pt", "Photon_pt[goodPhotons]") 
+               .Define("goodPhotons_eta", "Photon_eta[goodPhotons]")
+               .Define("goodPhotons_phi", "Photon_phi[goodPhotons]")
+               .Define("goodPhotons_mass", "Photon_mass[goodPhotons]")
+               .Define("goodPhotons_charge", "Photon_charge[goodPhotons]") 
+               .Define("goodPhotons_idx", ::good_idx, {"goodPhotons"})
+               .Define("NgoodPhotons", "int(goodPhotons_pt.size())")
+               .Define("goodPhotons_4vecs", ::generate_4vec, {"goodPhotons_pt", "goodPhotons_eta", "goodPhotons_phi", "goodPhotons_mass"});
 }
 
 void TopSemiLeptAnalyzer::selectMuons()
@@ -291,6 +326,37 @@ void TopSemiLeptAnalyzer::removeOverlaps()
 
 }
 
+ROOT::RDF::RNode TopSemiLeptAnalyzer::applyOverlapRemoval(ROOT::RDF::RNode df, const std::string &sample_name)
+{
+    bool verbose = false;
+    auto initial_count = df.Count();
+
+    if (sample_name == "TTbar") {
+        df = df.Filter([verbose, sample_name](const ROOT::RVec<float> &genPt, const ROOT::RVec<float> &genEta,
+                                              const ROOT::RVec<float> &genPhi, const ROOT::RVec<int> &genPdgId,
+                                              const ROOT::RVec<int> &genStatus, const ROOT::RVec<int> &genPartIdxMother) {
+            return overlapRemoval(genPt, genEta, genPhi, genPdgId, genStatus, genPartIdxMother, 10.0, 5.0, 0.1, verbose, sample_name);
+        }, {"GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_pdgId", "GenPart_status", "GenPart_genPartIdxMother"});
+    }
+    else if (sample_name == "WJets" || sample_name == "DYJets" || sample_name == "ST_t-channel") {
+        df = df.Filter([verbose, sample_name](const ROOT::RVec<float> &genPt, const ROOT::RVec<float> &genEta,
+                                              const ROOT::RVec<float> &genPhi, const ROOT::RVec<int> &genPdgId,
+                                              const ROOT::RVec<int> &genStatus, const ROOT::RVec<int> &genPartIdxMother) {
+            return overlapRemoval(genPt, genEta, genPhi, genPdgId, genStatus, genPartIdxMother, 15.0, 2.6, 0.05, verbose, sample_name);
+        }, {"GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_pdgId", "GenPart_status", "GenPart_genPartIdxMother"});
+    }
+
+    auto final_count = df.Count();
+    
+    auto removed_count = initial_count.GetValue() - final_count.GetValue();
+    std::cout << "Sample: " << sample_name << std::endl;
+    std::cout << "Initial number of events: " << initial_count.GetValue() << std::endl;
+    std::cout << "Final number of events: " << final_count.GetValue() << std::endl;
+    std::cout << "Number of overlapped events removed: " << removed_count << std::endl;
+
+    return df;
+}
+
 void TopSemiLeptAnalyzer::calculateEvWeight(){
 	
   int _case = 1;
@@ -339,7 +405,6 @@ void TopSemiLeptAnalyzer::selectMET()
     //             .Define("NgoodMET","int(goodMET_pt.size())");
     // _rlm = _rlm.Define("goodMet", "MET_sumEt>600 && MET_pt>5");
     // _rlm = _rlm.Define("goodMet_pt", "MET_pt[goodMet]");
-
     
 }
 
@@ -369,7 +434,8 @@ void TopSemiLeptAnalyzer::defineMoreVars()
 
     // addVartoStore("genWeight");
     // addVartoStore("genEventSumw");
-
+    addVartoStore("muonChannel");
+    addVartoStore("electronChannel");
     //electron
     addVartoStore("nElectron");
     addVartoStore("Electron_pt");
@@ -381,7 +447,6 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVartoStore("NtightElectrons");
     addVartoStore("tightElectrons_pt");
     addVartoStore("tightElectrons_eta");
-
 
     //muon
     addVartoStore("nMuon");
@@ -396,6 +461,11 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVartoStore("tightMuons_pt");
     addVartoStore("tightMuons_eta");
 
+    //photon
+    addVartoStore("NgoodPhotons");
+    addVartoStore("goodPhotons_pt");
+    addVartoStore("goodPhotons_eta");
+    
     //jet
     addVartoStore("nJet");
     addVartoStore("Jet_pt");
@@ -535,9 +605,20 @@ void TopSemiLeptAnalyzer::setupObjects()
 {
 	// Object selection will be defined in sequence.
 	// Selected objects will be stored in new vectors.
+    // std::string sample_name = "TTbar";  
+
+    // Perform overlap removal based on gen-level photons
+    if (!_isData) {
+        _rlm = applyOverlapRemoval(_rlm, sample_name);  // Apply overlap removal
+    }
+
+    // Continue with the other object selections
+
 	selectElectrons();
 	selectMuons();
+    selectChannel();
 	selectJets();
+    selectPhotons();
 	removeOverlaps();
 	if(!_isData){
 	  this->calculateEvWeight(); // PU, genweight and BTV and Mu and Ele

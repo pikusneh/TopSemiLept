@@ -24,9 +24,9 @@ int main(void) {
 	c1.Add("root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/");
 	// c1.Add("/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/GJets_HT100To200_2017_skim.root");
 	// c1.Add("/uscms/home/snehshuc/nobackup/CMSSW_10_6_28/src/TTGammaSemiLep_13TeV/Skimming/Data_SingleEle_d_2017_skim_10of10.root");
-	
+	std::string sampleName = "TTGamma_Hadronic";
 	// TopSemiLeptAnalyzer nanoaodrdf(&c1, "testout_data.root");
-	TopSemiLeptAnalyzer nanoaodrdf(&c1, "testout.root");
+	TopSemiLeptAnalyzer nanoaodrdf(&c1, "testout.root",sampleName);
 	nanoaodrdf.setParams(2017, "UL", -1);
 	nanoaodrdf.setHLT();
 

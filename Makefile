@@ -13,10 +13,10 @@ SRCDIR:=src
 # Compilation and linking flags
 SOFLAGS       = -shared
 LD = g++ -m64 -g -Wall
-CXXFLAGS = -O0 -g -Wall -fmessage-length=0 $(rootflags) -fPIC -pthread -DSTANDALONE -I$(SRCDIR) -I$(CORRECTION_INCDIR) -I.
+# CXXFLAGS = -O0 -g -Wall -fmessage-length=0 $(rootflags) -fPIC -pthread -DSTANDALONE -I$(SRCDIR) -I$(CORRECTION_INCDIR) -I.
 
 # CXXFLAGS = -O0 -g -Wall -fmessage-length=0 $(rootflags) -fpermissive -fPIC -pthread -DSTANDALONE -I$(SRCDIR) -I$(CORRECTION_INCDIR)
-# CXXFLAGS = -O0 -g -Wall -fmessage-length=0 $(rootflags) -fPIC -I$(SRCDIR) -I$(CORRECTION_INCDIR) -I.
+CXXFLAGS = -O0 -g -Wall -fmessage-length=0 $(rootflags) -fPIC -I$(SRCDIR) -I$(CORRECTION_INCDIR) -I.
 
 # Source files and objects
 SRCS := $(wildcard $(SRCDIR)/*.cpp)
@@ -46,7 +46,7 @@ clean:
 	rm -f $(OBJS) $(TARGET) libnanoaodrdframe.so $(SRCDIR)/rootdict.C rootdict_rdict.pcm
 	rm -rf .nfs*
 
-# Generate dictionary
+# # Generate dictionary
 # $(SRCDIR)/rootdict.C: $(SRCDIR)/NanoAODAnalyzerrdframe.h $(SRCDIR)/SkimEvents.h $(SRCDIR)/Linkdef.h 
 # $(SRCDIR)/rootdict.C: $(SRCDIR)/NanoAODAnalyzerrdframe.h $(SRCDIR)/TopSemiLeptAnalyzer.h $(SRCDIR)/Linkdef.h  
 

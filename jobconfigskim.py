@@ -5,9 +5,14 @@ File contains job options
 # options for Nanoaodrdframe
 config = {
         # tree name of input file(s)
-        'intreename': "Events", 
+        'intreename': "Events",
         # tree name of output file(s) it cannot be the same as the input tree name or it'll crash
-        'outtreename': "outputTree", 
+        'outtreename': "outputTree",
+        #data year (2016,2017,2018)
+        'year': 2017,
+        # is ReReco or Ultra Legacy
+        'runtype': 'UL',
+        'datatype': -1,
         # good json file
         # 'goodjson': 'data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt',
 
@@ -57,7 +62,7 @@ procflags = {
 
 # nanoaod_inputdir_outputdir_pairs = [['/eos/uscms/store/mc/RunIISummer20UL17NanoAODv9/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/NANOAODSIM/20UL17JMENano_106X_mc2017_realistic_v9-v1/40000', 'analyzed/output_skim_DY.root', 'stderrSkimDY.out']]
 
-nanoaod_inputdir_outputdir_pairs = [['/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM','/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Hadronic_Skim_output1.root', 'stderr_TTGamma_Had_Skim.out']]
+nanoaod_inputdir_outputdir_pairs = [['/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM','analyzed/TTGamma_Hadronic_Skim_output1.root', 'stderr_TTGamma_Had_Skim.out']]
 
 
 # nanoaod_inputdir_outputdir_pairs = [

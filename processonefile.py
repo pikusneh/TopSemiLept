@@ -16,14 +16,18 @@ from importlib import import_module
 from argparse import ArgumentParser
 
 if __name__ == '__main__':
-    parser = ArgumentParser(usage="%prog inputfile outputfile jobconfmod")
-    parser.add_argument("infile")
-    parser.add_argument("outfile")
-    parser.add_argument("jobconfmod")
+    parser = ArgumentParser(usage="%prog inputfile outputfile jobconfmod samplename")
+    parser.add_argument("infile", help="Input ROOT file")
+    parser.add_argument("outfile", help="Output ROOT file")
+    parser.add_argument("jobconfmod", help="Job configuration module")
+    parser.add_argument("samplename", help="Name of the sample being processed")
     args = parser.parse_args()
+
     infile = args.infile
     outfile = args.outfile
     jobconfmod = args.jobconfmod
+    samplename = args.samplename
+
 
     # load job configuration python module and get objects
     mod = import_module(jobconfmod)
@@ -58,7 +62,7 @@ if __name__ == '__main__':
     print("-------------------------------------------------------------------")
 
     # Initialize the analyzer
-    aproc = ROOT.TopSemiLeptAnalyzer(t, outfile)
+    aproc = ROOT.TopSemiLeptAnalyzer(t, outfile,samplename)
     aproc.setParams(config['year'], config['runtype'], config['datatype'])
 
     print("Setting up corrections...")

@@ -60,11 +60,6 @@ public:
     
 	//virtual void applyJetMETCorrections();
 
-    // TH2D* l_eff = nullptr;
-    // TH2D* c_eff = nullptr;
-    // TH2D* b_eff = nullptr;
-    // TFile* _correction_btag1 = nullptr;
-
 	void addVar(varinfo v);
 
 	// define variables
@@ -83,6 +78,7 @@ public:
 	ROOT::RDF::RNode calculateBTagSF(RNode _rlm, std::vector<std::string> Jets_vars, int _case, std::string output_var);
 	ROOT::RDF::RNode calculateMuSF(RNode _rlm, std::vector<std::string> Muon_vars, std::string output_var);
 	ROOT::RDF::RNode calculateEleSF(RNode _rlm, std::vector<std::string> Ele_vars, std::string output_var);
+
 	// ROOT::RDF::RNode applyPrefiringWeight(RNode _rlm, std::string output_var="prefiring_SF_");
 	
 
@@ -117,6 +113,7 @@ public:
 	std::string ElectronID(int cutbasedID);
     std::string MuonID(int cutbasedID);
     std::string JetID(int cutbasedID);
+	std::string PhotonID(int cutbasedID);
 
 //private:
 	ROOT::RDataFrame _rd;
@@ -151,7 +148,6 @@ public:
 	
 	vector<hist2dinfo> _hist2dinfovector;
 
-
 	vector<string> _originalvars;
 	vector<string> _selections;
 	
@@ -180,9 +176,7 @@ public:
 
 	// btag correction
 	std::unique_ptr<correction::CorrectionSet> _correction_btag1;
-
 	RNodeTree _rnt;
-
 	bool isDefined(string v);
 
 };

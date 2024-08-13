@@ -25,14 +25,14 @@ from importlib import import_module
 from XRootD import client
 
 
-def function_calling_PostProcessor(outdir, rootfileshere, jobconfmod):
+def function_calling_PostProcessor(sample_name, outdir, rootfileshere, jobconfmod):
     for afile in rootfileshere:
         print(f"Processing file: {afile}")
         rootfname = re.split('\/', afile)[-1]
         withoutext = re.split('\.root', rootfname)[0]
         outfname = os.path.join(outdir, f"{withoutext}_analyzed.root")
         print(f"Output file will be: {outfname}")
-        subprocess.run(["./processonefile.py", afile, outfname, jobconfmod])
+        subprocess.run(["./processonefile.py", afile, outfname, jobconfmod, sample_name])
     print("Finished processing files.")
     pass
 
@@ -195,56 +195,6 @@ class Nanoaodprocessor:
             for indir, outdir in zip(subdirs, outsubdirs):
                 self._processROOTfiles(indir, outdir)
 
-# def list_root_files_in_directory(path,nFiles):
-#         root_files = []
-#         print(f"dir 2 search :{path} for n files: {nFiles}")
-
-
-#         # xrd_client = client.FileSystem(path)
-#         # status,listing = xrd_client.dirlist(path)
-
-#         # if not status.ok:
-#         #     print(f"Failed to list directory {path}: {status.message}")
-#         #     return root_files
-    
-#         # for entry in listing:
-#         #     # Check if the entry is a ROOT file
-#         #     if entry.name.endswith(".root"):
-#         #         print(entry)
-#         #         root_files.append(entry.name)
-
-#         # # Use TSystem to check if the path is a directory
-#         system = ROOT.gSystem
-#         directory = system.OpenDirectory(path)
-#         if not directory:
-#             print(f"Cannot open directory {path}")
-#             return root_files
-#         if nFiles == -1:
-#             # List files in the directory
-#             while True:
-#                 entry = system.GetDirEntry(directory)
-#                 if not entry:
-#                     break
-#                 print(f'entry:{entry}')
-#                 # Check if the entry is a ROOT file
-#                 if entry.endswith(".root"):
-#                     root_files.append(f"{path}/{entry}")
-#         else:
-#             for i in range(1, nFiles + 1):
-#             # List files in the directory
-#                 entry = system.GetDirEntry(directory)
-#                 if not entry:
-#                     continue
-#                 print(f'entry:{entry}')
-#                 # Check if the entry is a ROOT file
-#                 if entry.endswith(".root"):
-#                     root_files.append(f"{path}/{entry}")
-        
-#         system.FreeDirectory(directory)
-
-#         print(f"root files found in root dir {path}: {root_files}")
-#         return root_files
-    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def get_root_file_paths(indir, xrootd_prefix="root://cmsxrootd.fnal.gov/"):
     """
     Function to retrieve ROOT file paths using dasgoclient.
@@ -325,7 +275,7 @@ def is_valid_das_path(indir):
         return False
 
 
-def Nanoaodprocessor_singledir(indir, outputroot, procflags, config):
+def Nanoaodprocessor_singledir(sample_name,indir, outputroot, procflags, config):
 
     if not re.match(r'.*\.root$', outputroot):
         print("Output file should be a root file! Quitting.")
@@ -338,52 +288,16 @@ def Nanoaodprocessor_singledir(indir, outputroot, procflags, config):
     if indir.startswith('/'):
         print("Detected a dataset path, querying DAS using dasgoclient")
         fullnamelist = get_root_file_paths(indir)
-        print("Files found in dataset:", fullnamelist)
+        # print("Files found in dataset:", fullnamelist) //debug
+    else:
+        print(f"Invalid path: {indir}. Exiting.")
+        exit(-1)
     
-    # Collect files to process, ensuring they are valid ROOT files
-    # counter = 0
-    # for fname in fullnamelist:
-    #     # Check if the file is a ROOT file
-    #     if re.match(r'.*\.root$', fname):
-    #         if indir.startswith('root://') or os.path.isfile(fname):
-    #             counter += 1
-    #             if counter <= procflags['nrootfiles'] or procflags['nrootfiles'] == 0:
-    #                 rootfilestoprocess.append(fname)
+        # Limit the number of files to process if specified
+    if procflags['nrootfiles'] > 0:
+        rootfilestoprocess = fullnamelist[:procflags['nrootfiles']]
+    else:
         rootfilestoprocess = fullnamelist
-    
-        # print(f"ROOT FILES TO PROCESS:",rootfilestoprocess)
-
-
-    # if indir.startswith('root://') and not re.match(r'.*\.root', indir):
-    #     # when its a dir of form root://..../
-    #     print("root dir")
-    #     fullnamelist = list_root_files_in_directory(indir,procflags['nrootfiles'])
-    #     print(fullnamelist)
-    # else:
-    #     if indir.startswith('root://'):
-    #         print(f"ITS a ROOT FILE")
-    #         fullnamelist.append(indir)
-    #     elif not procflags['recursive']:
-    #         flist = os.listdir(indir)
-    #         for fname in flist:
-    #             fullname = os.path.join(indir, fname)
-    #             fullnamelist.append(fullname)
-    #     else:
-    #         for root, dirs, flist in os.walk(indir):
-    #             for fname in flist:
-    #                 fullname = os.path.join(root, fname)
-    #                 fullnamelist.append(fullname)
-    # counter = 0
-    # for fname in fullnamelist:
-    #     if re.match(r'.*\.root', fname) and (indir.startswith('root://') or os.path.isfile(fname)):
-    #         counter += 1
-    #         if counter <= procflags['nrootfiles'] and procflags['nrootfiles'] != 0:
-    #             rootfilestoprocess.append(fname)
-    #         elif procflags['nrootfiles'] == 0:
-    #             rootfilestoprocess.append(fname) 
-
-    # print("FILES to PROCESS")
-    # print(rootfilestoprocess)
 
     intreename = config['intreename']
     outtreename = config['outtreename']
@@ -397,7 +311,7 @@ def Nanoaodprocessor_singledir(indir, outputroot, procflags, config):
 
     # Print the TChain to verify it's correctly set up
     print(f"PRINT")
-    tree = t.Print()
+    # tree = t.Print()
 
     nevents = t.GetEntries()
     print("-------------------------------------------------------------------")
@@ -405,27 +319,8 @@ def Nanoaodprocessor_singledir(indir, outputroot, procflags, config):
     print(nevents)
     print("-------------------------------------------------------------------")
 
-    # # aproc = ROOT.FourtopAnalyzer(t, outputroot)
-    aproc = ROOT.TopSemiLeptAnalyzer(t, outputroot)
+    aproc= ROOT.TopSemiLeptAnalyzer(t, outputroot, sample_name)
     aproc.setParams(config['year'], config['runtype'], config['datatype'])
-
-# uncomment the below lines if want to run with the executable nanoaodrdfdataframe
-# _______________________________________________________________________________________________
-    # skipcorrections = False
-    # if not skipcorrections:
-    #     print("correction step is on play")
-    #     required_keys = [
-    #         'goodjson', 'pileupfname', 'pileuptag', 'btvfname', 'btvtype', 
-    #         'muon_roch_fname', 'muon_fname', 'muonHLTtype', 'muonRECOtype', 
-    #         'muonIDtype', 'muonISOtype', 'electron_fname', 'electron_reco_type', 
-    #         'electron_id_type', 'jercfname', 'jerctag', 'jercunctag'
-    #     ]
-    #     for key in required_keys:
-    #         if key not in config:
-    #             raise KeyError(f"Missing key in config: {key}")
-
-        # aproc.setupCorrections(config['goodjson'], config['pileupfname'], config['pileuptag'], config['btvfname'], config['btvtype'], config['muon_fname'], config['muontype'], config['jercfname'], config['jerctag'], config['jercunctag'])
-# _______________________________________________________________________________________________
 
     aproc.setupCorrections(
             config['goodjson'],
@@ -464,15 +359,20 @@ if __name__ == '__main__':
     from importlib import import_module
     from argparse import ArgumentParser
     
-    parser = ArgumentParser(usage="%prog inputDir outputDir jobconfmod")
+    # parser = ArgumentParser(usage="%prog sample_list_file jobconfmod")
+    parser = ArgumentParser(description="Process NanoAOD files.")
     parser.add_argument("indir", help="Input directory, dataset path, or file path")
     parser.add_argument("outdir", help="Output directory or ROOT file")
     parser.add_argument("jobconfmod", help="Job configuration module")
+    parser.add_argument("sample_name", help="Name of the sample being processed")
     args = parser.parse_args()
 
     indir = args.indir
     outdir = args.outdir
     jobconfmod = args.jobconfmod
+    sample_name = args.sample_name
+
+
     print(f"indir in main: {indir}")
 
     if is_valid_das_path(indir):
@@ -483,6 +383,7 @@ if __name__ == '__main__':
         print(f'Path {indir} is not a valid local path, remote path, or DAS dataset. Stopping.')
         exit(1)
 
+
     cppyy.load_reflection_info("libcorrectionlib.so")
     cppyy.load_reflection_info("libMathMore.so")
     cppyy.load_reflection_info("libnanoadrdframe.so")
@@ -490,12 +391,9 @@ if __name__ == '__main__':
     mod = import_module(jobconfmod)
     procflags = getattr(mod, 'procflags')
     config = getattr(mod, 'config')
+
     # print(f"hellooooo")
 
-    if not procflags['allinone']:
-        print("not allinone")
-        # n = Nanoaodprocessor(indir, outdir, jobconfmod, procflags, config)
-        # n.process()
-    else:
-        print("allinone")
-        Nanoaodprocessor_singledir(indir, outdir, procflags, config)
+    print(f'Processing sample {sample_name} as a DAS dataset path: {indir}')
+    Nanoaodprocessor_singledir(sample_name, indir, outdir, procflags, config)
+

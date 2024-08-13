@@ -1,5 +1,72 @@
 /cvmfs/cms.cern.ch/el8_amd64_gcc10/lcg/root/6.24.07-6b24df5a7040a677b8f0d27957c7cb74/lib/cppyy_backend/loader.py:113: UserWarning: No precompiled header available (/cvmfs/cms.cern.ch/el8_amd64_gcc10/lcg/root/6.24.07-6b24df5a7040a677b8f0d27957c7cb74/lib/cppyy_backend/etc not writable); this may impact performance.
   warnings.warn('No precompiled header available (%s); this may impact performance.' % msg)
+Error in <TInterpreter::AutoParse>: Error parsing payload code for class SkimEvents with content:
+
+#line 1 "rootdict dictionary payload"
+
+
+#define _BACKWARD_BACKWARD_WARNING_H
+// Inline headers
+#include "src/NanoAODAnalyzerrdframe.h"
+#include "src/SkimEvents.h"
+#include "src/TopSemiLeptAnalyzer.h"
+
+#undef  _BACKWARD_BACKWARD_WARNING_H
+
+Error in <TInterpreter::AutoParse>: Error parsing payload code for class NanoAODAnalyzerrdframe with content:
+
+#line 1 "rootdict dictionary payload"
+
+
+#define _BACKWARD_BACKWARD_WARNING_H
+// Inline headers
+#include "src/NanoAODAnalyzerrdframe.h"
+#include "src/SkimEvents.h"
+#include "src/TopSemiLeptAnalyzer.h"
+
+#undef  _BACKWARD_BACKWARD_WARNING_H
+
+Error in <TClass::LoadClassInfo>: no interpreter information for class NanoAODAnalyzerrdframe is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class NanoAODAnalyzerrdframe is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class NanoAODAnalyzerrdframe is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class NanoAODAnalyzerrdframe is available even though it has a TClass initialization routine.
+IncrementalExecutor::executeFunction: symbol '_ZN5boost4math5tools14make_big_valueIeEET_ePKcRKSt17integral_constantIbLb1EERKS6_IbLb0EE' unresolved while linking function '__cxx_global_var_initcling_module_236_.2'!
+You are probably missing the definition of long double boost::math::tools::make_big_value<long double>(long double, char const*, std::integral_constant<bool, true> const&, std::integral_constant<bool, false> const&)
+Maybe you need to load the corresponding shared library?
+In file included from rootdict dictionary payload:5:
+./src/NanoAODAnalyzerrdframe.h:115:7: error: no type named 'sting' in namespace 'std'
+        std::sting PhotonID(int cutbasedID);
+        ~~~~~^
+In module 'std' imported from input_line_1:1:
+/cvmfs/cms.cern.ch/el8_amd64_gcc10/external/gcc/10.3.0-84898dea653199466402e67d73657f10/bin/../lib/gcc/x86_64-redhat-linux-gnu/10.3.0/../../../../include/c++/10.3.0/bits/stl_vector.h:680:30: error: no member named '_M_start' in 'std::_Vector_base<double, std::allocator<double> >::_Vector_impl'
+        std::_Destroy(this->_M_impl._M_start, this->_M_impl._M_finish,
+                      ~~~~~~~~~~~~~ ^
+src/RoccoR.h:97:2: note: in instantiation of member function 'std::vector<double, std::allocator<double> >::~vector' requested here
+        ResParams():eta(0){for(auto& k: kRes) k=1;}
+        ^
+Error in <TInterpreter::AutoParse>: Error parsing payload code for class SkimEvents with content:
+
+#line 1 "rootdict dictionary payload"
+
+
+#define _BACKWARD_BACKWARD_WARNING_H
+// Inline headers
+#include "src/NanoAODAnalyzerrdframe.h"
+#include "src/SkimEvents.h"
+#include "src/TopSemiLeptAnalyzer.h"
+
+#undef  _BACKWARD_BACKWARD_WARNING_H
+
+Error in <TClass::LoadClassInfo>: no interpreter information for class SkimEvents is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class SkimEvents is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class SkimEvents is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class SkimEvents is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class NanoAODAnalyzerrdframe is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class NanoAODAnalyzerrdframe is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class NanoAODAnalyzerrdframe is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class SkimEvents is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class SkimEvents is available even though it has a TClass initialization routine.
+Error in <TClass::LoadClassInfo>: no interpreter information for class SkimEvents is available even though it has a TClass initialization routine.
 Processing as a DAS dataset path: /TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
 allinone
 COLLECT root files in: /TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
@@ -26,10 +93,8 @@ Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17Nano
 Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/0B4D265E-5FD8-4345-8DD8-20A0781963D7.root
 Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/D9801548-E5FC-334C-AD2E-E877CF76C01E.root
 Traceback (most recent call last):
-  File "/uscms_data/d3/snehshuc/TopAnalysis/CMSSW_12_3_4/src/TopSemiLept/./skimnanoaod.py", line 338, in <module>
+  File "/uscms_data/d3/snehshuc/TopAnalysis/CMSSW_12_3_4/src/TopSemiLept/./skimnanoaod.py", line 342, in <module>
     Nanoaodprocessor_singledir (indir, outdir, procflags, config) # although it says outdir, it should really be a output ROOT file name
   File "/uscms_data/d3/snehshuc/TopAnalysis/CMSSW_12_3_4/src/TopSemiLept/./skimnanoaod.py", line 282, in Nanoaodprocessor_singledir
     aproc = ROOT.SkimEvents(t, outputroot)
-  File "/cvmfs/cms.cern.ch/el8_amd64_gcc10/lcg/root/6.24.07-6b24df5a7040a677b8f0d27957c7cb74/lib/ROOT/_facade.py", line 192, in _fallback_getattr
-    raise AttributeError("Failed to get attribute {} from ROOT".format(name))
-AttributeError: Failed to get attribute SkimEvents from ROOT
+TypeError: cannot instantiate incomplete class 'SkimEvents'

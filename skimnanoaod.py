@@ -283,8 +283,11 @@ def Nanoaodprocessor_singledir(indir, outputroot, procflags, config):
     # aproc = ROOT.TopSemiLeptAnalyzer(t, outputroot)
     #aproc.setupCorrections(config['goodjson'], config['pileupfname'], config['pileuptag']\
     #    , config['btvfname'], config['btvtype'], config['jercfname'], config['jerctag'], config['jercunctag'])
-    aproc.setupObjects()
-    aproc.setupAnalysis()
+    # aproc.setupObjects()
+    # aproc.setupAnalysis()
+    aproc.defineCuts();
+    aproc.defineMoreVars();
+    aproc.bookHists();
     aproc.run(saveallbranches, outtreename)
     pass
 
