@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <typeinfo>
 #include <random>
-
 #include "TCanvas.h"
 #include "Math/GenVector/VectorUtil.h"
 #include <vector>
@@ -326,7 +325,8 @@ void NanoAODAnalyzerrdframe::applyMuPtCorrection() //data and MC
 
 
 
-void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufname, string putag, string btvfname, string btvtype, string muon_roch_fname, string muon_fname, string muonhlttype, string muonrecotype,string muonidtype,string muonisotype,string electron_fname, string electron_reco_type, string electron_id_type, string jercfname, string jerctag, string jercunctag)
+void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufname, string putag, string btvfname, string btvtype, string muon_roch_fname, string muon_fname, string muonhlttype, string muonrecotype,string muonidtype,string muonisotype,string electron_fname, string electron_reco_type, string electron_id_type,string photon_fname,string photon_id_type, string jercfname, string jerctag, string jercunctag)
+
 //In this function the correction is evaluated for each jet, Muon, Electron and MET. The correction depends on the momentum, pseudorapidity, energy, and cone area of the jet, as well as the value of “rho” (the average momentum per area) and number of interactions in the event. The correction is used to scale the momentum of the jet.
 {
     cout << "set up Corrections!" << endl;
@@ -334,8 +334,9 @@ void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufna
 	std::cout << "Rochester correction files: " << muon_roch_fname << std::endl;
 	_Roch_corr.init(muon_roch_fname);
 	if (!_isData) {
-	  // using correctionlib
-	  //Muon corrections
+	  // ---------------------------------------using correctionlib----------------------------------------
+
+	  //----------------------------------------Muon corrections------------------------------------
 	  _correction_muon = correction::CorrectionSet::from_file(muon_fname);
 	  _muon_hlt_type = muonhlttype;
 	  _muon_reco_type = muonrecotype;
@@ -349,7 +350,7 @@ void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufna
 	  cout<< "MUON ISO type in JSON  : " << _muon_iso_type << endl;
 	  assert(_correction_muon->validate());
 	  
-	  //Electron corrections
+	  //------------------------------------Electron corrections------------------------------------------------
 	  _correction_electron = correction::CorrectionSet::from_file(electron_fname);
 	  _electron_reco_type = electron_reco_type;
 	  _electron_id_type = electron_id_type;
@@ -359,13 +360,22 @@ void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufna
 	  cout<< "ELECTRONID type in JSON  : " << _electron_id_type << endl;
 	  cout<< "================================//=================================" << std::endl;
 	  assert(_correction_electron->validate());
+
+	  //----------------------------------Photon corrections----------------------------------------------
+	  _correction_photon = correction::CorrectionSet::from_file(photon_fname);
+	  _photon_id_type = photon_id_type;
+	  std::cout<< "================================//=================================" << std::endl;
+	  cout<< "PHOTON JSON FILE : " << photon_fname << endl;
+	  cout<< "PHOTON ID type in JSON  : " << _photon_id_type << endl;
+	  cout<< "================================//=================================" << std::endl;
+	  assert(_correction_photon->validate());
 	  
-	  // btag corrections
+	  //-----------------------------------------btag corrections---------------------------------------------
 	  _correction_btag1 = correction::CorrectionSet::from_file(btvfname);
 	  _btvtype = btvtype;
 	  assert(_correction_btag1->validate());
 	  
-	  // pile up weights
+	  //------------------------------------- pile up weights---------------------------------------------
 	  _correction_pu = correction::CorrectionSet::from_file(pufname);
 	  assert(_correction_pu->validate());
 	  _putag = putag;
@@ -617,6 +627,56 @@ ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateEleSF(RNode _rlm, std::vector<
     }
     return _rlm;
 }
+
+ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculatePhoSF(RNode _rlm, std::vector<std::string> Pho_vars, std::string output_var) 
+ 
+{
+	// Lambda function to calculate the photon scale factor
+    auto photon_weightgenerator = [this](const std::string& year, const std::string& photype, const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts, const std::string& variation) -> float {
+        double photonSF_w = 1.0;
+
+        for (std::size_t i = 0; i < pts.size(); i++) {
+
+            double w = _correction_photon->at("UL-Photon-ID-SF")->evaluate({std::to_string(_year), variation, photype, std::fabs(etas[i]), pts[i]});
+            photonSF_w *= w;
+        }
+        return photonSF_w;
+    };
+
+    // Variations for the photon scale factors
+    std::vector<std::string> variations_pho = {"sf", "sfup", "sfdown"};
+
+    for (const std::string& variation : variations_pho) {
+
+        // Define photon ID weight sf/systs for each variation individually
+        std::string column_name_id = output_var + "id_" + variation;
+        _rlm = _rlm.Define(column_name_id, [this, photon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+            float weight = photon_weightgenerator(std::to_string(_year), _photon_id_type, etas, pts, variation);
+            return weight;
+        }, Pho_vars);
+
+        // Define final column name based on variation
+        std::string column_name = output_var;
+
+        if (variation == "sf") {
+            column_name += "central";
+        } else if (variation == "sfup") {
+            column_name += "up";
+        } else {
+            column_name += "down";
+        }
+
+        std::cout << "Photon SF column name: " << column_name << std::endl;
+
+        // For photons, we might only have ID scale factors
+        std::string sf_definition = column_name_id;
+
+        _rlm = _rlm.Define(column_name, sf_definition);
+    }
+
+    return _rlm;
+}
+
 ROOT::RDF::RNode NanoAODAnalyzerrdframe::applyPrefiringWeight(ROOT::RDF::RNode& _rlm, std::string output_var)
 {
   

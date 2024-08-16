@@ -47,8 +47,10 @@ int main(void) {
 	string electron_fname = "data/EGM/2017_UL/electron.json.gz";
 	string electron_reco_type = "RecoAbove20";
 	string electron_id_type = "Tight";
+	string photon_fname = "data/EGM/2017_UL/photon.json.gz";
+	string photon_id_type = "Medium";
 
-	nanoaodrdf.setupCorrections(goodjsonfname, pileupfname, pileuptag, btvfname, btvtype, muon_roch_fname, muon_fname, muonHLTtype, muonRECOtype, muonIDtype, muonISOtype, electron_fname, electron_reco_type, electron_id_type, jercfname, jerctag, jercunctag);
+	nanoaodrdf.setupCorrections(goodjsonfname, pileupfname, pileuptag, btvfname, btvtype, muon_roch_fname, muon_fname, muonHLTtype, muonRECOtype, muonIDtype, muonISOtype, electron_fname, electron_reco_type, electron_id_type, photon_fname,photon_id_type, jercfname, jerctag, jercunctag);
     
 	nanoaodrdf.setupObjects();
 	nanoaodrdf.setupAnalysis();

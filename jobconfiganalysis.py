@@ -69,6 +69,10 @@ config = {
         'electron_fname': 'data/EGM/2017_UL/electron.json.gz', 
         'electron_reco_type': 'RecoAbove20',
         'electron_id_type': 'Tight',#'Tight ID UL scale factor',
+
+        # Photon Correction 2017
+        'photon_fname':'data/EGM/2017_UL/photon.json.gz',
+        'photon_id_type':'Medium',
      
         # json file name for JERC 2017
         'jercfname': 'data/JERC/UL17_jerc.json',

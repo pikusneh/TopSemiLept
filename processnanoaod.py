@@ -419,6 +419,8 @@ def Nanoaodprocessor_singledir(sample_name,indir, outputroot, procflags, config)
             config['electron_fname'],
             config['electron_reco_type'],
             config['electron_id_type'],
+            config['photon_fname'],
+            config['photon_id_type'],
             config['jercfname'],
             config['jerctag'],
             config['jercunctag']

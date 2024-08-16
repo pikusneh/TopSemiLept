@@ -448,7 +448,7 @@ void TopSemiLeptAnalyzer::removeOverlaps()
     // // Apply overlap removal to photons
     // _rlm = _rlm.Define("leptonPhotonOverlap", checkPhotonLeptonOverlap, {"goodPhotons_4vecs", "tightLeptons_4vecs"})
     //            .Define("cleanedPhotons", "goodPhotons_4vecs[leptonPhotonOverlap]");
-    
+
     cout << "Defining Selected_jetpt" << endl;
     _rlm = _rlm.Define("Selected_jetpt", "goodJets_pt[jetNoOverlapWithLeptons]");
 
@@ -840,6 +840,9 @@ void TopSemiLeptAnalyzer::defineMoreVars()
         addVartoStore("ele_SF_id_sf");
         addVartoStore("ele_SF_id_sfup");
         addVartoStore("ele_SF_id_sfdown");
+        addVartoStore("pho_SF_central");
+        addVartoStore("pho_SF_id_sf");
+        addVartoStore("pho_SF_id_sfup");
 
         addVartoStore("evWeight");
     }

@@ -52,7 +52,7 @@ public:
 	bool readgoodjson(string goodjsonfname); // get ready for applying golden JSON
 	// void selectFatJets();
 
-	void setupCorrections(string goodjsonfname, string pufname, string putag, string btvfname, string btvtype, string muon_roch_fname, string muon_fname, string muon_hlt_type, string muon_reco_type, string muon_id_type, string muon_iso_type, string electron_fname, string electron_reco_type, string electron_id_type, string jercfname, string jerctag, string jercunctag);
+	void setupCorrections(string goodjsonfname, string pufname, string putag, string btvfname, string btvtype, string muon_roch_fname, string muon_fname, string muon_hlt_type, string muon_reco_type, string muon_id_type, string muon_iso_type, string electron_fname, string electron_reco_type, string electron_id_type,string photon_fname,string photon_id_type, string jercfname, string jerctag, string jercunctag);
 	// void setupCorrections(string goodjsonfname, string pufname, string putag, string btvfname, string btvtype, string fname_btagEff, string hname_btagEff_bcflav, string hname_btagEff_lflav, string muon_roch_fname, string muon_fname, string muonhlttype, string muonrecotype,string muonidtype,string muonisotype,string electron_fname, string electron_reco_type, string electron_id_type, string jercfname, string jerctag, string jercunctag);
     // void setupJetMETCorrection(string fname, string jettag);
 	void setupJetMETCorrection(string fname, string jettag);
@@ -78,6 +78,7 @@ public:
 	ROOT::RDF::RNode calculateBTagSF(RNode _rlm, std::vector<std::string> Jets_vars, int _case, std::string output_var);
 	ROOT::RDF::RNode calculateMuSF(RNode _rlm, std::vector<std::string> Muon_vars, std::string output_var);
 	ROOT::RDF::RNode calculateEleSF(RNode _rlm, std::vector<std::string> Ele_vars, std::string output_var);
+	ROOT::RDF::RNode calculatePhoSF(ROOT::RDF::RNode _rlm, std::vector<std::string> Pho_vars, std::string output_var = "pho_SF_");
 	ROOT::RDF::RNode applyPrefiringWeight(ROOT::RDF::RNode &_rlm, std::string output_var="prefiring_SF_");
 	// ROOT::RDF::RNode applyPrefiringWeight(RNode _rlm, std::string output_var="prefiring_SF_");
 	
@@ -132,6 +133,8 @@ public:
 	string _muon_iso_type;
 	string _electron_reco_type;
 	string _electron_id_type;
+	string _photon_id_type;
+	
 
 
 	TFile *_outrootfile;
@@ -168,6 +171,9 @@ public:
 
 	//electron correction
 	std::unique_ptr<correction::CorrectionSet> _correction_electron ;
+
+	//photon correction
+	std::unique_ptr<correction::CorrectionSet> _correction_photon ;
 
 	// JERC scale factors
 	std::unique_ptr<correction::CorrectionSet> _correction_jerc; // json containing all forms of corrections and uncertainties
