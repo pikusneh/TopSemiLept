@@ -21,8 +21,11 @@ using ints =  ROOT::VecOps::RVec<int>;
 using bools = ROOT::VecOps::RVec<bool>;
 using uchars = ROOT::VecOps::RVec<unsigned char>;
 
-using FourVector = ROOT::Math::PtEtaPhiMVector;
-using FourVectorVec = std::vector<FourVector>;
+// using FourVector = ROOT::Math::PtEtaPhiMVector;
+// using FourVectorVec = std::vector<FourVector>;
+using FourVector = ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<double>>;
+using FourVectorVec = ROOT::VecOps::RVec<FourVector>;
+
 using FourVectorRVec = ROOT::VecOps::RVec<FourVector>;
 
 ints pTcounter(floats vec);

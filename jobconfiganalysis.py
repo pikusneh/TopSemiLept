@@ -106,7 +106,7 @@ procflags = {
         # if False then only selected branches which is done in the .cpp file will be saved
         'saveallbranches': False,
         #How many input files?
-        'nrootfiles':5, # set to -1 when you want to process all files in the input dir of root:// type
+        'nrootfiles':300, # set to -1 when you want to process all files in the input dir of root:// type
         }
 
 

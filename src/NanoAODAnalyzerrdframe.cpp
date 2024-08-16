@@ -386,11 +386,11 @@ void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufna
 		 } ,{"genWeight", "puWeight"});
 
 	    }
-		 _rlm = _rlm.Define("GenPartpt", "GenPart_pt")
-                   .Define("GenParteta", "GenPart_eta")
-                   .Define("GenPartphi", "GenPart_phi")
-                   .Define("GenPartmass", "GenPart_mass")
-                   .Define("GenPartpdgId", "GenPart_pdgId");
+		//  _rlm = _rlm.Define("GenPartpt", "GenPart_pt")
+        //            .Define("GenParteta", "GenPart_eta")
+        //            .Define("GenPartphi", "GenPart_phi")
+        //            .Define("GenPartmass", "GenPart_mass")
+        //            .Define("GenPartpdgId", "GenPart_pdgId");
                 //    .Define("nGenPart", "nGenPart");
 	}
 	_jerctag = jerctag;
@@ -614,6 +614,18 @@ ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateEleSF(RNode _rlm, std::vector<
       _rlm = _rlm.Define(column_name, sf_definition); 
 
 
+    }
+    return _rlm;
+}
+ROOT::RDF::RNode NanoAODAnalyzerrdframe::applyPrefiringWeight(ROOT::RDF::RNode& _rlm, std::string output_var)
+{
+  
+    std::vector<std::string> variations = {"Nom", "Up", "Dn"};
+    std::vector<std::string> output_variations = {"central", "up", "down"};
+    for (int i =0; i<int(variations.size()); i++) {
+      std::string input_column_name = "L1PreFiringWeight_" + variations[i];
+      std::string output_column_name = output_var + output_variations[i];
+      _rlm = _rlm.Define(output_column_name, input_column_name);
     }
     return _rlm;
 }

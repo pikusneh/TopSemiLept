@@ -1,0 +1,280 @@
+/cvmfs/cms.cern.ch/el8_amd64_gcc10/lcg/root/6.24.07-6b24df5a7040a677b8f0d27957c7cb74/lib/cppyy_backend/loader.py:113: UserWarning: No precompiled header available (/cvmfs/cms.cern.ch/el8_amd64_gcc10/lcg/root/6.24.07-6b24df5a7040a677b8f0d27957c7cb74/lib/cppyy_backend/etc not writable); this may impact performance.
+  warnings.warn('No precompiled header available (%s); this may impact performance.' % msg)
+TClass::Init:0: RuntimeWarning: no dictionary for class __pair_base<edm::Hash<1>,edm::ParameterSetBlob> is available
+Analysing through Run 2017
+Ultra Legacy Selected 
+-------------------------------------------------------------------
+Default root version :checking out gen branches! 
+-------------------------------------------------------------------
+input file is MC
+set up Corrections!
+Rochester correction files: data/MUO/2017_UL/RoccoR2017UL.txt
+================================//=================================
+MUON JSON FILE : data/MUO/2017_UL/muon_Z.json.gz
+MUON HLT type in JSON  : NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight
+MUON RECO type in JSON  : NUM_TrackerMuons_DEN_genTracks
+MUON ID type in JSON  : NUM_MediumID_DEN_TrackerMuons
+MUON ISO type in JSON  : NUM_TightRelIso_DEN_MediumID
+================================//=================================
+ELECTRON JSON FILE : data/EGM/2017_UL/electron.json.gz
+ELECTRON RECO type in JSON  : RecoAbove20
+ELECTRONID type in JSON  : Tight
+================================//=================================
+SETUP JETMET correction
+JERC JSON file : data/JERC/UL17_jerc.json
+JET tag in JSON : Summer19UL17_V5_MC_L1L2L3Res_AK4PFchs
+JET uncertainity tag in JSON  : Summer19UL17_V5_MC_Total_AK4PFchs
+================================//=================================
+apply JETMET correction
+apply Muon Pt correction
+indir in main: /TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+Processing as a DAS dataset path: /TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+Processing sample TTGamma_Dilept as a DAS dataset path: /TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+COLLECT root files in: /TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+Detected a dataset path, querying DAS using dasgoclient
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/184046A1-C2A2-F141-AD7B-815920D3E4F5.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/5B7EE9A0-310C-364A-8DF3-83428E31518A.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/F1AC8648-7686-234D-ACE5-DC73B7CD3CEA.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/120000/649B0FC5-5BD1-7744-B83A-2C5B1C4EF92B.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/130000/663DF713-1907-4049-A87B-C77D8B8E1195.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/130000/E049FFED-D33E-6D46-9807-4B1ED5A71595.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/270000/0F0FCF49-4F63-544F-BC5B-46D63FADBEC3.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/70000/49B4062D-9567-1240-8299-2DD60E8BE8C5.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/70000/03B2BDEA-8FC3-F945-AF71-8B93FD2A9325.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/1089D50B-2E1F-E74B-B6B5-4AC186534653.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/BD640DFA-4DF9-7247-80B3-8F5B315CCB42.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/3AC2461B-268C-F94D-9162-DE2676A58123.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/A303E35E-46AB-3642-9D1A-06F147442639.root
+PRINT
+-------------------------------------------------------------------
+Total Number of Entries:
+10018000
+-------------------------------------------------------------------
+Starting setupanalysis
+Sample: TTGamma_Dilept
+Initial number of events: 10018000
+Final number of events: 10018000
+Number of overlapped events removed: 0
+select good electrons
+================================//=================================
+Line : 83 Function : selectElectrons
+================================//=================================
+================================//=================================
+Line : 1051 Function : ElectronID
+================================//=================================
+ TIGHT Electron ID requested   == 4
+-------------------------------------------------------------------
+tightElectrons_4vecs column successfully defined.
+================================//=================================
+Line : 1051 Function : ElectronID
+================================//=================================
+ VETO Electron ID requested    == 1
+-------------------------------------------------------------------
+================================//=================================
+Line : 1051 Function : ElectronID
+================================//=================================
+ LOOSE Electron ID requested   == 2
+-------------------------------------------------------------------
+select good muons
+================================//=================================
+Line : 1090 Function : MuonID
+================================//=================================
+ TIGHT Muon ID requested as == 4
+-------------------------------------------------------------------
+================================//=================================
+Line : 1090 Function : MuonID
+================================//=================================
+ Veto Muon ID requested   == 1
+-------------------------------------------------------------------
+ VETO Muon ID requested == 1, but it doesn't exist in the nanoAOD branches. It is moved to loose MuonID. 1
+================================//=================================
+Line : 1090 Function : MuonID
+================================//=================================
+ LOOSE Muon ID requested  == 2
+-------------------------------------------------------------------
+
+================================//=================================
+Line : 69 Function : selectChannel
+================================//=================================
+select good jets
+Jet_hadronFlavour branch is found in the input file.
+================================//=================================
+Line : 1135 Function : JetID
+================================//=================================
+ JET ID requested  == 6
+Select good photons
+================================//=================================
+Line : 1021 Function : PhotonID
+================================//=================================
+MEDIUM Photon ID requested  == 2
+-------------------------------------------------------------------
+Checking overlaps between jets, muons, electrons, and photons
+Defining muonjetoverlap
+Defining electronjetoverlap
+Defining jetNoOverlapWithLeptons
+Defining cleanedJetsWithLeptons
+Defining Selected_jetpt
+Defining other jet properties
+BJet SF column name: btag_SF_central
+BJet SF column name: btag_SF_up
+BJet SF column name: btag_SF_down
+BJet SF column name: btag_SF_up_correlated
+BJet SF column name: btag_SF_down_correlated
+BJet SF column name: btag_SF_uncorrelated
+muon HLT SF for MC 
+Muon SF column name: muon_SF_central
+Muon SF column name: muon_SF_up
+Muon SF column name: muon_SF_down
+Muon SF column name: muon_SF_syst
+Electron SF column name: ele_SF_central
+Electron SF column name: ele_SF_up
+Electron SF column name: ele_SF_down
+================================//=================================
+Line : 707 Function : selectMET
+================================//=================================
+================================//=================================
+Line : 979 Function : setupAnalysis
+================================//=================================
+year====2017==runtype=== UL
+Sum of genWeights = 10018000.000000
+================================//=================================
+Line : 34 Function : defineCuts
+================================//=================================
+-------------------------------------------------------------------
+Usage of ranges:
+ - All entries: 10018000
+-------------------------------------------------------------------
+================================//=================================
+Line : 726 Function : defineMoreVars
+================================//=================================
+Gen-level variables added.
+================================//=================================
+Line : 887 Function : bookHists
+================================//=================================
+setting up definitions, cuts, and histograms
+evWeight not found at 
+-------------------------------------------------------------------
+cut :  --writing branches
+-------------------------------------------------------------------
+_photonIsGenuine
+_photonIsMisIDEle
+_photonIsHadronicPhoton
+_photonIsHadronicFake
+run
+luminosityBlock
+event
+evWeight
+muonChannel
+electronChannel
+nElectron
+Electron_pt
+Electron_eta
+Electron_charge
+NgoodElectrons
+goodElectrons_pt
+goodElectrons_eta
+NtightElectrons
+tightElectrons_pt
+tightElectrons_eta
+nMuon
+Muon_charge
+Muon_pt
+Muon_eta
+Muon_mass
+NgoodMuons
+goodMuons_pt
+goodMuons_eta
+NtightMuons
+tightMuons_pt
+tightMuons_eta
+NgoodPhotons
+goodPhotons_pt
+goodPhotons_eta
+nJet
+Jet_pt
+NgoodJets
+goodJets_pt
+Selected_jetpt
+Selected_jeteta
+Selected_jetbtag
+good_bjetdeepcsvjet
+Ngood_bjets
+Selected_jethadflav
+goodJets_hadflav
+good_bjethadflav
+Selected_bjethadflav
+Jet_pt_corr
+Jet_pt_corr_up
+Jet_pt_corr_down
+Jet_pt_relerror
+MET_pt_corr
+MET_pt
+MET_phi
+btag_SF_central
+btag_SF_up
+btag_SF_down
+muon_SF_central
+muon_SF_id_sf
+muon_SF_id_syst
+muon_SF_id_systup
+muon_SF_id_systdown
+muon_SF_iso_sf
+ele_SF_central
+ele_SF_id_sf
+ele_SF_id_sfup
+ele_SF_id_sfdown
+GenPartpt
+GenParteta
+GenPartphi
+GenPartmass
+GenPartpdgId
+nGenPart
+-------------------------------------------------------------------
+Creating output root file :  
+/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Dilept_output.root 
+-------------------------------------------------------------------
+Writing histograms...   
+-------------------------------------------------------------------
+TH1.Print Name  = hNtightElectrons_cut1, Entries= 5081842, Total sum= 6.11865e+06
+TH1.Print Name  = hNtightElectrons_cut2, Entries= 9717167, Total sum= 1.2211e+07
+TH1.Print Name  = hNtightElectrons_cut3, Entries= 4145041, Total sum= 4.98725e+06
+TH1.Print Name  = hNtightElectrons_nocut, Entries= 10018000, Total sum= 1.25921e+07
+TH1.Print Name  = hNtightMuons_cut1, Entries= 5081842, Total sum= 6.11865e+06
+TH1.Print Name  = hNtightMuons_cut2, Entries= 9717167, Total sum= 1.2211e+07
+TH1.Print Name  = hNtightMuons_cut3, Entries= 4145041, Total sum= 4.98725e+06
+TH1.Print Name  = hNtightMuons_nocut, Entries= 10018000, Total sum= 1.25921e+07
+TH1.Print Name  = hgood_jet1pt_cut1, Entries= 5081842, Total sum= 6.01777e+06
+TH1.Print Name  = hgood_jet1pt_cut2, Entries= 9717167, Total sum= 1.20375e+07
+TH1.Print Name  = hgood_jet1pt_cut3, Entries= 4145041, Total sum= 4.90904e+06
+TH1.Print Name  = hgood_jet1pt_nocut, Entries= 10018000, Total sum= 1.24005e+07
+TH1.Print Name  = hgood_jetpt_NOWeight_cut1, Entries= 13747186, Total sum= 1.37469e+07
+TH1.Print Name  = hgood_jetpt_NOWeight_cut2, Entries= 27214393, Total sum= 2.72137e+07
+TH1.Print Name  = hgood_jetpt_NOWeight_cut3, Entries= 11337024, Total sum= 1.13367e+07
+TH1.Print Name  = hgood_jetpt_NOWeight_nocut, Entries= 27928808, Total sum= 2.79281e+07
+TH1.Print Name  = hgood_jetpt_with weight_cut1, Entries= 13747186, Total sum= 1.81007e+07
+TH1.Print Name  = hgood_jetpt_with weight_cut2, Entries= 27214393, Total sum= 3.75277e+07
+TH1.Print Name  = hgood_jetpt_with weight_cut3, Entries= 11337024, Total sum= 1.4857e+07
+TH1.Print Name  = hgood_jetpt_with weight_nocut, Entries= 27928808, Total sum= 3.853e+07
+TH1.Print Name  = hnevents_cut1, Entries= 5081842, Total sum= 6.11865e+06
+TH1.Print Name  = hnevents_cut2, Entries= 9717167, Total sum= 1.2211e+07
+TH1.Print Name  = hnevents_cut3, Entries= 4145041, Total sum= 4.98725e+06
+TH1.Print Name  = hnevents_no_weight_cut1, Entries= 5081842, Total sum= 5.08184e+06
+TH1.Print Name  = hnevents_no_weight_cut2, Entries= 9717167, Total sum= 9.71717e+06
+TH1.Print Name  = hnevents_no_weight_cut3, Entries= 4145041, Total sum= 4.14504e+06
+TH1.Print Name  = hnevents_no_weight_nocut, Entries= 10018000, Total sum= 1.0018e+07
+TH1.Print Name  = hnevents_nocut, Entries= 10018000, Total sum= 1.25921e+07
+TH1.Print Name  = hselected_jet1pt_cut1, Entries= 5081842, Total sum= 5.99808e+06
+TH1.Print Name  = hselected_jet1pt_cut2, Entries= 9717167, Total sum= 1.20082e+07
+TH1.Print Name  = hselected_jet1pt_cut3, Entries= 4145041, Total sum= 4.89129e+06
+TH1.Print Name  = hselected_jet1pt_nocut, Entries= 10018000, Total sum= 1.23711e+07
+TH1.Print Name  = hselected_jetptNoweight_cut1, Entries= 13083290, Total sum= 1.30833e+07
+TH1.Print Name  = hselected_jetptNoweight_cut2, Entries= 26255471, Total sum= 2.62555e+07
+TH1.Print Name  = hselected_jetptNoweight_cut3, Entries= 10677404, Total sum= 1.06774e+07
+TH1.Print Name  = hselected_jetptNoweight_nocut, Entries= 26969886, Total sum= 2.69699e+07
+TH1.Print Name  = hselected_jetptWithweight_cut1, Entries= 13083290, Total sum= 1.73205e+07
+TH1.Print Name  = hselected_jetptWithweight_cut2, Entries= 26255471, Total sum= 3.63945e+07
+TH1.Print Name  = hselected_jetptWithweight_cut3, Entries= 10677404, Total sum= 1.40523e+07
+TH1.Print Name  = hselected_jetptWithweight_nocut, Entries= 26969886, Total sum= 3.73969e+07
+-------------------------------------------------------------------
+END...  :) 
+Processing complete.

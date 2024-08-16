@@ -139,7 +139,7 @@ namespace ROOT {
       ::TopSemiLeptAnalyzer *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(::TopSemiLeptAnalyzer));
       static ::ROOT::TGenericClassInfo 
-         instance("TopSemiLeptAnalyzer", "TopSemiLeptAnalyzer.h", 15,
+         instance("TopSemiLeptAnalyzer", "TopSemiLeptAnalyzer.h", 14,
                   typeid(::TopSemiLeptAnalyzer), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &TopSemiLeptAnalyzer_Dictionary, isa_proxy, 4,
                   sizeof(::TopSemiLeptAnalyzer) );

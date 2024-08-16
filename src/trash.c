@@ -281,3 +281,71 @@ Data_SingleEle_f,/SingleElectron/Run2017D-UL2017_MiniAODv2_NanoAODv9-v1/NANOAOD
 # nanoaod_inputdir_outputdir_pairs = [['/eos/uscms/store/user/snehshuc/2017/TTGamma', '/eos/uscms/store/user/snehshuc/test/2017/TTGamma_output_100k.root', 'stderr2.out']]
 
 # ['/eos/lyoeos.in2p3.fr/grid/cms/store/mc/RunIISummer20UL17NanoAODv9/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/80000/','analyzed/testcorrection_muon.root', 'stderr.out' ],
+
+
+
+
+TTbar,/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM,/eos/uscms/store/user/snehshuc/test/2017/TTbar_Hadronic_few_output.root,stderr_TTbar_Had_fewfiles.out
+
+
+//////OLD OVERLAPREMOVAL FOR OBJECT FUNCTION
+//=================================Overlap function=================================================//
+/*void TopSemiLeptAnalyzer::removeOverlaps()
+{
+    cout << "checking overlapss between jets and muons" << endl;
+    // lambda function
+    // for checking overlapped jets with leptons
+    auto checkoverlap = [](FourVectorVec &goodjets, FourVectorVec &goodlep)
+        {
+            doubles mindrlepton;
+            for (auto ajet: goodjets)
+            {
+                auto mindr = 6.0;
+                for (auto alepton: goodlep)
+                {
+                    auto dr = ROOT::Math::VectorUtil::DeltaR(ajet, alepton);
+                    if (dr < mindr) mindr = dr;
+                }
+                int out = mindr > 0.4 ? 1 : 0;
+                mindrlepton.emplace_back(out);
+
+            }
+            return mindrlepton;
+        };
+    //cout << "overlap removal" << endl;
+    //==============================Clean Jets==============================================//
+    //Use clean jets/bjets for object selections
+    //=====================================================================================//
+     bool hasJetHadronFlavour = (_atree->GetBranch("Jet_hadronFlavour") != nullptr);
+
+    _rlm = _rlm.Define("muonjetoverlap", checkoverlap, {"goodJets_4vecs","tightMuons_4vecs"});
+
+    _rlm =	_rlm.Define("Selected_jetpt", "goodJets_pt[muonjetoverlap]")
+        .Define("Selected_jeteta", "goodJets_eta[muonjetoverlap]")
+        .Define("Selected_jetphi", "goodJets_phi[muonjetoverlap]")
+        .Define("Selected_jetmass", "goodJets_mass[muonjetoverlap]")
+        .Define("Selected_jetbtag", "goodJets_btag[muonjetoverlap]")
+        .Define("ncleanjetspass", "int(Selected_jetpt.size())")
+        .Define("cleanjet4vecs", ::generate_4vec, {"Selected_jetpt", "Selected_jeteta", "Selected_jetphi", "Selected_jetmass"})
+        .Define("Selected_jetHT", "Sum(Selected_jetpt)");
+
+        if (hasJetHadronFlavour) {
+             _rlm = _rlm.Define("Selected_jethadflav", "goodJets_hadflav[muonjetoverlap]");}
+
+     //==============================Clean b-Jets==============================================//
+     //--> after remove overlap: use requested btaggedJets for btag-weight SFs && weight_generator.
+     //=====================================================================================//
+    _rlm = _rlm.Define("btagcuts2", "Selected_jetbtag>0.4506") //medium wp
+            .Define("Selected_bjetpt", "Selected_jetpt[btagcuts2]")
+            .Define("Selected_bjeteta", "Selected_jeteta[btagcuts2]")
+            .Define("Selected_bjetphi", "Selected_jetphi[btagcuts2]")
+            .Define("Selected_bjetmass", "Selected_jetmass[btagcuts2]")
+            .Define("ncleanbjetspass", "int(Selected_bjetpt.size())")
+            .Define("Selected_bjetHT", "Sum(Selected_bjetpt)")
+            .Define("cleanbjet4vecs", ::generate_4vec, {"Selected_bjetpt", "Selected_bjeteta", "Selected_bjetphi", "Selected_bjetmass"});
+
+    if (hasJetHadronFlavour) {
+    _rlm = _rlm.Define("Selected_bjethadflav", "Selected_jethadflav[btagcuts2]");   }
+
+}
+*/

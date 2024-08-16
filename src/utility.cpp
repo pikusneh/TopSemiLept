@@ -19,18 +19,34 @@
 
 using namespace std;
 
+// FourVectorVec generate_4vec(floats &pt, floats &eta, floats &phi, floats &mass)
+// {
+// 	const int nsize = pt.size();
+// 	FourVectorVec fourvecs;
+// 	fourvecs.reserve(nsize);
+// 	for (auto i=0; i<nsize; i++)
+// 	{
+// 		fourvecs.emplace_back(pt[i], eta[i], phi[i], fabs(mass[i]));
+// 	}
+
+// 	return fourvecs;
+// }
+
 FourVectorVec generate_4vec(floats &pt, floats &eta, floats &phi, floats &mass)
 {
-	const int nsize = pt.size();
-	FourVectorVec fourvecs;
-	fourvecs.reserve(nsize);
-	for (auto i=0; i<nsize; i++)
-	{
-		fourvecs.emplace_back(pt[i], eta[i], phi[i], fabs(mass[i]));
-	}
+    const int nsize = pt.size();
+    FourVectorVec fourvecs(nsize);
+    for (int i = 0; i < nsize; ++i)
+    {
+        fourvecs[i].SetPt(pt[i]);
+        fourvecs[i].SetEta(eta[i]);
+        fourvecs[i].SetPhi(phi[i]);
+        fourvecs[i].SetM(fabs(mass[i]));
+    }
 
-	return fourvecs;
+    return fourvecs;
 }
+
 
 floats weightv(floats &x, float evWeight)
 {

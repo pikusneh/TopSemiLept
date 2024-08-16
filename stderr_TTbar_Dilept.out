@@ -1,0 +1,238 @@
+/cvmfs/cms.cern.ch/el8_amd64_gcc10/lcg/root/6.24.07-6b24df5a7040a677b8f0d27957c7cb74/lib/cppyy_backend/loader.py:113: UserWarning: No precompiled header available (/cvmfs/cms.cern.ch/el8_amd64_gcc10/lcg/root/6.24.07-6b24df5a7040a677b8f0d27957c7cb74/lib/cppyy_backend/etc not writable); this may impact performance.
+  warnings.warn('No precompiled header available (%s); this may impact performance.' % msg)
+TClass::Init:0: RuntimeWarning: no dictionary for class __pair_base<edm::Hash<1>,edm::ParameterSetBlob> is available
+Analysing through Run 2017
+Ultra Legacy Selected 
+-------------------------------------------------------------------
+Default root version :checking out gen branches! 
+-------------------------------------------------------------------
+input file is MC
+set up Corrections!
+Rochester correction files: data/MUO/2017_UL/RoccoR2017UL.txt
+================================//=================================
+MUON JSON FILE : data/MUO/2017_UL/muon_Z.json.gz
+MUON HLT type in JSON  : NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight
+MUON RECO type in JSON  : NUM_TrackerMuons_DEN_genTracks
+MUON ID type in JSON  : NUM_MediumID_DEN_TrackerMuons
+MUON ISO type in JSON  : NUM_TightRelIso_DEN_MediumID
+================================//=================================
+ELECTRON JSON FILE : data/EGM/2017_UL/electron.json.gz
+ELECTRON RECO type in JSON  : RecoAbove20
+ELECTRONID type in JSON  : Tight
+================================//=================================
+SETUP JETMET correction
+JERC JSON file : data/JERC/UL17_jerc.json
+JET tag in JSON : Summer19UL17_V5_MC_L1L2L3Res_AK4PFchs
+JET uncertainity tag in JSON  : Summer19UL17_V5_MC_Total_AK4PFchs
+================================//=================================
+apply JETMET correction
+apply Muon Pt correction
+indir in main: /TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+Processing as a DAS dataset path: /TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+Processing sample TTbar_Dilept as a DAS dataset path: /TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+COLLECT root files in: /TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM
+Detected a dataset path, querying DAS using dasgoclient
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/EFBBD9DF-1B6A-C54A-9CA5-704B819BB6A8.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/E7185D42-E19B-4743-B5D2-2D2A008AB656.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/47450C94-04DF-7048-A46E-E77DEFE35A0A.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/C9E789DD-BB0B-0344-84C0-FDA560DD2E94.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/3FBB724F-E747-3D41-84F6-21224B62F3F7.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/E20B15CA-EE5D-9140-A72D-66A3E861F364.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/2A429AF2-DE56-5E4D-A393-69B8C9DFD6CA.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/D90D8C3C-C9BA-E649-B040-23E044CF83B6.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/DEEDAACC-97D6-3B44-8D71-D6E5F30A03A5.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/1DF4A2CB-D908-2648-9F63-C3DC37707E93.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/2D764A69-C69D-BB41-8FDE-D85BA88A9055.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/35576172-00C8-5D42-977A-D53B4847DD4A.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/B83ADE54-44E2-2341-B389-423E33B952F1.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/AC24CEB2-EFA5-8047-89E3-A60570FCF48D.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/2697A553-4F09-9842-B942-37B9A8624343.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/3DBA0953-8993-294C-867B-6515EE28E334.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/2F927F33-BC10-B240-8BC9-3F05C92979C5.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/EE4C3954-7374-C846-A1D3-4DA821D46F97.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/E4F824A3-3F8C-564F-9AF4-6556DF7D3CC9.root
+Adding file to TChain: root://cmsxrootd.fnal.gov//store/mc/RunIISummer20UL17NanoAODv9/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/2510000/2D5262FE-F3BA-F142-9045-BCCE65DA5D10.root
+PRINT
+-------------------------------------------------------------------
+Total Number of Entries:
+19292000
+-------------------------------------------------------------------
+Starting setupanalysis
+Sample: TTbar_Dilept
+Initial number of events: 19292000
+Final number of events: 19292000
+Number of overlapped events removed: 0
+select good electrons
+================================//=================================
+Line : 83 Function : selectElectrons
+================================//=================================
+================================//=================================
+Line : 1051 Function : ElectronID
+================================//=================================
+ TIGHT Electron ID requested   == 4
+-------------------------------------------------------------------
+tightElectrons_4vecs column successfully defined.
+================================//=================================
+Line : 1051 Function : ElectronID
+================================//=================================
+ VETO Electron ID requested    == 1
+-------------------------------------------------------------------
+================================//=================================
+Line : 1051 Function : ElectronID
+================================//=================================
+ LOOSE Electron ID requested   == 2
+-------------------------------------------------------------------
+select good muons
+================================//=================================
+Line : 1090 Function : MuonID
+================================//=================================
+ TIGHT Muon ID requested as == 4
+-------------------------------------------------------------------
+================================//=================================
+Line : 1090 Function : MuonID
+================================//=================================
+ Veto Muon ID requested   == 1
+-------------------------------------------------------------------
+ VETO Muon ID requested == 1, but it doesn't exist in the nanoAOD branches. It is moved to loose MuonID. 1
+================================//=================================
+Line : 1090 Function : MuonID
+================================//=================================
+ LOOSE Muon ID requested  == 2
+-------------------------------------------------------------------
+
+================================//=================================
+Line : 69 Function : selectChannel
+================================//=================================
+select good jets
+Jet_hadronFlavour branch is found in the input file.
+================================//=================================
+Line : 1135 Function : JetID
+================================//=================================
+ JET ID requested  == 6
+Select good photons
+================================//=================================
+Line : 1021 Function : PhotonID
+================================//=================================
+MEDIUM Photon ID requested  == 2
+-------------------------------------------------------------------
+Checking overlaps between jets, muons, electrons, and photons
+Defining muonjetoverlap
+Defining electronjetoverlap
+Defining jetNoOverlapWithLeptons
+Defining cleanedJetsWithLeptons
+Defining Selected_jetpt
+Defining other jet properties
+BJet SF column name: btag_SF_central
+BJet SF column name: btag_SF_up
+BJet SF column name: btag_SF_down
+BJet SF column name: btag_SF_up_correlated
+BJet SF column name: btag_SF_down_correlated
+BJet SF column name: btag_SF_uncorrelated
+muon HLT SF for MC 
+Muon SF column name: muon_SF_central
+Muon SF column name: muon_SF_up
+Muon SF column name: muon_SF_down
+Muon SF column name: muon_SF_syst
+Electron SF column name: ele_SF_central
+Electron SF column name: ele_SF_up
+Electron SF column name: ele_SF_down
+================================//=================================
+Line : 707 Function : selectMET
+================================//=================================
+================================//=================================
+Line : 979 Function : setupAnalysis
+================================//=================================
+year====2017==runtype=== UL
+Sum of genWeights = 1391138736.842041
+================================//=================================
+Line : 34 Function : defineCuts
+================================//=================================
+-------------------------------------------------------------------
+Usage of ranges:
+ - All entries: 19292000
+-------------------------------------------------------------------
+================================//=================================
+Line : 726 Function : defineMoreVars
+================================//=================================
+Gen-level variables added.
+================================//=================================
+Line : 887 Function : bookHists
+================================//=================================
+setting up definitions, cuts, and histograms
+evWeight not found at 
+-------------------------------------------------------------------
+cut :  --writing branches
+-------------------------------------------------------------------
+_photonIsGenuine
+_photonIsMisIDEle
+_photonIsHadronicPhoton
+_photonIsHadronicFake
+run
+luminosityBlock
+event
+evWeight
+muonChannel
+electronChannel
+nElectron
+Electron_pt
+Electron_eta
+Electron_charge
+NgoodElectrons
+goodElectrons_pt
+goodElectrons_eta
+NtightElectrons
+tightElectrons_pt
+tightElectrons_eta
+nMuon
+Muon_charge
+Muon_pt
+Muon_eta
+Muon_mass
+NgoodMuons
+goodMuons_pt
+goodMuons_eta
+NtightMuons
+tightMuons_pt
+tightMuons_eta
+NgoodPhotons
+goodPhotons_pt
+goodPhotons_eta
+nJet
+Jet_pt
+NgoodJets
+goodJets_pt
+Selected_jetpt
+Selected_jeteta
+Selected_jetbtag
+good_bjetdeepcsvjet
+Ngood_bjets
+Selected_jethadflav
+goodJets_hadflav
+good_bjethadflav
+Selected_bjethadflav
+Jet_pt_corr
+Jet_pt_corr_up
+Jet_pt_corr_down
+Jet_pt_relerror
+MET_pt_corr
+MET_pt
+MET_phi
+btag_SF_central
+btag_SF_up
+btag_SF_down
+muon_SF_central
+muon_SF_id_sf
+muon_SF_id_syst
+muon_SF_id_systup
+muon_SF_id_systdown
+muon_SF_iso_sf
+ele_SF_central
+ele_SF_id_sf
+ele_SF_id_sfup
+ele_SF_id_sfdown
+GenPartpt
+GenParteta
+GenPartphi
+GenPartmass
+GenPartpdgId
+nGenPart
