@@ -4,7 +4,7 @@
  *  Created on: Sep 30, 2018
  *      Author: suyong
  *  Updated on: 10Oct, 2023
- *      Author: Arnab PUROHIT, IP2I, Lyon 
+ *      Author: Arnab PUROHIT, IP2I, Lyon
  */
 
 #include "NanoAODAnalyzerrdframe.h"
@@ -23,26 +23,26 @@
 using namespace std;
 
 NanoAODAnalyzerrdframe::NanoAODAnalyzerrdframe(TTree *atree, std::string outfilename)
-:_rd(*atree), _jsonOK(false),_outfilename(outfilename)
-	, _outrootfile(0), _rlm(_rd)
-	, _rnt(&_rlm) //PDFWeights(103, 0.0) 
+	: _rd(*atree), _jsonOK(false), _outfilename(outfilename), _outrootfile(0), _rlm(_rd), _rnt(&_rlm) // PDFWeights(103, 0.0)
 {
-	_atree=atree;
-	//cout<< " run year=====" << _year <<endl;
-	// if genWeight column exists, then it is not real data
+	_atree = atree;
+	// cout<< " run year=====" << _year <<endl;
+	//  if genWeight column exists, then it is not real data
 	//
-
 }
 
-NanoAODAnalyzerrdframe::~NanoAODAnalyzerrdframe() {
+NanoAODAnalyzerrdframe::~NanoAODAnalyzerrdframe()
+{
 	// TODO Auto-generated destructor stub
 }
 
 bool NanoAODAnalyzerrdframe::isDefined(string v)
 {
 	auto result = std::find(_originalvars.begin(), _originalvars.end(), v);
-	if (result != _originalvars.end()) return true;
-	else return false;
+	if (result != _originalvars.end())
+		return true;
+	else
+		return false;
 }
 
 void NanoAODAnalyzerrdframe::setTree(TTree *t, std::string outfilename)
@@ -61,59 +61,55 @@ void NanoAODAnalyzerrdframe::setTree(TTree *t, std::string outfilename)
 	this->setupAnalysis();
 }
 
-
 void NanoAODAnalyzerrdframe::setupAnalysis()
 {
 	// Event weight for data it's always one. For MC, it depends on the sign
- 	//cout<<"year===="<< _year<< "==runtype=== " <<  _runtype <<endl;
+	// cout<<"year===="<< _year<< "==runtype=== " <<  _runtype <<endl;
 	_rlm = _rlm.Define("one", "1.0");
 	if (_isData && !isDefined("evWeight"))
 	{
-		_rlm = _rlm.Define("evWeight", [](){
-				return 1.0;
-			}, {} );
+		_rlm = _rlm.Define("evWeight", []()
+						   { return 1.0; }, {});
 	}
 	// Store PDF sum of weights
-   /*if(!_isData){
-            auto storeWeights = [this](floats weights)->floats {
+	/*if(!_isData){
+			 auto storeWeights = [this](floats weights)->floats {
 
-                for (unsigned int i=0; i<weights.size(); i++)
-                    PDFWeights[i] += weights[i];
+				 for (unsigned int i=0; i<weights.size(); i++)
+					 PDFWeights[i] += weights[i];
 
-                return PDFWeights;
-            };
-            try {
-                _rlm.Foreach(storeWeights, {"LHEPdfWeight"});
-            } catch (exception& e) {
-                cout << e.what() << endl;
-                cout << "No PDF weight in this root file!" << endl;
-            }
-	}*/
-	
+				 return PDFWeights;
+			 };
+			 try {
+				 _rlm.Foreach(storeWeights, {"LHEPdfWeight"});
+			 } catch (exception& e) {
+				 cout << e.what() << endl;
+				 cout << "No PDF weight in this root file!" << endl;
+			 }
+	 }*/
 
 	setupCuts_and_Hists();
 	setupTree();
 }
 
-
 bool NanoAODAnalyzerrdframe::readgoodjson(string goodjsonfname)
 {
 	auto isgoodjsonevent = [this](unsigned int runnumber, unsigned int lumisection)
+	{
+		auto key = std::to_string(runnumber).c_str();
+
+		bool goodeventflag = false;
+
+		if (jsonroot.contains(key))
 		{
-			auto key = std::to_string(runnumber).c_str();
-
-			bool goodeventflag = false;
-
-
-			if (jsonroot.contains(key))
+			for (auto &v : jsonroot[key])
 			{
-				for (auto &v: jsonroot[key])
-				{
-					if (v[0]<=lumisection && lumisection <=v[1]) goodeventflag = true;
-				}
+				if (v[0] <= lumisection && lumisection <= v[1])
+					goodeventflag = true;
 			}
-			return goodeventflag;
-		};
+		}
+		return goodeventflag;
+	};
 
 	if (goodjsonfname != "")
 	{
@@ -122,11 +118,11 @@ bool NanoAODAnalyzerrdframe::readgoodjson(string goodjsonfname)
 
 		if (jsoninfile.good())
 		{
-			//using rapidjson
-			//rapidjson::IStreamWrapper s(jsoninfile);
-			//jsonroot.ParseStream(s);
+			// using rapidjson
+			// rapidjson::IStreamWrapper s(jsoninfile);
+			// jsonroot.ParseStream(s);
 
-			//using jsoncpp
+			// using jsoncpp
 			jsoninfile >> jsonroot;
 			_rlm = _rlm.Define("goodjsonevent", isgoodjsonevent, {"run", "luminosityBlock"}).Filter("goodjsonevent");
 			_jsonOK = true;
@@ -157,92 +153,88 @@ bool NanoAODAnalyzerrdframe::readgoodjson(string goodjsonfname)
 // 				.Define("Sel_fatjet4vecs", ::generate_4vec, {"Sel_fatjetpt", "Sel_fatjeteta", "Sel_fatjetphi", "Sel_fatjetmass"});
 // }
 
-
-void NanoAODAnalyzerrdframe::setupJetMETCorrection(string fname, string jettag) //data
+void NanoAODAnalyzerrdframe::setupJetMETCorrection(string fname, string jettag) // data
 {
 
-    cout << "SETUP JETMET correction" << endl;
-	// read from file 
-	_correction_jerc = correction::CorrectionSet::from_file(fname);//jercfname=json
-	assert(_correction_jerc->validate()); //the assert functionality : check if the parameters passed to a function are valid =1:true
+	cout << "SETUP JETMET correction" << endl;
+	// read from file
+	_correction_jerc = correction::CorrectionSet::from_file(fname); // jercfname=json
+	assert(_correction_jerc->validate());							// the assert functionality : check if the parameters passed to a function are valid =1:true
 	// correction type(jobconfiganalysis.py)
-	cout<<"JERC JSON file : " << fname<<endl;
-	_jetCorrector = _correction_jerc->compound().at(jettag);//jerctag#JSON (JEC,compound)compoundLevel="L1L2L3Res"
-	cout<< "JET tag in JSON : " << jettag << endl;
+	cout << "JERC JSON file : " << fname << endl;
+	_jetCorrector = _correction_jerc->compound().at(jettag); // jerctag#JSON (JEC,compound)compoundLevel="L1L2L3Res"
+	cout << "JET tag in JSON : " << jettag << endl;
 	_jetCorrectionUnc = _correction_jerc->at(_jercunctag);
-	cout<< "JET uncertainity tag in JSON  : " << _jercunctag << endl;
-	std::cout<< "================================//=================================" << std::endl;
+	cout << "JET uncertainity tag in JSON  : " << _jercunctag << endl;
+	std::cout << "================================//=================================" << std::endl;
 }
 
-void NanoAODAnalyzerrdframe::applyJetMETCorrections() //data
+void NanoAODAnalyzerrdframe::applyJetMETCorrections() // data
 {
-    cout << "apply JETMET correction" << endl;
+	cout << "apply JETMET correction" << endl;
 
-	auto appcorrlambdaf = [this](floats jetpts, floats jetetas, floats jetAreas, floats jetrawf, float rho)->floats
+	auto appcorrlambdaf = [this](floats jetpts, floats jetetas, floats jetAreas, floats jetrawf, float rho) -> floats
 	{
 		floats corrfactors;
 		corrfactors.reserve(jetpts.size());
-		for (auto i =0; i<int(jetpts.size()); i++)
+		for (auto i = 0; i < int(jetpts.size()); i++)
 		{
-			float rawjetpt = jetpts[i]*(1.0-jetrawf[i]);
-			//std::cout<<"jetpt===="<< jetpts[i] <<std::endl;
-			//float jet_rawmass = jet_mass * (1 - jet.rawFactor)
-			//std::cout<<"rawjetpt===="<< rawjetpt <<std::endl;
+			float rawjetpt = jetpts[i] * (1.0 - jetrawf[i]);
+			// std::cout<<"jetpt===="<< jetpts[i] <<std::endl;
+			// float jet_rawmass = jet_mass * (1 - jet.rawFactor)
+			// std::cout<<"rawjetpt===="<< rawjetpt <<std::endl;
 			float corrfactor = _jetCorrector->evaluate({jetAreas[i], jetetas[i], rawjetpt, rho});
-			//std::cout<<"correction factor===="<< corrfactor <<std::endl;
+			// std::cout<<"correction factor===="<< corrfactor <<std::endl;
 			corrfactors.emplace_back(rawjetpt * corrfactor);
-			//std::cout<<"rawjetpt* corrfactor ===="<< rawjetpt * corrfactor <<std::endl;
-
+			// std::cout<<"rawjetpt* corrfactor ===="<< rawjetpt * corrfactor <<std::endl;
 		}
-        //std::cout<<"Facsss===="<< corrfactors <<std::endl;
+		// std::cout<<"Facsss===="<< corrfactors <<std::endl;
 		return corrfactors;
-		
 	};
 
-	auto jecuncertaintylambdaf= [this](floats jetpts, floats jetetas, floats jetAreas, floats jetrawf, float rho)->floats
+	auto jecuncertaintylambdaf = [this](floats jetpts, floats jetetas, floats jetAreas, floats jetrawf, float rho) -> floats
+	{
+		floats uncertainties;
+		uncertainties.reserve(jetpts.size());
+		for (auto i = 0; i < int(jetpts.size()); i++)
 		{
-			floats uncertainties;
-			uncertainties.reserve(jetpts.size());
-			for (auto i =0; i<int(jetpts.size()); i++)
-			{
-				float rawjetpt = jetpts[i]*(1.0-jetrawf[i]);
-                
-				float corrfactor = _jetCorrector->evaluate({jetAreas[i], jetetas[i], rawjetpt, rho});
-				//print("\njet SF for shape correction:")
-				//print(f"SF: {corrfactor}")
-                
-				float unc = _jetCorrectionUnc->evaluate({corrfactor*rawjetpt, jetetas[i]});
-				uncertainties.emplace_back(unc);
+			float rawjetpt = jetpts[i] * (1.0 - jetrawf[i]);
 
-			}
-			return uncertainties;
-		};
+			float corrfactor = _jetCorrector->evaluate({jetAreas[i], jetetas[i], rawjetpt, rho});
+			// print("\njet SF for shape correction:")
+			// print(f"SF: {corrfactor}")
 
-	auto metcorrlambdaf = [](float met, float metphi, floats jetptsbefore, floats jetptsafter, floats jetphis)->float
+			float unc = _jetCorrectionUnc->evaluate({corrfactor * rawjetpt, jetetas[i]});
+			uncertainties.emplace_back(unc);
+		}
+		return uncertainties;
+	};
+
+	auto metcorrlambdaf = [](float met, float metphi, floats jetptsbefore, floats jetptsafter, floats jetphis) -> float
 	{
 		auto metx = met * cos(metphi);
 		auto mety = met * sin(metphi);
-		for (auto i=0; i<int(jetphis.size()); i++)
+		for (auto i = 0; i < int(jetphis.size()); i++)
 		{
-			if (jetptsafter[i]>15.0)
+			if (jetptsafter[i] > 15.0)
 			{
-				metx -= (jetptsafter[i] - jetptsbefore[i])*cos(jetphis[i]);
-				mety -= (jetptsafter[i] - jetptsbefore[i])*sin(jetphis[i]);
+				metx -= (jetptsafter[i] - jetptsbefore[i]) * cos(jetphis[i]);
+				mety -= (jetptsafter[i] - jetptsbefore[i]) * sin(jetphis[i]);
 			}
 		}
-		return float(sqrt(metx*metx + mety*mety));
+		return float(sqrt(metx * metx + mety * mety));
 	};
 
-	auto metphicorrlambdaf = [](float met, float metphi, floats jetptsbefore, floats jetptsafter, floats jetphis)->float
+	auto metphicorrlambdaf = [](float met, float metphi, floats jetptsbefore, floats jetptsafter, floats jetphis) -> float
 	{
 		auto metx = met * cos(metphi);
 		auto mety = met * sin(metphi);
-		for (auto i=0; i<int(jetphis.size()); i++)
+		for (auto i = 0; i < int(jetphis.size()); i++)
 		{
-			if (jetptsafter[i]>15.0)
+			if (jetptsafter[i] > 15.0)
 			{
-				metx -= (jetptsafter[i] - jetptsbefore[i])*cos(jetphis[i]);
-				mety -= (jetptsafter[i] - jetptsbefore[i])*sin(jetphis[i]);
+				metx -= (jetptsafter[i] - jetptsbefore[i]) * cos(jetphis[i]);
+				mety -= (jetptsafter[i] - jetptsbefore[i]) * sin(jetphis[i]);
 			}
 		}
 		return float(atan2(mety, metx));
@@ -250,7 +242,7 @@ void NanoAODAnalyzerrdframe::applyJetMETCorrections() //data
 
 	if (_jetCorrector != 0)
 	{
-        //cout << "jetcorrector==" <<_jetCorrector << endl;
+		// cout << "jetcorrector==" <<_jetCorrector << endl;
 
 		_rlm = _rlm.Define("Jet_pt_corr", appcorrlambdaf, {"Jet_pt", "Jet_eta", "Jet_area", "Jet_rawFactor", "fixedGridRhoFastjetAll"});
 		_rlm = _rlm.Define("Jet_pt_relerror", jecuncertaintylambdaf, {"Jet_pt", "Jet_eta", "Jet_area", "Jet_rawFactor", "fixedGridRhoFastjetAll"});
@@ -263,381 +255,466 @@ void NanoAODAnalyzerrdframe::applyJetMETCorrections() //data
 		_rlm = _rlm.Define("MET_pt_corr_down", metcorrlambdaf, {"MET_pt", "MET_phi", "Jet_pt", "Jet_pt_corr_down", "Jet_phi"});
 		_rlm = _rlm.Define("MET_phi_corr_down", metphicorrlambdaf, {"MET_pt", "MET_phi", "Jet_pt", "Jet_pt_corr_down", "Jet_phi"});
 	}
-
 }
 
-void NanoAODAnalyzerrdframe::applyMuPtCorrection() //data and MC
+void NanoAODAnalyzerrdframe::applyMuPtCorrection() // data and MC
 {
-  cout << "apply Muon Pt correction" << endl;
-  
-  if(_isData){
-    
-    auto lambdaf_data = [this](const ints mu_charges, const floats mu_pts, const floats mu_etas, const floats mu_phis)->floats
-      {
-	floats corrMuPts;
-	corrMuPts.reserve(mu_pts.size());
-	//std::cout<<"Number of muons: "<<mu_pts.size()<<std::endl;
-	for (auto i =0; i<int(mu_pts.size()); i++)
-	  {
-	    float mu_pt_uncorr = mu_pts[i];
-	    //std::cout<<"The Muon Uncorrected pt"<< mu_pt_uncorr<<std::endl;	    
-	    float corrfactor = 1;
-	    corrfactor = _Roch_corr.kScaleDT(mu_charges[i], mu_pt_uncorr, mu_etas[i], mu_phis[i], 0, 0);
-	    //std::cout<<"Muon pt correction factor===="<< corrfactor <<std::endl;
-	    corrMuPts.emplace_back(mu_pt_uncorr * corrfactor);
-	  }    
-	return corrMuPts;
-	
-      };
-    
-    
-    _rlm = _rlm.Define("Muon_pt_corr", lambdaf_data, {"Muon_charge", "Muon_pt", "Muon_eta", "Muon_phi"});
-  }
-  else{
-  
-    auto lambdaf_mc = [this](const ints mu_charges, const floats mu_pts, const floats mu_etas, const floats mu_phis, const ints muon_genIdx, const floats gen_pts,  const ints nls)->floats
-      {
-	floats corrMuPts;
-	corrMuPts.reserve(mu_pts.size());
-	//std::cout <<"Number of muons: "<<mu_pts.size()<<std::endl;
-	for (int i=0; i<int(mu_pts.size()); i++)
-	  {
-	    float corrfactor = 1;
-	    float mu_pt_uncorr = mu_pts[i];
-	    //std::cout<<"The Muon Uncorrected pt"<< mu_pt_uncorr<<std::endl;
-	    if ( muon_genIdx[i] != -1 ){
-	      corrfactor = _Roch_corr.kSpreadMC(mu_charges[i], mu_pt_uncorr, mu_etas[i], mu_phis[i], gen_pts[muon_genIdx[i]], 0, 0);
-	    }
-	    else{
-	      float rand = gRandom->Rndm();
-	      corrfactor = _Roch_corr.kSmearMC(mu_charges[i], mu_pt_uncorr, mu_etas[i], mu_phis[i], nls[i], rand, 0, 0);
-	    }
-	    //std::cout<<"Muon corrected Pt ===="<< corrfactor * mu_pt_uncorr <<std::endl;
-	    corrMuPts.emplace_back(corrfactor * mu_pt_uncorr);
-	  }
-	return corrMuPts;
-      };
-    _rlm = _rlm.Define("Muon_gen_pt", "GenPart_pt[Muon_genPartIdx]");
-    _rlm = _rlm.Define("Muon_pt_corr", lambdaf_mc, {"Muon_charge", "Muon_pt", "Muon_eta", "Muon_phi", "Muon_genPartIdx", "GenPart_pt", "Muon_nTrackerLayers"});
-    
-  }
+	cout << "apply Muon Pt correction" << endl;
+
+	if (_isData)
+	{
+
+		auto lambdaf_data = [this](const ints mu_charges, const floats mu_pts, const floats mu_etas, const floats mu_phis) -> floats
+		{
+			floats corrMuPts;
+			corrMuPts.reserve(mu_pts.size());
+			// std::cout<<"Number of muons: "<<mu_pts.size()<<std::endl;
+			for (auto i = 0; i < int(mu_pts.size()); i++)
+			{
+				float mu_pt_uncorr = mu_pts[i];
+				// std::cout<<"The Muon Uncorrected pt"<< mu_pt_uncorr<<std::endl;
+				float corrfactor = 1;
+				corrfactor = _Roch_corr.kScaleDT(mu_charges[i], mu_pt_uncorr, mu_etas[i], mu_phis[i], 0, 0);
+				// std::cout<<"Muon pt correction factor===="<< corrfactor <<std::endl;
+				corrMuPts.emplace_back(mu_pt_uncorr * corrfactor);
+			}
+			return corrMuPts;
+		};
+
+		_rlm = _rlm.Define("Muon_pt_corr", lambdaf_data, {"Muon_charge", "Muon_pt", "Muon_eta", "Muon_phi"});
+	}
+	else
+	{
+
+		auto lambdaf_mc = [this](const ints mu_charges, const floats mu_pts, const floats mu_etas, const floats mu_phis, const ints muon_genIdx, const floats gen_pts, const ints nls) -> floats
+		{
+			floats corrMuPts;
+			corrMuPts.reserve(mu_pts.size());
+			// std::cout <<"Number of muons: "<<mu_pts.size()<<std::endl;
+			for (int i = 0; i < int(mu_pts.size()); i++)
+			{
+				float corrfactor = 1;
+				float mu_pt_uncorr = mu_pts[i];
+				// std::cout<<"The Muon Uncorrected pt"<< mu_pt_uncorr<<std::endl;
+				if (muon_genIdx[i] != -1)
+				{
+					corrfactor = _Roch_corr.kSpreadMC(mu_charges[i], mu_pt_uncorr, mu_etas[i], mu_phis[i], gen_pts[muon_genIdx[i]], 0, 0);
+				}
+				else
+				{
+					float rand = gRandom->Rndm();
+					corrfactor = _Roch_corr.kSmearMC(mu_charges[i], mu_pt_uncorr, mu_etas[i], mu_phis[i], nls[i], rand, 0, 0);
+				}
+				// std::cout<<"Muon corrected Pt ===="<< corrfactor * mu_pt_uncorr <<std::endl;
+				corrMuPts.emplace_back(corrfactor * mu_pt_uncorr);
+			}
+			return corrMuPts;
+		};
+		_rlm = _rlm.Define("Muon_gen_pt", "GenPart_pt[Muon_genPartIdx]");
+		_rlm = _rlm.Define("Muon_pt_corr", lambdaf_mc, {"Muon_charge", "Muon_pt", "Muon_eta", "Muon_phi", "Muon_genPartIdx", "GenPart_pt", "Muon_nTrackerLayers"});
+	}
 }
 
+void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufname, string putag, string btvfname, string btvtype, string muon_roch_fname, string muon_fname, string muonhlttype, string muonrecotype, string muonidtype, string muonisotype, string electron_fname, string electron_reco_type, string electron_id_type, string photon_fname, string photon_id_type, string jercfname, string jerctag, string jercunctag)
 
-
-void NanoAODAnalyzerrdframe::setupCorrections(string goodjsonfname, string pufname, string putag, string btvfname, string btvtype, string muon_roch_fname, string muon_fname, string muonhlttype, string muonrecotype,string muonidtype,string muonisotype,string electron_fname, string electron_reco_type, string electron_id_type,string photon_fname,string photon_id_type, string jercfname, string jerctag, string jercunctag)
-
-//In this function the correction is evaluated for each jet, Muon, Electron and MET. The correction depends on the momentum, pseudorapidity, energy, and cone area of the jet, as well as the value of “rho” (the average momentum per area) and number of interactions in the event. The correction is used to scale the momentum of the jet.
+// In this function the correction is evaluated for each jet, Muon, Electron and MET. The correction depends on the momentum, pseudorapidity, energy, and cone area of the jet, as well as the value of “rho” (the average momentum per area) and number of interactions in the event. The correction is used to scale the momentum of the jet.
 {
-    cout << "set up Corrections!" << endl;
-	if (_isData) _jsonOK = readgoodjson(goodjsonfname); // read golden json file
+	cout << "set up Corrections!" << endl;
+	if (_isData)
+		_jsonOK = readgoodjson(goodjsonfname); // read golden json file
 	std::cout << "Rochester correction files: " << muon_roch_fname << std::endl;
 	_Roch_corr.init(muon_roch_fname);
-	if (!_isData) {
-	  // ---------------------------------------using correctionlib----------------------------------------
+	if (!_isData)
+	{
+		// ---------------------------------------using correctionlib----------------------------------------
 
-	  //----------------------------------------Muon corrections------------------------------------
-	  _correction_muon = correction::CorrectionSet::from_file(muon_fname);
-	  _muon_hlt_type = muonhlttype;
-	  _muon_reco_type = muonrecotype;
-	  _muon_id_type = muonidtype;
-	  _muon_iso_type = muonisotype;
-	  std::cout<< "================================//=================================" << std::endl;
-	  cout<< "MUON JSON FILE : " <<  muon_fname << endl;
-	  cout<< "MUON HLT type in JSON  : " << _muon_hlt_type << endl;
-	  cout<< "MUON RECO type in JSON  : " << _muon_reco_type << endl;
-	  cout<< "MUON ID type in JSON  : " << _muon_id_type << endl;
-	  cout<< "MUON ISO type in JSON  : " << _muon_iso_type << endl;
-	  assert(_correction_muon->validate());
-	  
-	  //------------------------------------Electron corrections------------------------------------------------
-	  _correction_electron = correction::CorrectionSet::from_file(electron_fname);
-	  _electron_reco_type = electron_reco_type;
-	  _electron_id_type = electron_id_type;
-	  std::cout<< "================================//=================================" << std::endl;
-	  cout<< "ELECTRON JSON FILE : " << electron_fname << endl;
-	  cout<< "ELECTRON RECO type in JSON  : " << _electron_reco_type << endl;
-	  cout<< "ELECTRONID type in JSON  : " << _electron_id_type << endl;
-	  cout<< "================================//=================================" << std::endl;
-	  assert(_correction_electron->validate());
+		//----------------------------------------Muon corrections------------------------------------
+		_correction_muon = correction::CorrectionSet::from_file(muon_fname);
+		_muon_hlt_type = muonhlttype;
+		_muon_reco_type = muonrecotype;
+		_muon_id_type = muonidtype;
+		_muon_iso_type = muonisotype;
+		std::cout << "================================//=================================" << std::endl;
+		cout << "MUON JSON FILE : " << muon_fname << endl;
+		cout << "MUON HLT type in JSON  : " << _muon_hlt_type << endl;
+		cout << "MUON RECO type in JSON  : " << _muon_reco_type << endl;
+		cout << "MUON ID type in JSON  : " << _muon_id_type << endl;
+		cout << "MUON ISO type in JSON  : " << _muon_iso_type << endl;
+		assert(_correction_muon->validate());
 
-	  //----------------------------------Photon corrections----------------------------------------------
-	  _correction_photon = correction::CorrectionSet::from_file(photon_fname);
-	  _photon_id_type = photon_id_type;
-	  std::cout<< "================================//=================================" << std::endl;
-	  cout<< "PHOTON JSON FILE : " << photon_fname << endl;
-	  cout<< "PHOTON ID type in JSON  : " << _photon_id_type << endl;
-	  cout<< "================================//=================================" << std::endl;
-	  assert(_correction_photon->validate());
-	  
-	  //-----------------------------------------btag corrections---------------------------------------------
-	  _correction_btag1 = correction::CorrectionSet::from_file(btvfname);
-	  _btvtype = btvtype;
-	  assert(_correction_btag1->validate());
-	  
-	  //------------------------------------- pile up weights---------------------------------------------
-	  _correction_pu = correction::CorrectionSet::from_file(pufname);
-	  assert(_correction_pu->validate());
-	  _putag = putag;
-	  auto punominal = [this](float x) { return pucorrection(_correction_pu, _putag, "nominal", x); };
-	  auto puplus = [this](float x) { return pucorrection(_correction_pu, _putag, "up", x); };
-	  auto puminus = [this](float x) { return pucorrection(_correction_pu, _putag, "down", x); };
-	  
-	  if (!isDefined("puWeight")) _rlm = _rlm.Define("puWeight", punominal, {"Pileup_nTrueInt"});
-	  if (!isDefined("puWeight_plus")) _rlm = _rlm.Define("puWeight_plus", puplus, {"Pileup_nTrueInt"});
-	  if (!isDefined("puWeight_minus")) _rlm = _rlm.Define("puWeight_minus", puminus, {"Pileup_nTrueInt"});
-	  
-	  
-	  if (!isDefined("pugenWeight"))
-	    {
-	      _rlm = _rlm.Define("pugenWeight", [this](float x, float y){
-		  return x*y;
-		// },{"Generator_weight","puWeight"});
-		 } ,{"genWeight", "puWeight"});
+		//------------------------------------Electron corrections------------------------------------------------
+		_correction_electron = correction::CorrectionSet::from_file(electron_fname);
+		_electron_reco_type = electron_reco_type;
+		_electron_id_type = electron_id_type;
+		std::cout << "================================//=================================" << std::endl;
+		cout << "ELECTRON JSON FILE : " << electron_fname << endl;
+		cout << "ELECTRON RECO type in JSON  : " << _electron_reco_type << endl;
+		cout << "ELECTRONID type in JSON  : " << _electron_id_type << endl;
+		cout << "================================//=================================" << std::endl;
+		assert(_correction_electron->validate());
 
-	    }
+		//----------------------------------Photon corrections----------------------------------------------
+		_correction_photon = correction::CorrectionSet::from_file(photon_fname);
+		_photon_id_type = photon_id_type;
+		std::cout << "================================//=================================" << std::endl;
+		cout << "PHOTON JSON FILE : " << photon_fname << endl;
+		cout << "PHOTON ID type in JSON  : " << _photon_id_type << endl;
+		cout << "================================//=================================" << std::endl;
+		assert(_correction_photon->validate());
+
+		//-----------------------------------------btag corrections---------------------------------------------
+		_correction_btag1 = correction::CorrectionSet::from_file(btvfname);
+		_btvtype = btvtype;
+		assert(_correction_btag1->validate());
+
+		//------------------------------------- pile up weights---------------------------------------------
+		_correction_pu = correction::CorrectionSet::from_file(pufname);
+		assert(_correction_pu->validate());
+		_putag = putag;
+		auto punominal = [this](float x)
+		{ return pucorrection(_correction_pu, _putag, "nominal", x); };
+		auto puplus = [this](float x)
+		{ return pucorrection(_correction_pu, _putag, "up", x); };
+		auto puminus = [this](float x)
+		{ return pucorrection(_correction_pu, _putag, "down", x); };
+
+		if (!isDefined("puWeight"))
+			_rlm = _rlm.Define("puWeight", punominal, {"Pileup_nTrueInt"});
+		if (!isDefined("puWeight_plus"))
+			_rlm = _rlm.Define("puWeight_plus", puplus, {"Pileup_nTrueInt"});
+		if (!isDefined("puWeight_minus"))
+			_rlm = _rlm.Define("puWeight_minus", puminus, {"Pileup_nTrueInt"});
+
+		if (!isDefined("pugenWeight"))
+		{
+			_rlm = _rlm.Define("pugenWeight", [this](float x, float y)
+							   {
+								   return x * y;
+								   // },{"Generator_weight","puWeight"});
+							   },
+							   {"genWeight", "puWeight"});
+		}
 		//  _rlm = _rlm.Define("GenPartpt", "GenPart_pt")
-        //            .Define("GenParteta", "GenPart_eta")
-        //            .Define("GenPartphi", "GenPart_phi")
-        //            .Define("GenPartmass", "GenPart_mass")
-        //            .Define("GenPartpdgId", "GenPart_pdgId");
-                //    .Define("nGenPart", "nGenPart");
+		//            .Define("GenParteta", "GenPart_eta")
+		//            .Define("GenPartphi", "GenPart_phi")
+		//            .Define("GenPartmass", "GenPart_mass")
+		//            .Define("GenPartpdgId", "GenPart_pdgId");
+		//    .Define("nGenPart", "nGenPart");
 	}
 	_jerctag = jerctag;
 	_jercunctag = jercunctag;
-	
+
 	setupJetMETCorrection(jercfname, _jerctag);
 	applyJetMETCorrections();
 	applyMuPtCorrection();
 }
 
-ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateBTagSF(RNode _rlm, std::vector<std::string> Jets_vars_names, int _case, std::string output_var="btag_SF_")
+ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateBTagSF(RNode _rlm, std::vector<std::string> Jets_vars_names, int _case, std::string output_var = "btag_SF_")
 {
 
-  //case1 : fixedWP correction with mujets (here medium WP) # evaluate('systematic', 'working_point', 'flavor', 'abseta', 'pt')
-  //for case 1  use one of the btvtype = "deepJet_mujets " , deepJet_comb" for b/c , deepJet_incl" for lightjets 
-  if(_case==1){
+	// case1 : fixedWP correction with mujets (here medium WP) # evaluate('systematic', 'working_point', 'flavor', 'abseta', 'pt')
+	// for case 1  use one of the btvtype = "deepCSV_mujets " , deepCSV_comb" for b/c , deepCSV_incl" for lightjets
+	if (_case == 1)
+	{
 
-      //======================================================================================================================================
-      //>>>> function to calculate event weights for MC events, incorporating fixedWP correction with mujets (here medium WP)and systematics with
-      //all variations seperately (up/down/correlated/uncorrelated/)
-      //The weight for each variation is stored in separate columns (btag_SF_central,btag_SF_up, btag_SF_down, etc.). 
-      // btagWeight_case1_central  is used to recalculate the eventweight. Other variations are intended for systematics calculations.
-      //======================================================================================================================================
-    auto btagweightgenerator_case1 = [this](const ROOT::VecOps::RVec<int>& hadflav, const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts, const std::string& variation) -> float {
-      double btagWeight = 1.0;
-      for (std::size_t i = 0; i < pts.size(); i++) {
-	//std::cout<<"The BTag flavor"<< hadflav[i]<< " BTagJet eta:"<< etas[i]<<" BTagJet pt"<< pts[i]<<std::endl;
-	if(std::abs(etas[i])>2.4999 || pts[i]<30.000001) continue;
-	if (hadflav[i] != 0) {
-	  double bcjets_weights = _correction_btag1->at("deepJet_mujets")->evaluate({variation, "M", hadflav[i], std::fabs(etas[i]), pts[i]});
-	  btagWeight *= bcjets_weights;
-	} else {
-	  double lightjets_weights = _correction_btag1->at("deepJet_incl")->evaluate({variation, "M", hadflav[i], std::fabs(etas[i]), pts[i]});
-	  btagWeight *= lightjets_weights;
-	}
-      }
-      return btagWeight;
-    };
-    // btag weight for each variation individually
-    std::vector<std::string> variations = {"central", "up", "down", "up_correlated", "down_correlated", "uncorrelated"}; 
-    for (const std::string& variation : variations) {
-      std::string column_name = output_var + variation;
-      _rlm = _rlm.Define(column_name, [btagweightgenerator_case1, variation](const ROOT::VecOps::RVec<int>& hadflav, const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+		//======================================================================================================================================
+		//>>>> function to calculate event weights for MC events, incorporating fixedWP correction with mujets (here medium WP)and systematics with
+		// all variations seperately (up/down/correlated/uncorrelated/)
+		// The weight for each variation is stored in separate columns (btag_SF_central,btag_SF_up, btag_SF_down, etc.).
+		// btagWeight_case1_central  is used to recalculate the eventweight. Other variations are intended for systematics calculations.
+		//======================================================================================================================================
+		auto btagweightgenerator_case1 = [this](const ROOT::VecOps::RVec<int> &hadflav, const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts, const std::string &variation) -> float
+		{
+			double btagWeight = 1.0;
+			for (std::size_t i = 0; i < pts.size(); i++)
+			{
+				// std::cout<<"The BTag flavor"<< hadflav[i]<< " BTagJet eta:"<< etas[i]<<" BTagJet pt"<< pts[i]<<std::endl;
+				if (std::abs(etas[i]) > 2.4999 || pts[i] < 30.000001)
+					continue;
+				if (hadflav[i] != 0)
+				{
+					double bcjets_weights = _correction_btag1->at("deepCSV_comb")->evaluate({variation, "M", hadflav[i], std::fabs(etas[i]), pts[i]});
+					btagWeight *= bcjets_weights;
+				}
+				else
+				{
+					double lightjets_weights = _correction_btag1->at("deepCSV_incl")->evaluate({variation, "M", hadflav[i], std::fabs(etas[i]), pts[i]});
+					btagWeight *= lightjets_weights;
+				}
+			}
+			return btagWeight;
+		};
+		// btag weight for each variation individually
+		std::vector<std::string> variations = {"central", "up", "down", "up_correlated", "down_correlated", "uncorrelated"};
+		for (const std::string &variation : variations)
+		{
+			std::string column_name = output_var + variation;
+			_rlm = _rlm.Define(column_name, [btagweightgenerator_case1, variation](const ROOT::VecOps::RVec<int> &hadflav, const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts)
+							   {
 	  float weight = btagweightgenerator_case1(hadflav, etas, pts, variation);// Get the weight for the corresponding variation
-	  return weight;
-	}, Jets_vars_names); //after all cuts, remove overlapped
-      std::cout<< "BJet SF column name: " << column_name << std::endl;
-      if(isDefined("column_name")){
-	std::cout<< "BJet SF column: " << column_name << " is saved in the Node."<< std::endl;
-      }
+	  return weight; }, Jets_vars_names); // after all cuts, remove overlapped
+			std::cout << "BJet SF column name: " << column_name << std::endl;
+			if (isDefined("column_name"))
+			{
+				std::cout << "BJet SF column: " << column_name << " is saved in the Node." << std::endl;
+			}
+		}
 
-    }
-    
-    //======================================================================================================================================
-    //case3 - Shape correction
-  }
-  else if(_case==3){
-    //for case 3 : use btvtype': 'deepJet_shape' in jobconfiganalysis.py
-    cout<<"case 3 Shape correction B tagging SF for MC "<<endl;
-    //======================================================================================================================================
-    //>>>> function to calculate event weights for MC events,based on DeepJet algorithm, incorporating shape correction with central variation
-    //======================================================================================================================================
-    auto btagweightgenerator3= [this](ints &hadflav, floats &etas, floats &pts, floats &btags)->float
-      {
-	double bweight=1.0;
-	
-	for (auto i=0; i<int(pts.size()); i++)
-	  {
-	    if(std::abs(etas[i])>2.5 || pts[i]<30.000001) continue;
-	    double w = _correction_btag1->at(_btvtype)->evaluate({"central", int(hadflav[i]), fabs(float(etas[i])), float(pts[i]), float(btags[i])});
-	    bweight *= w;
-	  }
-	return bweight;
-      };
-    
-    cout<<"Generate case3 b-tagging weight"<<endl;
-    std::string column_name = output_var + "case3";
-    _rlm = _rlm.Define(column_name, btagweightgenerator3, Jets_vars_names);
-    //Total event weight after shape correction
-    //_rlm = _rlm.Define("evWeight", "pugenWeight*btagWeight_case3");
-    std::cout<< "BJet SF column name: " << column_name << std::endl;
+		//======================================================================================================================================
+		// case3 - Shape correction
+	}
+	else if (_case == 3)
+	{
+		// for case 3 : use btvtype': 'deepJet_shape' in jobconfiganalysis.py
+		cout << "case 3 Shape correction B tagging SF for MC " << endl;
+		//======================================================================================================================================
+		//>>>> function to calculate event weights for MC events,based on DeepJet algorithm, incorporating shape correction with central variation
+		//======================================================================================================================================
+		auto btagweightgenerator3 = [this](ints &hadflav, floats &etas, floats &pts, floats &btags) -> float
+		{
+			double bweight = 1.0;
 
-  }
-  return _rlm;
+			for (auto i = 0; i < int(pts.size()); i++)
+			{
+				if (std::abs(etas[i]) > 2.5 || pts[i] < 30.000001)
+					continue;
+				double w = _correction_btag1->at(_btvtype)->evaluate({"central", int(hadflav[i]), fabs(float(etas[i])), float(pts[i]), float(btags[i])});
+				bweight *= w;
+			}
+			return bweight;
+		};
+
+		cout << "Generate case3 b-tagging weight" << endl;
+		std::string column_name = output_var + "case3";
+		_rlm = _rlm.Define(column_name, btagweightgenerator3, Jets_vars_names);
+		// Total event weight after shape correction
+		//_rlm = _rlm.Define("evWeight", "pugenWeight*btagWeight_case3");
+		std::cout << "BJet SF column name: " << column_name << std::endl;
+	}
+	return _rlm;
 }
 
-
-ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateMuSF(RNode _rlm, std::vector<std::string> Muon_vars, std::string output_var="muon_SF_")
+ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateMuSF(RNode _rlm, std::vector<std::string> Muon_vars, std::string output_var = "muon_SF_")
 {
-    //=====================================================Muon SF and eventweight============================================================// 
-    //muontype= for thight: NUM_TightID_DEN_genTracks //for medium: NUM_MediumID_DEN_TrackerMuons
-    //Muon MediumID ISO UL type: NUM_TightRelIso_DEN_MediumID && thightID:NUM_TightRelIso_DEN_TightIDandIPCut --> the type can be found in json file
-    //--> As an example Medium wp is used 
-    //===============================================================================================================================================//
-    cout << "muon HLT SF for MC " << endl;
-    auto muon_weightgenerator = [this](const std::string& muon_type, const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts, const std::string& variation) -> float {
-        double muonHLT_w = 1.0;
+	//=====================================================Muon SF and eventweight============================================================//
+	// muontype= for thight: NUM_TightID_DEN_genTracks //for medium: NUM_MediumID_DEN_TrackerMuons
+	// Muon MediumID ISO UL type: NUM_TightRelIso_DEN_MediumID && thightID:NUM_TightRelIso_DEN_TightIDandIPCut --> the type can be found in json file
+	//--> As an example Medium wp is used
+	//===============================================================================================================================================//
+	cout << "muon HLT SF for MC " << endl;
+	auto muon_weightgenerator = [this](const std::string &muon_type, const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts, const std::string &variation) -> float
+	{
+		double muonHLT_w = 1.0;
 		// std::cout << "Year: " << _year << " Runtype: " << _runtype << std::endl;  // Debug print
 
-        for (std::size_t i = 0; i < pts.size(); i++) {
+		for (std::size_t i = 0; i < pts.size(); i++)
+		{
 			// std::cout << "Muon abs_eta:" << std::fabs(etas[i]) << " pt: " << pts[i] << std::endl;
-            try {
-                double w = _correction_muon->at(muon_type)->evaluate({std::to_string(_year) + "_" + _runtype, std::fabs(etas[i]), pts[i], variation}); 
-                muonHLT_w *= w;
-                // std::cout << "Muon type: " << muon_type << " Eta: " << etas[i] << " Pt: " << pts[i] << " Weight: " << w << std::endl;
-            } catch (const std::out_of_range& e) {
-                std::cerr << "Error in muon weight generation: " << e.what() << " for Eta: " << etas[i] << " Pt: " << pts[i] << " Year: " << _year << " Runtype: " << _runtype << std::endl;
-                // throw;
+			try
+			{
+				double w = _correction_muon->at(muon_type)->evaluate({std::to_string(_year) + "_" + _runtype, std::fabs(etas[i]), pts[i], variation});
+				muonHLT_w *= w;
+				// std::cout << "Muon type: " << muon_type << " Eta: " << etas[i] << " Pt: " << pts[i] << " Weight: " << w << std::endl;
+			}
+			catch (const std::out_of_range &e)
+			{
+				std::cerr << "Error in muon weight generation: " << e.what() << " for Eta: " << etas[i] << " Pt: " << pts[i] << " Year: " << _year << " Runtype: " << _runtype << std::endl;
+				// throw;
 				continue;
-            }
-        }
-        return muonHLT_w;
-    };
+			}
+		}
+		return muonHLT_w;
+	};
 
-    //'sf' is nominal, and 'systup' and 'systdown' are up/down variations with total stat+-syst uncertainties. Individual systs are also available (in these cases syst only, not sf +/- syst
-    std::vector<std::string> variations = {"sf", "systup", "systdown", "syst"};
+	//'sf' is nominal, and 'systup' and 'systdown' are up/down variations with total stat+-syst uncertainties. Individual systs are also available (in these cases syst only, not sf +/- syst
+	std::vector<std::string> variations = {"sf", "systup", "systdown", "syst"};
 
-    // Generate MUON HLT weight
-    for (const std::string& variation : variations) {
-        std::string column_name_hlt = output_var + "hlt_" + variation;
-        _rlm = _rlm.Define(column_name_hlt, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+	// Generate MUON HLT weight
+	for (const std::string &variation : variations)
+	{
+		std::string column_name_hlt = output_var + "hlt_" + variation;
+		_rlm = _rlm.Define(column_name_hlt, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts)
+						   {
             float weight = muon_weightgenerator(_muon_hlt_type, etas, pts, variation); // Get the weight for the corresponding variation
-            return weight;
-        }, Muon_vars);
+            return weight; }, Muon_vars);
 
-        std::string column_name_reco = output_var + "reco_" + variation;
-        _rlm = _rlm.Define(column_name_reco, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+		std::string column_name_reco = output_var + "reco_" + variation;
+		_rlm = _rlm.Define(column_name_reco, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts)
+						   {
             float weight = muon_weightgenerator(_muon_reco_type, etas, pts, variation); // Get the weight for the corresponding variation
-            return weight;
-        }, Muon_vars);
+            return weight; }, Muon_vars);
 
-        std::string column_name_id = output_var + "id_" + variation;
-        _rlm = _rlm.Define(column_name_id, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+		std::string column_name_id = output_var + "id_" + variation;
+		_rlm = _rlm.Define(column_name_id, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts)
+						   {
             float weight = muon_weightgenerator(_muon_id_type, etas, pts, variation); // Get the weight for the corresponding variation
-            return weight;
-        }, Muon_vars);
+            return weight; }, Muon_vars);
 
-        std::string column_name_iso = output_var + "iso_" + variation;
-        _rlm = _rlm.Define(column_name_iso, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+		std::string column_name_iso = output_var + "iso_" + variation;
+		_rlm = _rlm.Define(column_name_iso, [this, muon_weightgenerator, variation](const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts)
+						   {
             float weight = muon_weightgenerator(_muon_iso_type, etas, pts, variation); // Get the weight for the corresponding variation
-            return weight;
-        }, Muon_vars);
+            return weight; }, Muon_vars);
 
-        std::string column_name = output_var;
-        if (variation == "sf") {
-            column_name += "central";
-        } else if (variation == "systup") {
-            column_name += "up";
-        } else if (variation == "systdown") {
-            column_name += "down";
-        } else {
-            column_name += "syst";
-        }
+		std::string column_name = output_var;
+		if (variation == "sf")
+		{
+			column_name += "central";
+		}
+		else if (variation == "systup")
+		{
+			column_name += "up";
+		}
+		else if (variation == "systdown")
+		{
+			column_name += "down";
+		}
+		else
+		{
+			column_name += "syst";
+		}
 
-        std::string sf_definition = column_name_hlt + " * " + column_name_reco + " * " + column_name_id + " * " + column_name_iso;
-        _rlm = _rlm.Define(column_name, sf_definition);
-        std::cout << "Muon SF column name: " << column_name << std::endl;
-    }
-    return _rlm;
+		std::string sf_definition = column_name_hlt + " * " + column_name_reco + " * " + column_name_id + " * " + column_name_iso;
+		_rlm = _rlm.Define(column_name, sf_definition);
+		std::cout << "Muon SF column name: " << column_name << std::endl;
+	}
+	return _rlm;
 }
 
-
-
-ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateEleSF(RNode _rlm, std::vector<std::string> Ele_vars, std::string output_var="ele_SF_")
+ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculateEleSF(RNode _rlm, std::vector<std::string> Ele_vars, std::string output_var = "ele_SF_")
 {
 
-    //auto cs = correction::CorrectionSet::from_file("electron.json.gz");
-    //cout<<"Generate ELECTRONRECO weight"<<endl;
-    //electronRECO sf and systematics with up/down variations
-    //===========//===========//===========//===========//===========
-  auto electron_weightgenerator = [this](const std::string eletype, const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts, const std::string& variation) -> float {
-      double electronReco_w = 1.0;
+	// auto cs = correction::CorrectionSet::from_file("electron.json.gz");
+	// cout<<"Generate ELECTRONRECO weight"<<endl;
+	// electronRECO sf and systematics with up/down variations
+	//===========//===========//===========//===========//===========
+	auto electron_weightgenerator = [this](const std::string eletype, const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts, const std::string &variation) -> float
+	{
+		double electronReco_w = 1.0;
 
-      for (std::size_t i = 0; i < pts.size(); i++) {
-	
-	double w = _correction_electron->at("UL-Electron-ID-SF")->evaluate({std::to_string(_year), variation, eletype, std::fabs(etas[i]), pts[i]}); 
-	electronReco_w *= w;
-	//std::cout << "Individual weight (electron " << i << "): " << w << std::endl;
-	//std::cout << "Cumulative weight after electron " << i << ": " << electronId_w << std::endl;
-      }
-      return electronReco_w;
-    };
+		for (std::size_t i = 0; i < pts.size(); i++)
+		{
 
-    //'sf' is nominal, and 'systup' and 'systdown' are up/down variations with total stat+-syst uncertainties. Individual systs are also available (in these cases syst only, not sf +/- syst
-    std::vector<std::string> variations_elec = {"sf", "sfup", "sfdown"};
+			double w = _correction_electron->at("UL-Electron-ID-SF")->evaluate({std::to_string(_year), variation, eletype, std::fabs(etas[i]), pts[i]});
+			electronReco_w *= w;
+			// std::cout << "Individual weight (electron " << i << "): " << w << std::endl;
+			// std::cout << "Cumulative weight after electron " << i << ": " << electronId_w << std::endl;
+		}
+		return electronReco_w;
+	};
 
+	//'sf' is nominal, and 'systup' and 'systdown' are up/down variations with total stat+-syst uncertainties. Individual systs are also available (in these cases syst only, not sf +/- syst
+	std::vector<std::string> variations_elec = {"sf", "sfup", "sfdown"};
 
-    for (const std::string& variation : variations_elec) {
+	for (const std::string &variation : variations_elec)
+	{
 
-      // define electron RECO weight sf/systs for each variation individually
-      std::string column_name_reco = output_var+ "reco_" + variation;
-      _rlm = _rlm.Define(column_name_reco, [this, electron_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+		// define electron RECO weight sf/systs for each variation individually
+		std::string column_name_reco = output_var + "reco_" + variation;
+		_rlm = _rlm.Define(column_name_reco, [this, electron_weightgenerator, variation](const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts)
+						   {
 	  float weight = electron_weightgenerator(_electron_reco_type, etas, pts, variation); // Get the weight for the corresponding variation
 	  //std::cout << "Electron RECO weight (" << variation << "): " << weight << std::endl;
-	  return weight;
-	}, Ele_vars);
+	  return weight; }, Ele_vars);
 
-
-      // define electron ID weight sf/systs for each variation individually
-      std::string column_name_id = output_var+ "id_" + variation;
-      _rlm = _rlm.Define(column_name_id, [this, electron_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
+		// define electron ID weight sf/systs for each variation individually
+		std::string column_name_id = output_var + "id_" + variation;
+		_rlm = _rlm.Define(column_name_id, [this, electron_weightgenerator, variation](const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts)
+						   {
 	  float weight = electron_weightgenerator(_electron_id_type, etas, pts, variation); // Get the weight for the corresponding variation
 	  //std::cout << "Electron RECO weight (" << variation << "): " << weight << std::endl;
-	  return weight;
-	}, Ele_vars);
-      
-      std::string column_name = output_var;
+	  return weight; }, Ele_vars);
 
-      if(variation=="sf"){
-	column_name += "central";
-      }
-      else if(variation=="sfup"){
-	column_name += "up";
-      }
-      else{
-	column_name += "down";
-      }
-      std::cout<< "Electron SF column name: " << column_name << std::endl;
-      std::string sf_definition = column_name_reco+" * "+column_name_id;
+		std::string column_name = output_var;
 
-      _rlm = _rlm.Define(column_name, sf_definition); 
+		if (variation == "sf")
+		{
+			column_name += "central";
+		}
+		else if (variation == "sfup")
+		{
+			column_name += "up";
+		}
+		else
+		{
+			column_name += "down";
+		}
+		std::cout << "Electron SF column name: " << column_name << std::endl;
+		std::string sf_definition = column_name_reco + " * " + column_name_id;
 
-
-    }
-    return _rlm;
+		_rlm = _rlm.Define(column_name, sf_definition);
+	}
+	return _rlm;
 }
 
-ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculatePhoSF(RNode _rlm, std::vector<std::string> Pho_vars, std::string output_var) 
- 
+/*ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculatePhoSF(RNode _rlm, std::vector<std::string> Pho_vars, std::string output_var)
+
 {
 	// Lambda function to calculate the photon scale factor
-    auto photon_weightgenerator = [this](const std::string& year, const std::string& photype, const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts, const std::string& variation) -> float {
+	auto photon_weightgenerator = [this](const std::string &year, const std::string &photype, const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts, const std::string &variation) -> float
+	{
+		double photonSF_w = 1.0;
+
+		for (std::size_t i = 0; i < pts.size(); i++)
+		{
+
+			double w = _correction_photon->at("UL-Photon-ID-SF")->evaluate({std::to_string(_year), variation, photype, std::fabs(etas[i]), pts[i]});
+			photonSF_w *= w;
+		}
+		return photonSF_w;
+	};
+
+	// Variations for the photon scale factors
+	std::vector<std::string> variations_pho = {"sf", "sfup", "sfdown"};
+	
+
+	for (const std::string &variation : variations_pho)
+	{
+
+		// Define photon ID weight sf/systs for each variation individually
+		std::string column_name_id = output_var + "id_" + variation;
+		_rlm = _rlm.Define(column_name_id, [this, photon_weightgenerator, variation](const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts)
+						   {
+            float weight = photon_weightgenerator(std::to_string(_year), _photon_id_type, etas, pts, variation);
+            return weight; }, Pho_vars);
+
+		// Define final column name based on variation
+		std::string column_name = output_var;
+
+		if (variation == "sf")
+		{
+			column_name += "central";
+		}
+		else if (variation == "sfup")
+		{
+			column_name += "up";
+		}
+		else
+		{
+			column_name += "down";
+		}
+
+		std::cout << "Photon SF column name: " << column_name << std::endl;
+
+		// For photons, we might only have ID scale factors
+		std::string sf_definition = column_name_id;
+
+		_rlm = _rlm.Define(column_name, sf_definition);
+	}
+
+	return _rlm;
+}*/
+
+ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculatePhoSF(RNode _rlm, std::vector<std::string> Pho_vars, std::string output_var)
+{
+    // Lambda function to calculate the photon scale factor for a specific type
+    auto photon_weightgenerator = [this](const std::string &sf_type, const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts, const std::string &variation) -> float
+    {
         double photonSF_w = 1.0;
 
-        for (std::size_t i = 0; i < pts.size(); i++) {
-
-            double w = _correction_photon->at("UL-Photon-ID-SF")->evaluate({std::to_string(_year), variation, photype, std::fabs(etas[i]), pts[i]});
+        for (std::size_t i = 0; i < pts.size(); i++)
+        {
+            double w = _correction_photon->at(sf_type)->evaluate({std::to_string(_year), variation, _photon_id_type, std::fabs(etas[i]), pts[i]});
             photonSF_w *= w;
         }
         return photonSF_w;
@@ -646,67 +723,75 @@ ROOT::RDF::RNode NanoAODAnalyzerrdframe::calculatePhoSF(RNode _rlm, std::vector<
     // Variations for the photon scale factors
     std::vector<std::string> variations_pho = {"sf", "sfup", "sfdown"};
 
-    for (const std::string& variation : variations_pho) {
+    // Different photon scale factor types
+    std::vector<std::string> sf_types = {"UL-Photon-ID-SF", "UL-Photon-CSEV-SF", "UL-Photon-PixVeto-SF"};
 
-        // Define photon ID weight sf/systs for each variation individually
-        std::string column_name_id = output_var + "id_" + variation;
-        _rlm = _rlm.Define(column_name_id, [this, photon_weightgenerator, variation](const ROOT::VecOps::RVec<float>& etas, const ROOT::VecOps::RVec<float>& pts) {
-            float weight = photon_weightgenerator(std::to_string(_year), _photon_id_type, etas, pts, variation);
-            return weight;
-        }, Pho_vars);
+    for (const std::string &variation : variations_pho)
+    {
+        // Define the final combined scale factor directly
+        std::string final_column_name = output_var;
 
-        // Define final column name based on variation
-        std::string column_name = output_var;
-
-        if (variation == "sf") {
-            column_name += "central";
-        } else if (variation == "sfup") {
-            column_name += "up";
-        } else {
-            column_name += "down";
+        if (variation == "sf")
+        {
+            final_column_name += "central";
+        }
+        else if (variation == "sfup")
+        {
+            final_column_name += "up";
+        }
+        else
+        {
+            final_column_name += "down";
         }
 
-        std::cout << "Photon SF column name: " << column_name << std::endl;
+        std::cout << "Photon SF column name: " << final_column_name << std::endl;
 
-        // For photons, we might only have ID scale factors
-        std::string sf_definition = column_name_id;
-
-        _rlm = _rlm.Define(column_name, sf_definition);
+        _rlm = _rlm.Define(final_column_name, [this, photon_weightgenerator, sf_types, variation](const ROOT::VecOps::RVec<float> &etas, const ROOT::VecOps::RVec<float> &pts)
+        {
+            float combined_weight = 1.0;
+            for (const auto& sf_type : sf_types)
+            {
+                float weight = photon_weightgenerator(sf_type, etas, pts, variation);
+                combined_weight *= weight;
+            }
+            return combined_weight;
+        }, Pho_vars);
     }
 
     return _rlm;
 }
 
-ROOT::RDF::RNode NanoAODAnalyzerrdframe::applyPrefiringWeight(ROOT::RDF::RNode& _rlm, std::string output_var)
+
+ROOT::RDF::RNode NanoAODAnalyzerrdframe::applyPrefiringWeight(ROOT::RDF::RNode &_rlm, std::string output_var)
 {
-  
-    std::vector<std::string> variations = {"Nom", "Up", "Dn"};
-    std::vector<std::string> output_variations = {"central", "up", "down"};
-    for (int i =0; i<int(variations.size()); i++) {
-      std::string input_column_name = "L1PreFiringWeight_" + variations[i];
-      std::string output_column_name = output_var + output_variations[i];
-      _rlm = _rlm.Define(output_column_name, input_column_name);
-    }
-    return _rlm;
-}
 
+	std::vector<std::string> variations = {"Nom", "Up", "Dn"};
+	std::vector<std::string> output_variations = {"central", "up", "down"};
+	for (int i = 0; i < int(variations.size()); i++)
+	{
+		std::string input_column_name = "L1PreFiringWeight_" + variations[i];
+		std::string output_column_name = output_var + output_variations[i];
+		_rlm = _rlm.Define(output_column_name, input_column_name);
+	}
+	return _rlm;
+}
 
 bool NanoAODAnalyzerrdframe::helper_1DHistCreator(std::string hname, std::string title, const int nbins, const double xlow, const double xhi, std::string rdfvar, std::string evWeight, RNode *anode)
 {
-	//cout << "1DHistCreator " << hname  << endl;
+	// cout << "1DHistCreator " << hname  << endl;
 
 	RDF1DHist histojets = anode->Histo1D({hname.c_str(), title.c_str(), nbins, xlow, xhi}, rdfvar, evWeight); // Fill with weight given by evWeight
 	_th1dhistos[hname] = histojets;
-	//histojets.GetPtr()->Print("all");
+	// histojets.GetPtr()->Print("all");
 	return true;
 }
 
-//for 2D histograms//
-bool NanoAODAnalyzerrdframe::helper_2DHistCreator(std::string hname, std::string title, const int nbinsx, const double xlow, const double xhi, const int nbinsy, const double ylow, const double yhi,std::string rdfvarx,std::string rdfvary, std::string evWeight, RNode *anode)
+// for 2D histograms//
+bool NanoAODAnalyzerrdframe::helper_2DHistCreator(std::string hname, std::string title, const int nbinsx, const double xlow, const double xhi, const int nbinsy, const double ylow, const double yhi, std::string rdfvarx, std::string rdfvary, std::string evWeight, RNode *anode)
 {
-	//cout << "1DHistCreator " << hname  << endl;
+	// cout << "1DHistCreator " << hname  << endl;
 
-	RDF2DHist histojets = anode->Histo2D({hname.c_str(), title.c_str(), nbinsx, xlow, xhi,nbinsy, ylow, yhi}, rdfvarx,rdfvary, evWeight); // Fill with weight given by evWeight
+	RDF2DHist histojets = anode->Histo2D({hname.c_str(), title.c_str(), nbinsx, xlow, xhi, nbinsy, ylow, yhi}, rdfvarx, rdfvary, evWeight); // Fill with weight given by evWeight
 	_th2dhistos[hname] = histojets;
 	histojets.GetPtr()->Print("all");
 	return true;
@@ -715,94 +800,97 @@ bool NanoAODAnalyzerrdframe::helper_2DHistCreator(std::string hname, std::string
 // Automatically loop to create
 void NanoAODAnalyzerrdframe::setupCuts_and_Hists()
 {
-	cout << "setting up definitions, cuts, and histograms" <<endl;
-	
-    for (auto &c : _varinfovector) {
-        if (c.mincutstep.length() == 0) {
-            _rlm = _rlm.Define(c.varname, c.vardefinition);
-        }
-    }
+	cout << "setting up definitions, cuts, and histograms" << endl;
+
+	for (auto &c : _varinfovector)
+	{
+		if (c.mincutstep.length() == 0)
+		{
+			_rlm = _rlm.Define(c.varname, c.vardefinition);
+		}
+	}
 
 	for (auto &x : _hist1dinfovector)
 	{
 		std::string hpost = "_nocut";
 
-		if (x.mincutstep.length()==0)
+		if (x.mincutstep.length() == 0)
 		{
-			helper_1DHistCreator(std::string(x.hmodel.fName)+hpost,  std::string(x.hmodel.fTitle)+hpost, x.hmodel.fNbinsX, x.hmodel.fXLow, x.hmodel.fXUp, x.varname, x.weightname, &_rlm);
+			helper_1DHistCreator(std::string(x.hmodel.fName) + hpost, std::string(x.hmodel.fTitle) + hpost, x.hmodel.fNbinsX, x.hmodel.fXLow, x.hmodel.fXUp, x.varname, x.weightname, &_rlm);
 		}
 	}
 
-	//for 2D histograms
+	// for 2D histograms
 	for (auto &x : _hist2dinfovector)
 	{
 		std::string hpost = "_nocut";
 
-		if (x.mincutstep.length()==0)
+		if (x.mincutstep.length() == 0)
 		{
-			helper_2DHistCreator(std::string(x.hmodel.fName)+hpost,  std::string(x.hmodel.fTitle)+hpost, x.hmodel.fNbinsX, x.hmodel.fXLow, x.hmodel.fXUp, x.hmodel.fNbinsY, x.hmodel.fYLow, x.hmodel.fYUp, x.varname1, x.varname2, x.weightname, &_rlm);
+			helper_2DHistCreator(std::string(x.hmodel.fName) + hpost, std::string(x.hmodel.fTitle) + hpost, x.hmodel.fNbinsX, x.hmodel.fXLow, x.hmodel.fXUp, x.hmodel.fNbinsY, x.hmodel.fYLow, x.hmodel.fYUp, x.varname1, x.varname2, x.weightname, &_rlm);
 		}
 	}
-   
+
 	_rnt.setRNode(&_rlm);
 
 	for (auto acut : _cutinfovector)
 	{
-		std::string cutname = "cut"+ acut.idx;
-		std::string hpost = "_"+cutname;
+		std::string cutname = "cut" + acut.idx;
+		std::string hpost = "_" + cutname;
 		auto parentNode = _rnt.getParent(acut.idx);
-        
-        if (!parentNode) {
-            std::cerr << "Error: Parent node for cut index " << acut.idx << " is null!" << std::endl;
-            continue;
-        }
+
+		if (!parentNode)
+		{
+			std::cerr << "Error: Parent node for cut index " << acut.idx << " is null!" << std::endl;
+			continue;
+		}
 		RNode *r = _rnt.getParent(acut.idx)->getRNode();
-		if (!r) {
-            std::cerr << "Error: RNode for parent node of cut index " << acut.idx << " is null!" << std::endl;
-            continue;
-        }
+		if (!r)
+		{
+			std::cerr << "Error: RNode for parent node of cut index " << acut.idx << " is null!" << std::endl;
+			continue;
+		}
 		auto rnext = new RNode(r->Define(cutname, acut.cutdefinition));
 		*rnext = rnext->Filter(cutname);
 
-		for ( auto &c : _varinfovector)
+		for (auto &c : _varinfovector)
 		{
-			if (acut.idx.compare(c.mincutstep)==0) *rnext = rnext->Define(c.varname, c.vardefinition);
+			if (acut.idx.compare(c.mincutstep) == 0)
+				*rnext = rnext->Define(c.varname, c.vardefinition);
 		}
 		for (auto &x : _hist1dinfovector)
 		{
-			if (acut.idx.compare(0, x.mincutstep.length(), x.mincutstep)==0)
+			if (acut.idx.compare(0, x.mincutstep.length(), x.mincutstep) == 0)
 			{
-				helper_1DHistCreator(std::string(x.hmodel.fName)+hpost,  std::string(x.hmodel.fTitle)+hpost, x.hmodel.fNbinsX, x.hmodel.fXLow, x.hmodel.fXUp, x.varname, x.weightname, rnext);
+				helper_1DHistCreator(std::string(x.hmodel.fName) + hpost, std::string(x.hmodel.fTitle) + hpost, x.hmodel.fNbinsX, x.hmodel.fXLow, x.hmodel.fXUp, x.varname, x.weightname, rnext);
 			}
 		}
 
-			//for 2DHistograms
+		// for 2DHistograms
 		for (auto &x : _hist2dinfovector)
 		{
-			if (acut.idx.compare(0, x.mincutstep.length(), x.mincutstep)==0)
+			if (acut.idx.compare(0, x.mincutstep.length(), x.mincutstep) == 0)
 			{
-				helper_2DHistCreator(std::string(x.hmodel.fName)+hpost,  std::string(x.hmodel.fTitle)+hpost, x.hmodel.fNbinsX, x.hmodel.fXLow, x.hmodel.fXUp, x.hmodel.fNbinsY, x.hmodel.fYLow, x.hmodel.fYUp, x.varname1, x.varname2, x.weightname, rnext);
+				helper_2DHistCreator(std::string(x.hmodel.fName) + hpost, std::string(x.hmodel.fTitle) + hpost, x.hmodel.fNbinsX, x.hmodel.fXLow, x.hmodel.fXUp, x.hmodel.fNbinsY, x.hmodel.fYLow, x.hmodel.fYUp, x.varname1, x.varname2, x.weightname, rnext);
 			}
 		}
 		_rnt.addDaughter(rnext, acut.idx);
-
 	}
 }
 
-void NanoAODAnalyzerrdframe::add1DHist(TH1DModel histdef, std::string variable, std::string weight,string mincutstep)
+void NanoAODAnalyzerrdframe::add1DHist(TH1DModel histdef, std::string variable, std::string weight, string mincutstep)
 {
 	_hist1dinfovector.push_back({histdef, variable, weight, mincutstep});
 }
-//for 2DHistograms
-void NanoAODAnalyzerrdframe::add2DHist(TH2DModel histdef, std::string variable1,std::string variable2, std::string weight,string mincutstep)
+// for 2DHistograms
+void NanoAODAnalyzerrdframe::add2DHist(TH2DModel histdef, std::string variable1, std::string variable2, std::string weight, string mincutstep)
 {
-	_hist2dinfovector.push_back({histdef, variable1,variable2, weight, mincutstep});
+	_hist2dinfovector.push_back({histdef, variable1, variable2, weight, mincutstep});
 }
-
 
 void NanoAODAnalyzerrdframe::drawHists(RNode t)
 {
-	cout << "processing" <<endl;
+	cout << "processing" << endl;
 	t.Count();
 }
 
@@ -818,27 +906,26 @@ void NanoAODAnalyzerrdframe::addVartoStore(string varname)
 	// if varname=="Muon_.*", then any branch name that starts with "Muon_" string will
 	// be saved
 	_varstostore.push_back(varname);
-
 }
 
 void NanoAODAnalyzerrdframe::setupTree()
 {
 	vector<RNodeTree *> rntends;
 	_rnt.getRNodeLeafs(rntends);
-	for (auto arnt: rntends)
+	for (auto arnt : rntends)
 	{
 		RNode *arnode = arnt->getRNode();
 		string nodename = arnt->getIndex();
 		vector<string> varforthistree;
 		std::map<string, int> varused;
 
-		for (auto varname: _varstostore)
+		for (auto varname : _varstostore)
 		{
 			bool foundmatch = false;
 			std::regex b(varname);
-			for (auto a: arnode->GetColumnNames())
+			for (auto a : arnode->GetColumnNames())
 			{
-				if (std::regex_match(a, b) && varused[a]==0)
+				if (std::regex_match(a, b) && varused[a] == 0)
 				{
 					varforthistree.push_back(a);
 					varused[a]++;
@@ -847,13 +934,11 @@ void NanoAODAnalyzerrdframe::setupTree()
 			}
 			if (!foundmatch)
 			{
-				cout << varname << " not found at "<< nodename << endl;
+				cout << varname << " not found at " << nodename << endl;
 			}
-
 		}
-		_varstostorepertree[nodename]  = varforthistree;
+		_varstostorepertree[nodename] = varforthistree;
 	}
-
 }
 
 void NanoAODAnalyzerrdframe::addCuts(string cut, string idx)
@@ -866,357 +951,421 @@ void NanoAODAnalyzerrdframe::run(bool saveAll, string outtreename)
 	vector<RNodeTree *> rntends;
 	_rnt.getRNodeLeafs(rntends);
 	//_rnt.Print();
-    //cout << rntends.size() << endl;
-	for (auto arnt: rntends)
+	// cout << rntends.size() << endl;
+	for (auto arnt : rntends)
 	{
 		string nodename = arnt->getIndex();
 		string outname = _outfilename;
-		if (rntends.size()>1) outname.replace(outname.find(".root"), 5, "_"+nodename+".root");
+		if (rntends.size() > 1)
+			outname.replace(outname.find(".root"), 5, "_" + nodename + ".root");
 		_outrootfilenames.push_back(outname);
 		RNode *arnode = arnt->getRNode();
-		std::cout<< "-------------------------------------------------------------------" << std::endl;
-                cout<<"cut : " ;
-                cout << arnt->getIndex();
-		if (saveAll) {
+		std::cout << "-------------------------------------------------------------------" << std::endl;
+		cout << "cut : ";
+		cout << arnt->getIndex();
+		if (saveAll)
+		{
 			arnode->Snapshot(outtreename, outname);
 		}
-		else {
-            cout << " --writing branches" << endl;
-			std::cout<< "-------------------------------------------------------------------" << std::endl;
-			for (auto bname: _varstostorepertree[nodename])
+		else
+		{
+			cout << " --writing branches" << endl;
+			std::cout << "-------------------------------------------------------------------" << std::endl;
+			for (auto bname : _varstostorepertree[nodename])
 			{
 				cout << bname << endl;
 				// cout << "-----branch stored" << endl;
 			}
-			
-			arnode->Snapshot(outtreename, outname, _varstostorepertree[nodename]);
 
+			arnode->Snapshot(outtreename, outname, _varstostorepertree[nodename]);
 		}
-		std::cout<< "-------------------------------------------------------------------" << std::endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
 		cout << "Creating output root file :  " << endl;
 		cout << outname << " ";
-		cout<<endl;
-		std::cout<< "-------------------------------------------------------------------" << std::endl;
+		cout << endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
 		_outrootfile = new TFile(outname.c_str(), "UPDATE");
 		cout << "Writing histograms...   " << endl;
-		std::cout<< "-------------------------------------------------------------------" << std::endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
 		for (auto &h : _th1dhistos)
 		{
-			if (h.second.GetPtr() != nullptr) {
+			if (h.second.GetPtr() != nullptr)
+			{
 				h.second.GetPtr()->Print();
 				h.second.GetPtr()->Write();
 			}
 		}
-		//for 2D histograms
+		// for 2D histograms
 		for (auto &h : _th2dhistos)
 		{
-			if (h.second.GetPtr() != nullptr) {
+			if (h.second.GetPtr() != nullptr)
+			{
 				h.second.GetPtr()->Print();
 				h.second.GetPtr()->Write();
 			}
 		}
 		/*TH1F* hPDFWeights = new TH1F("LHEPdfWeightSum", "LHEPdfWeightSum", 103, 0, 1);
-        for (size_t i=0; i<PDFWeights.size(); i++){
-            hPDFWeights->SetBinContent(i+1, PDFWeights[i]);
+		for (size_t i=0; i<PDFWeights.size(); i++){
+			hPDFWeights->SetBinContent(i+1, PDFWeights[i]);
 		}*/
 		_outrootfile->Write(0, TObject::kOverwrite);
 		_outrootfile->Close();
 	}
-    std::cout<< "-------------------------------------------------------------------" << std::endl;
-    std::cout << "END...  :) " << std::endl; 
-
+	std::cout << "-------------------------------------------------------------------" << std::endl;
+	std::cout << "END...  :) " << std::endl;
 }
 
 void NanoAODAnalyzerrdframe::setParams(int year, string runtype, int datatype)
 {
-    /*if(debug){
-        std::cout<< "================================//=================================" << std::endl;
-        std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
-        std::cout<< "================================//=================================" << std::endl;
-    }*/
-	_year=year;
-	_runtype=runtype;
-	_datatype=datatype;
+	/*if(debug){
+		std::cout<< "================================//=================================" << std::endl;
+		std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+		std::cout<< "================================//=================================" << std::endl;
+	}*/
+	_year = year;
+	_runtype = runtype;
+	_datatype = datatype;
 
-	if(_year==2016) {
-        cout << "Analysing through Run 2016" << endl;
-    }else if(_year==2017) {
-        cout << "Analysing through Run 2017" << endl;
-    }else if(_year==2018){
-        cout << "Analysing through Run 2018" << endl;
-    }
+	if (_year == 2016)
+	{
+		cout << "Analysing through Run 2016" << endl;
+	}
+	else if (_year == 2017)
+	{
+		cout << "Analysing through Run 2017" << endl;
+	}
+	else if (_year == 2018)
+	{
+		cout << "Analysing through Run 2018" << endl;
+	}
 
-	if(_runtype.find("UL") != std::string::npos){
-        _isUL = true;
-        cout << "Ultra Legacy Selected " << endl;
-        std::cout<< "-------------------------------------------------------------------" << std::endl;
-    }else if(_runtype.find("ReReco") != std::string::npos){
-        _isReReco = true;
-        cout << " ReReco  Selected!" << endl;
-        std::cout<< "-------------------------------------------------------------------" << std::endl;
-    }
-    if (!_isUL && !_isReReco){
-        std::cout<< "Default run version : UL or ReReco is not selected! "<< std::endl;
-        std::cout<< "-------------------------------------------------------------------" << std::endl;
-    }
-	if (_datatype==0){
+	if (_runtype.find("UL") != std::string::npos)
+	{
+		_isUL = true;
+		cout << "Ultra Legacy Selected " << endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
+	}
+	else if (_runtype.find("ReReco") != std::string::npos)
+	{
+		_isReReco = true;
+		cout << " ReReco  Selected!" << endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
+	}
+	if (!_isUL && !_isReReco)
+	{
+		std::cout << "Default run version : UL or ReReco is not selected! " << std::endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
+	}
+	if (_datatype == 0)
+	{
 		_isData = false;
-        std::cout << " MC input files Selected!! "<<std::endl;
-        std::cout<< "-------------------------------------------------------------------" << std::endl;
+		std::cout << " MC input files Selected!! " << std::endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
+	}
+	else if (_datatype == 1)
+	{
+		_isData = true;
+		std::cout << " DATA input files Selected!!" << std::endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
+	}
+	if (_datatype == -1)
+	{
+		std::cout << "Default root version :checking out gen branches! " << std::endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
 
-    }else if(_datatype==1){
-        _isData = true;
-        std::cout << " DATA input files Selected!!" <<std::endl;
-        std::cout<< "-------------------------------------------------------------------" << std::endl;
-    }if(_datatype==-1){
-		std::cout<< "Default root version :checking out gen branches! "<< std::endl;
-        std::cout<< "-------------------------------------------------------------------" << std::endl;
-
-		if (_atree->GetBranch("genWeight") == nullptr){
-		// if (_atree->GetBranch("Generator_weight")==nullptr) {
-			//add print statement
+		if (_atree->GetBranch("genWeight") == nullptr)
+		{
+			// if (_atree->GetBranch("Generator_weight")==nullptr) {
+			// add print statement
 			// std::cout<< "Generator_weight branch is not found in the input file!! "<< std::endl;
-			std::cout<< "genWeight branch is not found in the input file!! "<< std::endl;
+			std::cout << "genWeight branch is not found in the input file!! " << std::endl;
 			_isData = true;
-			cout << "input file is DATA" <<endl;
+			cout << "input file is DATA" << endl;
 		}
 		else
 		{
 			_isData = false;
-			cout << "input file is MC" <<endl;
+			cout << "input file is MC" << endl;
 		}
 	}
 	TObjArray *allbranches = _atree->GetListOfBranches();
-	for (int i =0; i<allbranches->GetSize(); i++)
+	for (int i = 0; i < allbranches->GetSize(); i++)
 	{
 		TBranch *abranch = dynamic_cast<TBranch *>(allbranches->At(i));
-		if (abranch!= nullptr){
-			//cout << abranch->GetName() << endl;
+		if (abranch != nullptr)
+		{
+			// cout << abranch->GetName() << endl;
 			_originalvars.push_back(abranch->GetName());
 		}
 	}
-
-
 }
-//Checking HLTs in the input root file
-std::string NanoAODAnalyzerrdframe::setHLT(std::string str_HLT){
-    if(debug){
-    std::cout<< "================================//=================================" << std::endl;
-    std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
-    std::cout<< "================================//=================================" << std::endl;
-    }
-    if(str_HLT != "" ){
+// Checking HLTs in the input root file
+std::string NanoAODAnalyzerrdframe::setHLT(std::string str_HLT)
+{
+	if (debug)
+	{
+		std::cout << "================================//=================================" << std::endl;
+		std::cout << "Line : " << __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+		std::cout << "================================//=================================" << std::endl;
+	}
+	if (str_HLT != "")
+	{
 
-        bool ctrl_HLT =isDefined(str_HLT);
-        std::string output;
-        if(ctrl_HLT){
-            output=str_HLT;
-            std::cout<<"HLT : " <<  str_HLT  << " : SUCCESSFULLY FOUND!!"<< std::endl;
-        }else{
-            std::cout<<"HLT : " <<  str_HLT  << " : CAN NOT BE FOUND "<< std::endl;
-            std::cout<< "Check HLT branches in the input root file!!" << std::endl;
-            std::cout<< "EXITING PROGRAM!!" << std::endl;
+		bool ctrl_HLT = isDefined(str_HLT);
+		std::string output;
+		if (ctrl_HLT)
+		{
+			output = str_HLT;
+			std::cout << "HLT : " << str_HLT << " : SUCCESSFULLY FOUND!!" << std::endl;
+		}
+		else
+		{
+			std::cout << "HLT : " << str_HLT << " : CAN NOT BE FOUND " << std::endl;
+			std::cout << "Check HLT branches in the input root file!!" << std::endl;
+			std::cout << "EXITING PROGRAM!!" << std::endl;
 
-            exit(1);
-        }
-        return output;
+			exit(1);
+		}
+		return output;
+	}
+	else
+	{ // fill the HLT names in a vector according to each year
+		std::vector<string> V_output;
+		if (_year == 2016)
+		{
+			HLTGlobalNames = HLT2016Names;
+		}
+		else if (_year == 2017)
+		{
+			HLTGlobalNames = HLT2017Names;
+		}
+		else if (_year == 2018)
+		{
+			HLTGlobalNames = HLT2018Names;
+		}
 
-    }else{ // fill the HLT names in a vector according to each year
-            std::vector<string> V_output;
-            if(_year==2016){
-                HLTGlobalNames=HLT2016Names;
-            }else if (_year==2017){
-                HLTGlobalNames=HLT2017Names;
-            }else if(_year==2018){
-                HLTGlobalNames=HLT2018Names;
-            }
-
-            //loop on HLTs
-            for (size_t i = 0; i < HLTGlobalNames.size(); i++)
-            {
-                /* code */
-                bool ctrl_HLT = isDefined(HLTGlobalNames[i]);
-                if(ctrl_HLT){
-                    V_output.push_back(HLTGlobalNames[i]);
-                }
-
-            }
-            std::string output_HLT;
-            if(!V_output.empty()){
-                for (size_t i = 0; i < V_output.size() ; i++)
-                {
-                    if(i!=V_output.size()-1){
-                    output_HLT += V_output[i] + "==1 || " ;
-                    }else{
-                        output_HLT += V_output[i] + "==1 " ;
-                    }
-                }
-            }else{
-                std::cout<< " Not matched with any HLT Triggers! Please check the HLT Names in the inputfile " << std::endl;
-                std::cout<< "EXITING PROGRAM!!" << std::endl;
-                exit(1);
-            }
-            std::cout<< " HLT names =  " <<  output_HLT  << std::endl;
-            return output_HLT;
-
-    }
-
+		// loop on HLTs
+		for (size_t i = 0; i < HLTGlobalNames.size(); i++)
+		{
+			/* code */
+			bool ctrl_HLT = isDefined(HLTGlobalNames[i]);
+			if (ctrl_HLT)
+			{
+				V_output.push_back(HLTGlobalNames[i]);
+			}
+		}
+		std::string output_HLT;
+		if (!V_output.empty())
+		{
+			for (size_t i = 0; i < V_output.size(); i++)
+			{
+				if (i != V_output.size() - 1)
+				{
+					output_HLT += V_output[i] + "==1 || ";
+				}
+				else
+				{
+					output_HLT += V_output[i] + "==1 ";
+				}
+			}
+		}
+		else
+		{
+			std::cout << " Not matched with any HLT Triggers! Please check the HLT Names in the inputfile " << std::endl;
+			std::cout << "EXITING PROGRAM!!" << std::endl;
+			exit(1);
+		}
+		std::cout << " HLT names =  " << output_HLT << std::endl;
+		return output_HLT;
+	}
 }
-//control all branch names using in the addCuts function
-std::string NanoAODAnalyzerrdframe::ctrlBranchName(std::string str_Branch){
+// control all branch names using in the addCuts function
+std::string NanoAODAnalyzerrdframe::ctrlBranchName(std::string str_Branch)
+{
 
-    if(debug){
-        std::cout<< "================================//=================================" << std::endl;
-        std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
-        std::cout<< "================================//=================================" << std::endl;
-    }
+	if (debug)
+	{
+		std::cout << "================================//=================================" << std::endl;
+		std::cout << "Line : " << __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+		std::cout << "================================//=================================" << std::endl;
+	}
 
-    bool ctrl_Branch =isDefined(str_Branch);
-    std::string output;
-    if(ctrl_Branch){
-        output=str_Branch;
-    }else{
-        std::cout<<"Branch : " <<  str_Branch  << " : CAN NOT BE FOUND "<< std::endl;
-        std::cout<< "Check your branches in the input root file!!" << std::endl;
-        std::cout<< "EXITING PROGRAM!!" << std::endl;
+	bool ctrl_Branch = isDefined(str_Branch);
+	std::string output;
+	if (ctrl_Branch)
+	{
+		output = str_Branch;
+	}
+	else
+	{
+		std::cout << "Branch : " << str_Branch << " : CAN NOT BE FOUND " << std::endl;
+		std::cout << "Check your branches in the input root file!!" << std::endl;
+		std::cout << "EXITING PROGRAM!!" << std::endl;
 
-        exit(1);
-    }
-    return output;
-}
-
-//cut-based ID bitmap, Fall17V2, (0:fail, 1:loose, 2:medium, 3:tight)
-std::string NanoAODAnalyzerrdframe::PhotonID(int cutbasedID) {
-
-    if(debug){
-        std::cout<< "================================//=================================" << std::endl;
-        std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
-        std::cout<< "================================//=================================" << std::endl;
-    }
-
-    // Print debug information based on the Photon ID
-    if (cutbasedID == 1) std::cout << "LOOSE Photon ID requested   == " << cutbasedID << std::endl;
-    if (cutbasedID == 2) std::cout << "MEDIUM Photon ID requested  == " << cutbasedID << std::endl;
-    if (cutbasedID == 3) std::cout << "TIGHT Photon ID requested   == " << cutbasedID << std::endl;
-    std::cout << "-------------------------------------------------------------------" << std::endl;
-
-    // Validate the cutbasedID input
-    if (cutbasedID < 0 || cutbasedID > 3) {
-        std::cout << "ERROR!! Wrong Photon ID requested  == " << cutbasedID << "!! Can't be applied" << std::endl;
-        std::cout << "Please select PhotonID from 1 to 3 " << std::endl;
-        std::cout << "-------------------------------------------------------------------" << std::endl;
-        std::cout << "EXITING PROGRAM!!" << std::endl;
-        exit(1);
-    }
-
-    // Construct the selection string based on the cut-based ID
-    std::string output = Form("Photon_cutBased == %d ", cutbasedID);
-    
-    return output;
+		exit(1);
+	}
+	return output;
 }
 
-//cut-based ID Fall17 V2 (0:fail, 1:veto, 2:loose, 3:medium, 4:tight)
-std::string NanoAODAnalyzerrdframe::ElectronID(int cutbasedID){
+// cut-based ID bitmap, Fall17V2, (0:fail, 1:loose, 2:medium, 3:tight)
+std::string NanoAODAnalyzerrdframe::PhotonID(int cutbasedID)
+{
 
-    if(debug){
-        std::cout<< "================================//=================================" << std::endl;
-        std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
-        std::cout<< "================================//=================================" << std::endl;
-    }
-    //double Electron_eta;
-    //double Electron_pt;
-    if (cutbasedID==1)std::cout<< " VETO Electron ID requested    == " << cutbasedID <<std::endl;
-    if (cutbasedID==2)std::cout<< " LOOSE Electron ID requested   == " << cutbasedID <<std::endl;
-    if (cutbasedID==3)std::cout<< " MEDIUM Electron ID requested  == " << cutbasedID <<std::endl;
-    if (cutbasedID==4)std::cout<< " TIGHT Electron ID requested   == " << cutbasedID <<std::endl;
-    std::cout<< "-------------------------------------------------------------------" << std::endl;
+	if (debug)
+	{
+		std::cout << "================================//=================================" << std::endl;
+		std::cout << "Line : " << __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+		std::cout << "================================//=================================" << std::endl;
+	}
 
-    if (cutbasedID<0 || cutbasedID>4){
-        std::cout<< "ERROR!! Wrong Electron ID requested  == " << cutbasedID << "!! Can't be applied" <<std::endl;
-        std::cout<< "Please select ElectronID from 1 to 4 " <<std::endl;
-        std::cout<< "-------------------------------------------------------------------" << std::endl;
-        std::cout<< "EXITING PROGRAM!!" << std::endl;
-        exit(1);
-    }
+	// Print debug information based on the Photon ID
+	if (cutbasedID == 1)
+		std::cout << "LOOSE Photon ID requested   == " << cutbasedID << std::endl;
+	if (cutbasedID == 2)
+		std::cout << "MEDIUM Photon ID requested  == " << cutbasedID << std::endl;
+	if (cutbasedID == 3)
+		std::cout << "TIGHT Photon ID requested   == " << cutbasedID << std::endl;
+	std::cout << "-------------------------------------------------------------------" << std::endl;
+
+	// Validate the cutbasedID input
+	if (cutbasedID < 0 || cutbasedID > 3)
+	{
+		std::cout << "ERROR!! Wrong Photon ID requested  == " << cutbasedID << "!! Can't be applied" << std::endl;
+		std::cout << "Please select PhotonID from 1 to 3 " << std::endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
+		std::cout << "EXITING PROGRAM!!" << std::endl;
+		exit(1);
+	}
+
+	// Construct the selection string based on the cut-based ID
+	std::string output = Form("Photon_cutBased == %d ", cutbasedID);
+
+	return output;
+}
+
+// cut-based ID Fall17 V2 (0:fail, 1:veto, 2:loose, 3:medium, 4:tight)
+std::string NanoAODAnalyzerrdframe::ElectronID(int cutbasedID)
+{
+
+	if (debug)
+	{
+		std::cout << "================================//=================================" << std::endl;
+		std::cout << "Line : " << __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+		std::cout << "================================//=================================" << std::endl;
+	}
+	// double Electron_eta;
+	// double Electron_pt;
+	if (cutbasedID == 1)
+		std::cout << " VETO Electron ID requested    == " << cutbasedID << std::endl;
+	if (cutbasedID == 2)
+		std::cout << " LOOSE Electron ID requested   == " << cutbasedID << std::endl;
+	if (cutbasedID == 3)
+		std::cout << " MEDIUM Electron ID requested  == " << cutbasedID << std::endl;
+	if (cutbasedID == 4)
+		std::cout << " TIGHT Electron ID requested   == " << cutbasedID << std::endl;
+	std::cout << "-------------------------------------------------------------------" << std::endl;
+
+	if (cutbasedID < 0 || cutbasedID > 4)
+	{
+		std::cout << "ERROR!! Wrong Electron ID requested  == " << cutbasedID << "!! Can't be applied" << std::endl;
+		std::cout << "Please select ElectronID from 1 to 4 " << std::endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
+		std::cout << "EXITING PROGRAM!!" << std::endl;
+		exit(1);
+	}
 	/*if(_year==2018 && _isUL){
-    	if(cutbasedID==2 ){
-        	Electron_eta=2.5;
-    		Electron_pt=10;
-    	}else if (cutbasedID==3){
-        	Electron_eta=2.4;
-        	Electron_pt=10;
+		if(cutbasedID==2 ){
+			Electron_eta=2.5;
+			Electron_pt=10;
+		}else if (cutbasedID==3){
+			Electron_eta=2.4;
+			Electron_pt=10;
 		}
 	}*/
 
-//Rdataframe look for the variables in the intput Ttree..
-std::string output = Form("Electron_cutBased == %d ",cutbasedID);
-//std::string output = Form("Electron_cutBased == %d &&  abs(Electron_eta)<%f && Electron_pt<%f",cutbasedID,  Electron_eta, Electron_pt);
+	// Rdataframe look for the variables in the intput Ttree..
+	std::string output = Form("Electron_cutBased == %d ", cutbasedID);
+	// std::string output = Form("Electron_cutBased == %d &&  abs(Electron_eta)<%f && Electron_pt<%f",cutbasedID,  Electron_eta, Electron_pt);
 
-return output;
+	return output;
 }
 
-std::string NanoAODAnalyzerrdframe::MuonID(int cutbasedID){
-    
-    if(debug){
-        std::cout<< "================================//=================================" << std::endl;
-        std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
-        std::cout<< "================================//=================================" << std::endl;
-    }
-    
-    //  cut-based ID Fall17 V2 (0:fail, 1:veto, 2:loose, 3:medium, 4:tight)
-    if (cutbasedID==1)std::cout<< " Veto Muon ID requested   == " << cutbasedID <<std::endl;
-    if (cutbasedID==2)std::cout<< " LOOSE Muon ID requested  == " << cutbasedID <<std::endl;
-    if (cutbasedID==3)std::cout<< " MEDIUM Muon ID requested == " << cutbasedID <<std::endl;
-    if (cutbasedID==4)std::cout<< " TIGHT Muon ID requested as == " << cutbasedID <<std::endl;
-    std::cout<< "-------------------------------------------------------------------" << std::endl;
+std::string NanoAODAnalyzerrdframe::MuonID(int cutbasedID)
+{
 
-    if (cutbasedID<1 || cutbasedID>4){
-        std::cout<< "ERROR!! Wrong Muon ID requested  == " << cutbasedID << "!! Can't be applied" <<std::endl;
-        std::cout<< "Please select Muon ID from 2 to 4 " <<std::endl;
-        std::cout<< "-------------------------------------------------------------------" << std::endl;
-        std::cout<< "EXITING PROGRAM!!" << std::endl;
+	if (debug)
+	{
+		std::cout << "================================//=================================" << std::endl;
+		std::cout << "Line : " << __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+		std::cout << "================================//=================================" << std::endl;
+	}
 
-        exit(1);
-    }
+	//  cut-based ID Fall17 V2 (0:fail, 1:veto, 2:loose, 3:medium, 4:tight)
+	if (cutbasedID == 1)
+		std::cout << " Veto Muon ID requested   == " << cutbasedID << std::endl;
+	if (cutbasedID == 2)
+		std::cout << " LOOSE Muon ID requested  == " << cutbasedID << std::endl;
+	if (cutbasedID == 3)
+		std::cout << " MEDIUM Muon ID requested == " << cutbasedID << std::endl;
+	if (cutbasedID == 4)
+		std::cout << " TIGHT Muon ID requested as == " << cutbasedID << std::endl;
+	std::cout << "-------------------------------------------------------------------" << std::endl;
 
-    string Muon_cutBased_ID;
-    
-    if (cutbasedID==1){
-        Muon_cutBased_ID = "Muon_looseId";
-        std::cout<< " VETO Muon ID requested == " << cutbasedID <<", but it doesn't exist in the nanoAOD branches. It is moved to loose MuonID. " << cutbasedID <<std::endl;
-    }
-    if (cutbasedID == 2){
-        Muon_cutBased_ID = "Muon_looseId";
-    
-    }else if(cutbasedID == 3){
-        Muon_cutBased_ID = "Muon_mediumId";
+	if (cutbasedID < 1 || cutbasedID > 4)
+	{
+		std::cout << "ERROR!! Wrong Muon ID requested  == " << cutbasedID << "!! Can't be applied" << std::endl;
+		std::cout << "Please select Muon ID from 2 to 4 " << std::endl;
+		std::cout << "-------------------------------------------------------------------" << std::endl;
+		std::cout << "EXITING PROGRAM!!" << std::endl;
 
-    }else if(cutbasedID == 4){
-        Muon_cutBased_ID = "Muon_tightId";
-    }
-    string output;
-    output = Form ("%s==true",Muon_cutBased_ID.c_str());
-    return output;
+		exit(1);
+	}
+
+	string Muon_cutBased_ID;
+
+	if (cutbasedID == 1)
+	{
+		Muon_cutBased_ID = "Muon_looseId";
+		std::cout << " VETO Muon ID requested == " << cutbasedID << ", but it doesn't exist in the nanoAOD branches. It is moved to loose MuonID. " << cutbasedID << std::endl;
+	}
+	if (cutbasedID == 2)
+	{
+		Muon_cutBased_ID = "Muon_looseId";
+	}
+	else if (cutbasedID == 3)
+	{
+		Muon_cutBased_ID = "Muon_mediumId";
+	}
+	else if (cutbasedID == 4)
+	{
+		Muon_cutBased_ID = "Muon_tightId";
+	}
+	string output;
+	output = Form("%s==true", Muon_cutBased_ID.c_str());
+	return output;
 }
 
+std::string NanoAODAnalyzerrdframe::JetID(int cutbasedID)
+{
 
-std::string NanoAODAnalyzerrdframe::JetID(int cutbasedID){
+	if (debug)
+	{
+		std::cout << "================================//=================================" << std::endl;
+		std::cout << "Line : " << __LINE__ << " Function : " << __FUNCTION__ << std::endl;
+		std::cout << "================================//=================================" << std::endl;
+	}
 
-    if(debug){
-        std::cout<< "================================//=================================" << std::endl;
-        std::cout<< "Line : "<< __LINE__ << " Function : " << __FUNCTION__ << std::endl;
-        std::cout<< "================================//=================================" << std::endl;
-    }
+	if (cutbasedID < 1 || cutbasedID > 7)
+	{
+		std::cout << "Error Wrong JET ID requested == " << cutbasedID << "!! Can't be applied" << std::endl;
+		std::cout << "Please select number from 1 to 7 " << std::endl;
+	}
+	else
+	{
+		std::cout << " JET ID requested  == " << cutbasedID << std::endl;
+	}
 
-    if(cutbasedID<1 || cutbasedID>7){
-        std::cout<< "Error Wrong JET ID requested == " << cutbasedID << "!! Can't be applied" <<std::endl;
-        std::cout<< "Please select number from 1 to 7 " <<std::endl;
-
-    }else{
-	    std::cout<< " JET ID requested  == " << cutbasedID <<std::endl;
-    }
-
-    string output;
-    output = Form ("Jet_jetId==%d",cutbasedID);
-    return output;
+	string output;
+	output = Form("Jet_jetId==%d", cutbasedID);
+	return output;
 }

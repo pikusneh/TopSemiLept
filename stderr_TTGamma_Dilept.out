@@ -20,6 +20,10 @@ ELECTRON JSON FILE : data/EGM/2017_UL/electron.json.gz
 ELECTRON RECO type in JSON  : RecoAbove20
 ELECTRONID type in JSON  : Tight
 ================================//=================================
+================================//=================================
+PHOTON JSON FILE : data/EGM/2017_UL/photon.json.gz
+PHOTON ID type in JSON  : Medium
+================================//=================================
 SETUP JETMET correction
 JERC JSON file : data/JERC/UL17_jerc.json
 JET tag in JSON : Summer19UL17_V5_MC_L1L2L3Res_AK4PFchs
@@ -60,35 +64,35 @@ select good electrons
 Line : 83 Function : selectElectrons
 ================================//=================================
 ================================//=================================
-Line : 1051 Function : ElectronID
+Line : 1123 Function : ElectronID
 ================================//=================================
  TIGHT Electron ID requested   == 4
 -------------------------------------------------------------------
 tightElectrons_4vecs column successfully defined.
 ================================//=================================
-Line : 1051 Function : ElectronID
+Line : 1123 Function : ElectronID
 ================================//=================================
  VETO Electron ID requested    == 1
 -------------------------------------------------------------------
 ================================//=================================
-Line : 1051 Function : ElectronID
+Line : 1123 Function : ElectronID
 ================================//=================================
  LOOSE Electron ID requested   == 2
 -------------------------------------------------------------------
 select good muons
 ================================//=================================
-Line : 1090 Function : MuonID
+Line : 1162 Function : MuonID
 ================================//=================================
  TIGHT Muon ID requested as == 4
 -------------------------------------------------------------------
 ================================//=================================
-Line : 1090 Function : MuonID
+Line : 1162 Function : MuonID
 ================================//=================================
  Veto Muon ID requested   == 1
 -------------------------------------------------------------------
  VETO Muon ID requested == 1, but it doesn't exist in the nanoAOD branches. It is moved to loose MuonID. 1
 ================================//=================================
-Line : 1090 Function : MuonID
+Line : 1162 Function : MuonID
 ================================//=================================
  LOOSE Muon ID requested  == 2
 -------------------------------------------------------------------
@@ -99,12 +103,12 @@ Line : 69 Function : selectChannel
 select good jets
 Jet_hadronFlavour branch is found in the input file.
 ================================//=================================
-Line : 1135 Function : JetID
+Line : 1207 Function : JetID
 ================================//=================================
  JET ID requested  == 6
 Select good photons
 ================================//=================================
-Line : 1021 Function : PhotonID
+Line : 1093 Function : PhotonID
 ================================//=================================
 MEDIUM Photon ID requested  == 2
 -------------------------------------------------------------------
@@ -130,10 +134,10 @@ Electron SF column name: ele_SF_central
 Electron SF column name: ele_SF_up
 Electron SF column name: ele_SF_down
 ================================//=================================
-Line : 707 Function : selectMET
+Line : 708 Function : selectMET
 ================================//=================================
 ================================//=================================
-Line : 979 Function : setupAnalysis
+Line : 962 Function : setupAnalysis
 ================================//=================================
 year====2017==runtype=== UL
 Sum of genWeights = 10018000.000000
@@ -145,13 +149,16 @@ Usage of ranges:
  - All entries: 10018000
 -------------------------------------------------------------------
 ================================//=================================
-Line : 726 Function : defineMoreVars
+Line : 727 Function : defineMoreVars
 ================================//=================================
 Gen-level variables added.
 ================================//=================================
-Line : 887 Function : bookHists
+Line : 871 Function : bookHists
 ================================//=================================
 setting up definitions, cuts, and histograms
+pho_SF_central not found at 
+pho_SF_id_sf not found at 
+pho_SF_id_sfup not found at 
 evWeight not found at 
 -------------------------------------------------------------------
 cut :  --writing branches
@@ -231,50 +238,50 @@ GenPartpdgId
 nGenPart
 -------------------------------------------------------------------
 Creating output root file :  
-/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Dilept_output.root 
+/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Dilept_new.root 
 -------------------------------------------------------------------
 Writing histograms...   
 -------------------------------------------------------------------
-TH1.Print Name  = hNtightElectrons_cut1, Entries= 5081842, Total sum= 6.11865e+06
-TH1.Print Name  = hNtightElectrons_cut2, Entries= 9717167, Total sum= 1.2211e+07
-TH1.Print Name  = hNtightElectrons_cut3, Entries= 4145041, Total sum= 4.98725e+06
-TH1.Print Name  = hNtightElectrons_nocut, Entries= 10018000, Total sum= 1.25921e+07
-TH1.Print Name  = hNtightMuons_cut1, Entries= 5081842, Total sum= 6.11865e+06
-TH1.Print Name  = hNtightMuons_cut2, Entries= 9717167, Total sum= 1.2211e+07
-TH1.Print Name  = hNtightMuons_cut3, Entries= 4145041, Total sum= 4.98725e+06
-TH1.Print Name  = hNtightMuons_nocut, Entries= 10018000, Total sum= 1.25921e+07
-TH1.Print Name  = hgood_jet1pt_cut1, Entries= 5081842, Total sum= 6.01777e+06
-TH1.Print Name  = hgood_jet1pt_cut2, Entries= 9717167, Total sum= 1.20375e+07
-TH1.Print Name  = hgood_jet1pt_cut3, Entries= 4145041, Total sum= 4.90904e+06
-TH1.Print Name  = hgood_jet1pt_nocut, Entries= 10018000, Total sum= 1.24005e+07
+TH1.Print Name  = hNtightElectrons_cut1, Entries= 5081842, Total sum= 5.92015e+06
+TH1.Print Name  = hNtightElectrons_cut2, Entries= 9717167, Total sum= 1.18058e+07
+TH1.Print Name  = hNtightElectrons_cut3, Entries= 4145041, Total sum= 4.82878e+06
+TH1.Print Name  = hNtightElectrons_nocut, Entries= 10018000, Total sum= 1.21684e+07
+TH1.Print Name  = hNtightMuons_cut1, Entries= 5081842, Total sum= 5.92015e+06
+TH1.Print Name  = hNtightMuons_cut2, Entries= 9717167, Total sum= 1.18058e+07
+TH1.Print Name  = hNtightMuons_cut3, Entries= 4145041, Total sum= 4.82878e+06
+TH1.Print Name  = hNtightMuons_nocut, Entries= 10018000, Total sum= 1.21684e+07
+TH1.Print Name  = hgood_jet1pt_cut1, Entries= 5081842, Total sum= 5.82554e+06
+TH1.Print Name  = hgood_jet1pt_cut2, Entries= 9717167, Total sum= 1.16443e+07
+TH1.Print Name  = hgood_jet1pt_cut3, Entries= 4145041, Total sum= 4.75552e+06
+TH1.Print Name  = hgood_jet1pt_nocut, Entries= 10018000, Total sum= 1.19909e+07
 TH1.Print Name  = hgood_jetpt_NOWeight_cut1, Entries= 13747186, Total sum= 1.37469e+07
 TH1.Print Name  = hgood_jetpt_NOWeight_cut2, Entries= 27214393, Total sum= 2.72137e+07
 TH1.Print Name  = hgood_jetpt_NOWeight_cut3, Entries= 11337024, Total sum= 1.13367e+07
 TH1.Print Name  = hgood_jetpt_NOWeight_nocut, Entries= 27928808, Total sum= 2.79281e+07
-TH1.Print Name  = hgood_jetpt_with weight_cut1, Entries= 13747186, Total sum= 1.81007e+07
-TH1.Print Name  = hgood_jetpt_with weight_cut2, Entries= 27214393, Total sum= 3.75277e+07
-TH1.Print Name  = hgood_jetpt_with weight_cut3, Entries= 11337024, Total sum= 1.4857e+07
-TH1.Print Name  = hgood_jetpt_with weight_nocut, Entries= 27928808, Total sum= 3.853e+07
-TH1.Print Name  = hnevents_cut1, Entries= 5081842, Total sum= 6.11865e+06
-TH1.Print Name  = hnevents_cut2, Entries= 9717167, Total sum= 1.2211e+07
-TH1.Print Name  = hnevents_cut3, Entries= 4145041, Total sum= 4.98725e+06
+TH1.Print Name  = hgood_jetpt_with weight_cut1, Entries= 13747186, Total sum= 1.75364e+07
+TH1.Print Name  = hgood_jetpt_with weight_cut2, Entries= 27214393, Total sum= 3.63513e+07
+TH1.Print Name  = hgood_jetpt_with weight_cut3, Entries= 11337024, Total sum= 1.4405e+07
+TH1.Print Name  = hgood_jetpt_with weight_nocut, Entries= 27928808, Total sum= 3.7315e+07
+TH1.Print Name  = hnevents_cut1, Entries= 5081842, Total sum= 5.92015e+06
+TH1.Print Name  = hnevents_cut2, Entries= 9717167, Total sum= 1.18058e+07
+TH1.Print Name  = hnevents_cut3, Entries= 4145041, Total sum= 4.82878e+06
 TH1.Print Name  = hnevents_no_weight_cut1, Entries= 5081842, Total sum= 5.08184e+06
 TH1.Print Name  = hnevents_no_weight_cut2, Entries= 9717167, Total sum= 9.71717e+06
 TH1.Print Name  = hnevents_no_weight_cut3, Entries= 4145041, Total sum= 4.14504e+06
 TH1.Print Name  = hnevents_no_weight_nocut, Entries= 10018000, Total sum= 1.0018e+07
-TH1.Print Name  = hnevents_nocut, Entries= 10018000, Total sum= 1.25921e+07
-TH1.Print Name  = hselected_jet1pt_cut1, Entries= 5081842, Total sum= 5.99808e+06
-TH1.Print Name  = hselected_jet1pt_cut2, Entries= 9717167, Total sum= 1.20082e+07
-TH1.Print Name  = hselected_jet1pt_cut3, Entries= 4145041, Total sum= 4.89129e+06
-TH1.Print Name  = hselected_jet1pt_nocut, Entries= 10018000, Total sum= 1.23711e+07
+TH1.Print Name  = hnevents_nocut, Entries= 10018000, Total sum= 1.21684e+07
+TH1.Print Name  = hselected_jet1pt_cut1, Entries= 5081842, Total sum= 5.80682e+06
+TH1.Print Name  = hselected_jet1pt_cut2, Entries= 9717167, Total sum= 1.16165e+07
+TH1.Print Name  = hselected_jet1pt_cut3, Entries= 4145041, Total sum= 4.73884e+06
+TH1.Print Name  = hselected_jet1pt_nocut, Entries= 10018000, Total sum= 1.1963e+07
 TH1.Print Name  = hselected_jetptNoweight_cut1, Entries= 13083290, Total sum= 1.30833e+07
 TH1.Print Name  = hselected_jetptNoweight_cut2, Entries= 26255471, Total sum= 2.62555e+07
 TH1.Print Name  = hselected_jetptNoweight_cut3, Entries= 10677404, Total sum= 1.06774e+07
 TH1.Print Name  = hselected_jetptNoweight_nocut, Entries= 26969886, Total sum= 2.69699e+07
-TH1.Print Name  = hselected_jetptWithweight_cut1, Entries= 13083290, Total sum= 1.73205e+07
-TH1.Print Name  = hselected_jetptWithweight_cut2, Entries= 26255471, Total sum= 3.63945e+07
-TH1.Print Name  = hselected_jetptWithweight_cut3, Entries= 10677404, Total sum= 1.40523e+07
-TH1.Print Name  = hselected_jetptWithweight_nocut, Entries= 26969886, Total sum= 3.73969e+07
+TH1.Print Name  = hselected_jetptWithweight_cut1, Entries= 13083290, Total sum= 1.67803e+07
+TH1.Print Name  = hselected_jetptWithweight_cut2, Entries= 26255471, Total sum= 3.52534e+07
+TH1.Print Name  = hselected_jetptWithweight_cut3, Entries= 10677404, Total sum= 1.36259e+07
+TH1.Print Name  = hselected_jetptWithweight_nocut, Entries= 26969886, Total sum= 3.62172e+07
 -------------------------------------------------------------------
 END...  :) 
 Processing complete.

@@ -20,25 +20,19 @@ def generate_input_output_pairs(sample_list_file):
 
 # options for Nanoaodrdframe
 config = {
-        # tree name of input file(s)
-        'intreename': "Events",
-        # tree name of output file(s) it cannot be the same as the input tree name or it'll crash
-        'outtreename': "outputTree2",
-        #data year (2016,2017,2018)
-        'year': 2017,
-        # is ReReco or Ultra Legacy
-        'runtype': 'UL',
+       
+        'intreename': "Events",  # tree name of input file(s)
+        'outtreename': "outputTree2", # tree name of output file(s) it cannot be the same as the input tree name or it'll crash
+        'year': 2017,    #data year (2016,2017,2018)
+        'runtype': 'UL',   # is ReReco or Ultra Legacy
         'datatype': -1,
 
-
         #for correction
-        # good json file 
         # 'goodjson': 'data/Legacy_RunII/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt', #UL_2018
-        'goodjson': 'data/Legacy_RunII/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt', #UL_2017
+        'goodjson': 'data/Legacy_RunII/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt', #UL_2017  # good json file 
 
-        # pileup weight for MC 
         # 'pileupfname': 'data/LUM/2018_UL/puWeights.json',
-        'pileupfname': 'data/LUM/2017_UL/puWeights.json',
+        'pileupfname': 'data/LUM/2017_UL/puWeights.json',  # pileup weight for MC 
 
         # 'pileuptag': 'Collisions18_UltraLegacy_goldenJSON',
         'pileuptag': 'Collisions17_UltraLegacy_goldenJSON',
@@ -47,7 +41,7 @@ config = {
         # 'btvfname': 'data/BTV/2018_UL/btagging.json',
         'btvfname': 'data/BTV/2017_UL/btagging.json',
         # BTV correction type: //to use btvtype from the json file for the btag SFs
-        'btvtype': 'deepJet_mujets', #for fixed wp : case1 
+        'btvtype': 'deepJet_mujets', #for fixed wp : case1 # need to account for btag SF as deepCSV is used.
         #'btvtype': 'deepJet_comb', #for fixed wp : case2
         #'btvtype': 'deepJet_shape', #for central shape : case3
         
@@ -98,23 +92,19 @@ config = {
 
 # processing options
 procflags = {
-        # how many jobs?
-        'split': 1,
-        # if False, one output file per input file, if True then one output file for everything
-        'allinone': True, 
-        # if True then skip existing analyzed files
-        'skipold': True,
-        # travel through the subdirectories and their subdirecties when processing.
-        # becareful not to mix MC and real DATA in them.
-        'recursive': True,
-        # if False then only selected branches which is done in the .cpp file will be saved
-        'saveallbranches': False,
+     
+        'split': 10,    # how many jobs?
+        # 'n_jobs': 10,
+        'allinone': False,   # if False, one output file per input file, if True then one output file for everything
+        'skipold': True,    # if True then skip existing analyzed files
+        'recursive': True, # travel through the subdirectories and their subdirecties when processing. # becareful not to mix MC and real DATA in them.                        
+        'saveallbranches': False, # if False then only selected branches which is done in the .cpp file will be saved
         #How many input files?
-        'nrootfiles':300, # set to -1 when you want to process all files in the input dir of root:// type
+        'nrootfiles': 'All', # set to -1 when you want to process all files in the input dir of root:// type
         }
 
 
-sample_list_file = 'sample_list.txt'
+sample_list_file = 'test_list.txt'
 nanoaod_inputdir_outputdir_pairs, sample_names = generate_input_output_pairs(sample_list_file)
 
 

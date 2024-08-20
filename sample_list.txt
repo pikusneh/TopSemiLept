@@ -1,3 +1,12 @@
+TTbar_Dilept,/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM,/eos/uscms/store/user/snehshuc/test/2017/TTbar_Dilept.root,stderr_TTbar_Dilept.out
+
+TTbar_Hadronic,/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM,/eos/uscms/store/user/snehshuc/test/2017/TTbar_Hadronic.root,stderr_TTbar_Hadronic.out
 
 TTbar_Semilept,/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM,/eos/uscms/store/user/snehshuc/test/2017/TTbar_Semilept_300.root,stderr_TTbar_Semilept300.out
+
+TTGamma_Dilept,/TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM,/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Dilept_new.root,stderr_TTGamma_Dilept.out
+
+TTGamma_Hadronic,/TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM,/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Hadronic_new.root,stderr_TTGamma_Hadronic.out
+
+TTGamma_Semilept,/TTGamma_SingleLept_TuneCP5_13TeV-madgraph-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM,/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Semilept_new.root,stderr_TTGamma_Semilept.out
 

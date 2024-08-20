@@ -4,134 +4,214 @@
 
 void photoncat() {
     
-    std::vector<std::string> TTgamma = {"/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Dilept.root",
-    "/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Hadronic.root",
-    "/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Semilept.root"};
+    std::vector<std::string> TTgamma = {"/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Dilept_new.root",
+    "/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Hadronic_new.root",
+    "/eos/uscms/store/user/snehshuc/test/2017/TTGamma_Semilept_new.root"};
     std::string treeName = "outputTree2"; 
 
     std::vector<std::string> TTbar = {"/eos/uscms/store/user/snehshuc/test/2017/TTbar_Hadronic_300.root",
-    "/eos/uscms/store/user/snehshuc/test/2017/TTbar_Dilept_300.root"};
-    ROOT::RDataFrame df(treeName, TTgamma);
-    ROOT::RDataFrame df_TTbar(treeName, TTbar);
+    "/eos/uscms/store/user/snehshuc/test/2017/TTbar_Dilept_300.root",
+    "/eos/uscms/store/user/snehshuc/test/2017/TTbar_Semilept_300.root"};
+    
+    ROOT::RDataFrame df1(treeName, TTgamma);
+    ROOT::RDataFrame df2(treeName, TTbar);
+    
+    //number of events in TTGamma and TTbar
+    auto df_TTGamma = df1.Count();
+    std::cout << "Number of events in TTGamma sample: " << *df_TTGamma << std::endl;
+    auto df_TTBar = df2.Count();
+    std::cout << "Number of events in TTbar sample: " << *df_TTBar << std::endl;
 
-    auto df_muon = df.Filter("NtightMuons == 1");
-    auto df_muon_TTbar = df_TTbar.Filter("NtightMuons == 1");
-    auto df_electron = df.Filter("NtightElectrons == 1");
-    auto df_electron_TTbar = df_TTbar.Filter("NtightElectrons == 1");
+// --------------------------------muon channel selection-------------------------------------------------------------------------------------------
+    auto df_muon_TTGamma = df1.Filter("NtightMuons == 1 && NgoodJets >= 3");
+    auto df_muon_TTbar = df2.Filter("NtightMuons == 1 && NgoodJets >= 3");
     // number of events after muon channel selection
-    auto df_muon_ch = df_muon.Count();
-    std::cout << "Number of events after muon channel selection in TTGamma sample: " << *df_muon_ch << std::endl;
+    auto df_muon_ch_TTGamma = df_muon_TTGamma.Count();
+    std::cout << "Number of events after muon channel and Jets selection in TTGamma sample: " << *df_muon_ch_TTGamma << std::endl;
     auto df_muon_ch_TTbar = df_muon_TTbar.Count();
-    std::cout << "Number of events after muon channel selection in TTbar sample: " << *df_muon_ch_TTbar << std::endl;
-    // number of events after electron channel selection
-    auto df_electron_ch = df_electron.Count();
-    std::cout << "Number of events after electron channel selection in TTGamma sample: " << *df_electron_ch << std::endl;
+    std::cout << "Number of events after muon channel and Jets selection in TTbar sample: " << *df_muon_ch_TTbar << std::endl;
+
+    auto df_photon_muon_TTGamma = df_muon_TTGamma.Filter("NgoodPhotons == 1 ");  
+    auto df_photon_muon_TTbar = df_muon_TTbar.Filter("NgoodPhotons == 1");
+    // number of events after photon selection
+    auto df_photon_ch_muon_TTGamma = df_photon_muon_TTGamma.Count();
+    std::cout << "Number of events after photon selection in TTGamma sample : " << *df_photon_ch_muon_TTGamma << std::endl;
+    auto df_photon_ch_muon_TTbar = df_photon_muon_TTbar.Count();
+    std::cout << "Number of events after photon selection in TTbar sample : " << *df_photon_ch_muon_TTbar << std::endl;
+
+    auto df_pho_isgenuine_muon_TTGamma = df_photon_muon_TTGamma.Filter("_photonIsGenuine[0] == 1");
+    auto df_pho_ishadronic_muon_TTGamma = df_photon_muon_TTGamma.Filter("_photonIsHadronicPhoton[0] == 1");
+    auto df_pho_ismisid_muon_TTGamma = df_photon_muon_TTGamma.Filter("_photonIsMisIDEle[0] == 1");
+    auto df_pho_ishadronicfake_muon_TTGamma = df_photon_muon_TTGamma.Filter("_photonIsHadronicFake[0] == 1");
+
+    auto df_pho_isgenuine_muon_TTbar = df_photon_muon_TTbar.Filter("_photonIsGenuine[0] == 1");
+    auto df_pho_ishadronic_muon_TTbar = df_photon_muon_TTbar.Filter("_photonIsHadronicPhoton[0] == 1");
+    auto df_pho_ismisid_muon_TTbar = df_photon_muon_TTbar.Filter("_photonIsMisIDEle[0] == 1");
+    auto df_pho_ishadronicfake_muon_TTbar = df_photon_muon_TTbar.Filter("_photonIsHadronicFake[0] == 1");
+
+    auto h_pho_isgenuine_muon_TTGamma = df_pho_isgenuine_muon_TTGamma.Histo1D({"h_pho_isgenuine_muon_TTGamma", "Genuine Photon (tt + #gamma), muon channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ishadronic_muon_TTGamma = df_pho_ishadronic_muon_TTGamma.Histo1D({"h_pho_ishadronic_muon_TTGamma", "Hadronic Photon (tt + #gamma), muon channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ismisid_muon_TTGamma = df_pho_ismisid_muon_TTGamma.Histo1D({"h_pho_ismisid_muon_TTGamma", "MisID Photon (tt + #gamma), muon channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ishadronicfake_muon_TTGamma = df_pho_ishadronicfake_muon_TTGamma.Histo1D({"h_pho_ishadronicfake_muon_TTGamma", "Hadronic Fake Photon (tt + #gamma), muon channel", 50, 0, 200}, "goodPhotons_pt");
+
+    auto h_pho_isgenuine_muon_TTbar = df_pho_isgenuine_muon_TTbar.Histo1D({"h_pho_isgenuine_muon_TTbar", "Genuine Photon (tt), muon channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ishadronic_muon_TTbar = df_pho_ishadronic_muon_TTbar.Histo1D({"h_pho_ishadronic_muon_TTbar", "Hadronic Photon (tt), muon channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ismisid_muon_TTbar = df_pho_ismisid_muon_TTbar.Histo1D({"h_pho_ismisid_muon_TTbar", "MisID Photon (tt), muon channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ishadronicfake_muon_TTbar = df_pho_ishadronicfake_muon_TTbar.Histo1D({"h_pho_ishadronicfake_muon_TTbar", "Hadronic Fake Photon (tt), muon channel", 50, 0, 200}, "goodPhotons_pt");
+
+
+    // --------------------------------electron channel selection-------------------------------------------------------------------------------------------
+    auto df_electron_TTgamma = df1.Filter("NtightElectrons == 1 && NgoodJets >= 3");
+    auto df_electron_TTbar = df2.Filter("NtightElectrons == 1 && NgoodJets >= 3");
+    // number of evWeightents after electron channel selection
+    auto df_electron_ch_TTGamma = df_electron_TTgamma.Count();
+    std::cout << "Number of events after electron channel and Jets selection in TTGamma sample: " << *df_electron_ch_TTGamma << std::endl;
     auto df_electron_ch_TTbar = df_electron_TTbar.Count();
-    std::cout << "Number of events after electron channel selection in TTbar sample: " << *df_electron_ch_TTbar << std::endl;
+    std::cout << "Number of events after electron channel and Jets selection in TTbar sample: " << *df_electron_ch_TTbar << std::endl;
 
-    auto df_photon = df_muon.Filter("NgoodPhotons == 1");
-    auto df_photon_TTbar = df_muon_TTbar.Filter("NgoodPhotons == 1");
-    //print number of events after photon selection
-    auto df_photon_ch = df_photon.Count();
-    std::cout << "Number of events after photon selection in TTGamma sample : " << *df_photon_ch << std::endl;
-    auto df_photon_ch_TTbar = df_photon_TTbar.Count();
-    std::cout << "Number of events after photon selection in TTbar sample : " << *df_photon_ch_TTbar << std::endl;
+    auto df_photon_electron_TTGamma = df_electron_TTgamma.Filter("NgoodPhotons == 1");
+    auto df_photon_electron_TTbar = df_electron_TTbar.Filter("NgoodPhotons == 1");
+    // number of events after photon selection
+    auto df_photon_ch_electron_TTGamma = df_photon_electron_TTGamma.Count();
+    std::cout << "Number of events after photon selection in TTGamma sample : " << *df_photon_ch_electron_TTGamma << std::endl;
+    auto df_photon_ch_electron_TTbar = df_photon_electron_TTbar.Count();
+    std::cout << "Number of events after photon selection in TTbar sample : " << *df_photon_ch_electron_TTbar << std::endl;
 
-    auto df_pho_isgenuine = df_photon.Filter("_photonIsGenuine[0] == 1");
-    auto df_pho_ishadronic = df_photon.Filter("_photonIsHadronicPhoton[0] == 1");
-    auto df_pho_ismisid = df_photon.Filter("_photonIsMisIDEle[0] == 1");
-    auto df_pho_ishadronicfake = df_photon.Filter("_photonIsHadronicFake[0] == 1");
+    auto df_pho_isgenuine_electron_TTGamma = df_photon_electron_TTGamma.Filter("_photonIsGenuine[0] == 1");
+    auto df_pho_ishadronic_electron_TTGamma = df_photon_electron_TTGamma.Filter("_photonIsHadronicPhoton[0] == 1");
+    auto df_pho_ismisid_electron_TTGamma = df_photon_electron_TTGamma.Filter("_photonIsMisIDEle[0] == 1");
+    auto df_pho_ishadronicfake_electron_TTGamma = df_photon_electron_TTGamma.Filter("_photonIsHadronicFake[0] == 1");
 
-    auto df_pho_isgenuine_TTbar = df_photon_TTbar.Filter("_photonIsGenuine[0] == 1");
-    auto df_pho_ishadronic_TTbar = df_photon_TTbar.Filter("_photonIsHadronicPhoton[0] == 1");
-    auto df_pho_ismisid_TTbar = df_photon_TTbar.Filter("_photonIsMisIDEle[0] == 1");
-    auto df_pho_ishadronicfake_TTbar = df_photon_TTbar.Filter("_photonIsHadronicFake[0] == 1");
+    auto df_pho_isgenuine_electron_TTbar = df_photon_electron_TTbar.Filter("_photonIsGenuine[0] == 1");
+    auto df_pho_ishadronic_electron_TTbar = df_photon_electron_TTbar.Filter("_photonIsHadronicPhoton[0] == 1");
+    auto df_pho_ismisid_electron_TTbar = df_photon_electron_TTbar.Filter("_photonIsMisIDEle[0] == 1");
+    auto df_pho_ishadronicfake_electron_TTbar = df_photon_electron_TTbar.Filter("_photonIsHadronicFake[0] == 1");
 
-    // Define histograms for each photon category
-    auto h_pho_isgenuine = df_pho_isgenuine.Histo1D({"h_pho_isgenuine", "Genuine Photon", 50, 0, 200}, "goodPhotons_pt");
-    auto h_pho_ishadronic = df_pho_ishadronic.Histo1D({"h_pho_ishadronic", "Hadronic Photon", 50, 0, 200}, "goodPhotons_pt");
-    auto h_pho_ismisid = df_pho_ismisid.Histo1D({"h_pho_ismisid", "MisID Photon", 50, 0, 200}, "goodPhotons_pt");
-    auto h_pho_ishadronicfake = df_pho_ishadronicfake.Histo1D({"h_pho_ishadronicfake", "Hadronic Fake Photon", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_isgenuine_electron_TTGamma = df_pho_isgenuine_electron_TTGamma.Histo1D({"h_pho_isgenuine_electron_TTGamma", "Genuine Photon (tt + #gamma), electron channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ishadronic_electron_TTGamma = df_pho_ishadronic_electron_TTGamma.Histo1D({"h_pho_ishadronic_electron_TTGamma", "Hadronic Photon (tt + #gamma), electron channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ismisid_electron_TTGamma = df_pho_ismisid_electron_TTGamma.Histo1D({"h_pho_ismisid_electron_TTGamma", "MisID Photon (tt + #gamma), electron channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ishadronicfake_electron_TTGamma = df_pho_ishadronicfake_electron_TTGamma.Histo1D({"h_pho_ishadronicfake_electron_TTGamma", "Hadronic Fake Photon (tt + #gamma), electron channel", 50, 0, 200}, "goodPhotons_pt");
 
-    auto h_pho_isgenuine_TTbar = df_pho_isgenuine_TTbar.Histo1D({"h_pho_isgenuine_TTbar", "Genuine Photon", 50, 0, 200}, "goodPhotons_pt");
-    auto h_pho_ishadronic_TTbar = df_pho_ishadronic_TTbar.Histo1D({"h_pho_ishadronic_TTbar", "Hadronic Photon", 50, 0, 200}, "goodPhotons_pt");
-    auto h_pho_ismisid_TTbar = df_pho_ismisid_TTbar.Histo1D({"h_pho_ismisid_TTbar", "MisID Photon", 50, 0, 200}, "goodPhotons_pt");
-    auto h_pho_ishadronicfake_TTbar = df_pho_ishadronicfake_TTbar.Histo1D({"h_pho_ishadronicfake_TTbar", "Hadronic Fake Photon", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_isgenuine_electron_TTbar = df_pho_isgenuine_electron_TTbar.Histo1D({"h_pho_isgenuine_electron_TTbar", "Genuine Photon (tt), electron channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ishadronic_electron_TTbar = df_pho_ishadronic_electron_TTbar.Histo1D({"h_pho_ishadronic_electron_TTbar", "Hadronic Photon (tt), electron channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ismisid_electron_TTbar = df_pho_ismisid_electron_TTbar.Histo1D({"h_pho_ismisid_electron_TTbar", "MisID Photon (tt), electron channel", 50, 0, 200}, "goodPhotons_pt");
+    auto h_pho_ishadronicfake_electron_TTbar = df_pho_ishadronicfake_electron_TTbar.Histo1D({"h_pho_ishadronicfake_electron_TTbar", "Hadronic Fake Photon (tt), electron channel", 50, 0, 200}, "goodPhotons_pt");
 
-    auto hist_tightElectrons_pt = df.Histo1D({"tightElectrons_pt", "tightElectrons_pt;X-axis;Y-axis",  25, 0, 250}, "tightElectrons_pt","evWeight");
-
-    auto hist_goodPhotons_pt = df_photon.Histo1D({"goodPhotons_pt", "goodPhotons_pt;X-axis;Y-axis",  25, 0, 250}, "goodPhotons_pt");
-
-    auto hist_tightElectrons_pt_TTbar = df_TTbar.Histo1D({"tightElectrons_pt_TTbar", "tightElectrons_pt_TTbar;X-axis;Y-axis",  25, 0, 250}, "tightElectrons_pt","evWeight");
-
-    auto hist_goodPhotons_pt_TTbar = df_photon_TTbar.Histo1D({"goodPhotons_pt_TTbar", "goodPhotons_pt_TTbar;X-axis;Y-axis",  25, 0, 250}, "goodPhotons_pt");
-    
+// ---------------------------------------------------------Canvas-----------------------------------------------------------
     // Create a canvas to draw the histograms
-    TCanvas c1("c1", "Photon Categories", 800, 600);
-    THStack hs("hs", "Stacked Photon Categories");
+    TCanvas c1_muon_TTGamma("c1_muon_TTGamma", "Photon Categories", 800, 600);
+    THStack hs_muon_TTGamma("hs_muon_TTGamma", "Photon Categories (tt + #gamma) muon channel");
+    h_pho_isgenuine_muon_TTGamma->SetFillColor(kBlue);
+    h_pho_ishadronic_muon_TTGamma->SetFillColor(kRed);
+    h_pho_ismisid_muon_TTGamma->SetFillColor(kGreen);
+    h_pho_ishadronicfake_muon_TTGamma->SetFillColor(kMagenta);
 
-    // Set colors for each histogram
-    h_pho_isgenuine->SetFillColor(kBlue);
-    h_pho_ishadronic->SetFillColor(kRed);
-    h_pho_ismisid->SetFillColor(kGreen);
-    h_pho_ishadronicfake->SetFillColor(kMagenta);
+    hs_muon_TTGamma.Add(h_pho_isgenuine_muon_TTGamma.GetPtr());
+    hs_muon_TTGamma.Add(h_pho_ishadronic_muon_TTGamma.GetPtr());
+    hs_muon_TTGamma.Add(h_pho_ismisid_muon_TTGamma.GetPtr());
+    hs_muon_TTGamma.Add(h_pho_ishadronicfake_muon_TTGamma.GetPtr());
 
-    // Add histograms to the stack
-    hs.Add(h_pho_isgenuine.GetPtr());
-    hs.Add(h_pho_ishadronic.GetPtr());
-    hs.Add(h_pho_ismisid.GetPtr());
-    hs.Add(h_pho_ishadronicfake.GetPtr());
+    hs_muon_TTGamma.Draw("HIST");
 
-    // Draw the stacked histograms
-    hs.Draw("HIST");
+    TLegend legend_muon_TTGamma(0.7, 0.7, 0.9, 0.9);
+    legend_muon_TTGamma.AddEntry(h_pho_isgenuine_muon_TTGamma.GetPtr(), "Genuine Photon", "f");
+    legend_muon_TTGamma.AddEntry(h_pho_ishadronic_muon_TTGamma.GetPtr(), "Hadronic Photon", "f");
+    legend_muon_TTGamma.AddEntry(h_pho_ismisid_muon_TTGamma.GetPtr(), "MisID Photon", "f");
+    legend_muon_TTGamma.AddEntry(h_pho_ishadronicfake_muon_TTGamma.GetPtr(), "Hadronic Fake Photon", "f");
+    legend_muon_TTGamma.Draw();
 
-    // Add a legend
-    TLegend legend(0.7, 0.7, 0.9, 0.9);
-    legend.AddEntry(h_pho_isgenuine.GetPtr(), "Genuine Photon", "f");
-    legend.AddEntry(h_pho_ishadronic.GetPtr(), "Hadronic Photon", "f");
-    legend.AddEntry(h_pho_ismisid.GetPtr(), "MisID Photon", "f");
-    legend.AddEntry(h_pho_ishadronicfake.GetPtr(), "Hadronic Fake Photon", "f");
-    legend.Draw();
+    TCanvas c2_muon_TTbar("c2_muon_TTbar", "Photon Categories TTbar", 800, 600);
+    THStack hs_muon_TTbar("hs_muon_TTbar", "Photon Categories TTbar muon channel");
 
-//TTbar sample Canvas and histograms
-    TCanvas c2("c2", "Photon Categories TTbar", 800, 600);
-    THStack hs_TTbar("hs_TTbar", "Stacked Photon Categories TTbar");
+    h_pho_isgenuine_muon_TTbar->SetFillColor(kBlue);
+    h_pho_ishadronic_muon_TTbar->SetFillColor(kRed);
+    h_pho_ismisid_muon_TTbar->SetFillColor(kGreen);
+    h_pho_ishadronicfake_muon_TTbar->SetFillColor(kMagenta);
 
-    h_pho_isgenuine_TTbar->SetFillColor(kBlue);
-    h_pho_ishadronic_TTbar->SetFillColor(kRed);
-    h_pho_ismisid_TTbar->SetFillColor(kGreen);
-    h_pho_ishadronicfake_TTbar->SetFillColor(kMagenta);
+    hs_muon_TTbar.Add(h_pho_isgenuine_muon_TTbar.GetPtr());
+    hs_muon_TTbar.Add(h_pho_ishadronic_muon_TTbar.GetPtr());
+    hs_muon_TTbar.Add(h_pho_ismisid_muon_TTbar.GetPtr());
+    hs_muon_TTbar.Add(h_pho_ishadronicfake_muon_TTbar.GetPtr());
 
-    hs_TTbar.Add(h_pho_isgenuine_TTbar.GetPtr());
-    hs_TTbar.Add(h_pho_ishadronic_TTbar.GetPtr());
-    hs_TTbar.Add(h_pho_ismisid_TTbar.GetPtr());
-    hs_TTbar.Add(h_pho_ishadronicfake_TTbar.GetPtr());
+    hs_muon_TTbar.Draw("HIST");
 
-    hs_TTbar.Draw("HIST");
+    TLegend legend_muon_TTbar(0.7, 0.7, 0.9, 0.9);
+    legend_muon_TTbar.AddEntry(h_pho_isgenuine_muon_TTbar.GetPtr(), "Genuine Photon", "f");
+    legend_muon_TTbar.AddEntry(h_pho_ishadronic_muon_TTbar.GetPtr(), "Hadronic Photon", "f");
+    legend_muon_TTbar.AddEntry(h_pho_ismisid_muon_TTbar.GetPtr(), "MisID Photon", "f");
+    legend_muon_TTbar.AddEntry(h_pho_ishadronicfake_muon_TTbar.GetPtr(), "Hadronic Fake Photon", "f");
+    legend_muon_TTbar.Draw();
 
-    TLegend legend_TTbar(0.7, 0.7, 0.9, 0.9);
-    legend_TTbar.AddEntry(h_pho_isgenuine_TTbar.GetPtr(), "Genuine Photon", "f");
-    legend_TTbar.AddEntry(h_pho_ishadronic_TTbar.GetPtr(), "Hadronic Photon", "f");
-    legend_TTbar.AddEntry(h_pho_ismisid_TTbar.GetPtr(), "MisID Photon", "f");
-    legend_TTbar.AddEntry(h_pho_ishadronicfake_TTbar.GetPtr(), "Hadronic Fake Photon", "f");
-    legend_TTbar.Draw();
+    TCanvas c1_electron_TTGamma("c1_electron_TTGamma", "Photon Categories", 800, 600);
+    THStack hs_electron_TTGamma("hs_electron_TTGamma", "Photon Categories (tt + #gamma) electron channel");
+
+    h_pho_isgenuine_electron_TTGamma->SetFillColor(kBlue);
+    h_pho_ishadronic_electron_TTGamma->SetFillColor(kRed);
+    h_pho_ismisid_electron_TTGamma->SetFillColor(kGreen);
+    h_pho_ishadronicfake_electron_TTGamma->SetFillColor(kMagenta);
+
+    hs_electron_TTGamma.Add(h_pho_isgenuine_electron_TTGamma.GetPtr());
+    hs_electron_TTGamma.Add(h_pho_ishadronic_electron_TTGamma.GetPtr());
+    hs_electron_TTGamma.Add(h_pho_ismisid_electron_TTGamma.GetPtr());
+    hs_electron_TTGamma.Add(h_pho_ishadronicfake_electron_TTGamma.GetPtr());
+
+    hs_electron_TTGamma.Draw("HIST");
+
+    TLegend legend_electron_TTGamma(0.7, 0.7, 0.9, 0.9);
+    legend_electron_TTGamma.AddEntry(h_pho_isgenuine_electron_TTGamma.GetPtr(), "Genuine Photon", "f");
+    legend_electron_TTGamma.AddEntry(h_pho_ishadronic_electron_TTGamma.GetPtr(), "Hadronic Photon", "f");
+    legend_electron_TTGamma.AddEntry(h_pho_ismisid_electron_TTGamma.GetPtr(), "MisID Photon", "f");
+    legend_electron_TTGamma.AddEntry(h_pho_ishadronicfake_electron_TTGamma.GetPtr(), "Hadronic Fake Photon", "f");
+
+    legend_electron_TTGamma.Draw();
+
+    TCanvas c2_electron_TTbar("c2_electron_TTbar", "Photon Categories TTbar", 800, 600);
+    THStack hs_electron_TTbar("hs_electron_TTbar", "Photon Categories TTbar electron channel");
+
+    h_pho_isgenuine_electron_TTbar->SetFillColor(kBlue);
+    h_pho_ishadronic_electron_TTbar->SetFillColor(kRed);
+    h_pho_ismisid_electron_TTbar->SetFillColor(kGreen);
+    h_pho_ishadronicfake_electron_TTbar->SetFillColor(kMagenta);
+
+    hs_electron_TTbar.Add(h_pho_isgenuine_electron_TTbar.GetPtr());
+    hs_electron_TTbar.Add(h_pho_ishadronic_electron_TTbar.GetPtr());
+    hs_electron_TTbar.Add(h_pho_ismisid_electron_TTbar.GetPtr());
+    hs_electron_TTbar.Add(h_pho_ishadronicfake_electron_TTbar.GetPtr());
+
+    hs_electron_TTbar.Draw("HIST");
+
+    TLegend legend_electron_TTbar(0.7, 0.7, 0.9, 0.9);
+    legend_electron_TTbar.AddEntry(h_pho_isgenuine_electron_TTbar.GetPtr(), "Genuine Photon", "f");
+    legend_electron_TTbar.AddEntry(h_pho_ishadronic_electron_TTbar.GetPtr(), "Hadronic Photon", "f");
+    legend_electron_TTbar.AddEntry(h_pho_ismisid_electron_TTbar.GetPtr(), "MisID Photon", "f");
+    legend_electron_TTbar.AddEntry(h_pho_ishadronicfake_electron_TTbar.GetPtr(), "Hadronic Fake Photon", "f");
+
+    legend_electron_TTbar.Draw();
+
     
-    TFile *f = new TFile("photon_cat.root","RECREATE");
+    TFile *f = new TFile("photon_categoryWeight.root","RECREATE");
 
-    hist_tightElectrons_pt->Write();
-    h_pho_isgenuine->Write();
-    h_pho_ishadronic->Write();
-    h_pho_ismisid->Write();
-    h_pho_ishadronicfake->Write();
-    hist_goodPhotons_pt->Write();
-    h_pho_isgenuine_TTbar->Write();
-    h_pho_ishadronic_TTbar->Write();
-    h_pho_ismisid_TTbar->Write();
-    h_pho_ishadronicfake_TTbar->Write();
-    hist_tightElectrons_pt_TTbar->Write();
-    hist_goodPhotons_pt_TTbar->Write();
-    c1.Write();
-    c2.Write();
+    h_pho_isgenuine_muon_TTGamma->Write();
+    h_pho_ishadronic_muon_TTGamma->Write();
+    h_pho_ismisid_muon_TTGamma->Write();
+    h_pho_ishadronicfake_muon_TTGamma->Write();
+    h_pho_isgenuine_muon_TTbar->Write();
+    h_pho_ishadronic_muon_TTbar->Write();
+    h_pho_ismisid_muon_TTbar->Write();
+    h_pho_ishadronicfake_muon_TTbar->Write();
+    h_pho_isgenuine_electron_TTGamma->Write();
+    h_pho_ishadronic_electron_TTGamma->Write();
+    h_pho_ismisid_electron_TTGamma->Write();
+    h_pho_ishadronicfake_electron_TTGamma->Write();
+    h_pho_isgenuine_electron_TTbar->Write();
+    h_pho_ishadronic_electron_TTbar->Write();
+    h_pho_ismisid_electron_TTbar->Write();
+    h_pho_ishadronicfake_electron_TTbar->Write();
+
+    c1_muon_TTGamma.Write();
+    c2_muon_TTbar.Write();
+    c1_electron_TTGamma.Write();
+    c2_electron_TTbar.Write();
 
    
     f->Close();

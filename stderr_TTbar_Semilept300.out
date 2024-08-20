@@ -170,6 +170,10 @@ ELECTRON JSON FILE : data/EGM/2017_UL/electron.json.gz
 ELECTRON RECO type in JSON  : RecoAbove20
 ELECTRONID type in JSON  : Tight
 ================================//=================================
+================================//=================================
+PHOTON JSON FILE : data/EGM/2017_UL/photon.json.gz
+PHOTON ID type in JSON  : Medium
+================================//=================================
 SETUP JETMET correction
 JERC JSON file : data/JERC/UL17_jerc.json
 JET tag in JSON : Summer19UL17_V5_MC_L1L2L3Res_AK4PFchs
@@ -335,3 +339,192 @@ Total Number of Entries:
 346052000
 -------------------------------------------------------------------
 Starting setupanalysis
+Error in <TNetXNGFile::Open>: [ERROR] Server responded with an error: [3000] Unable to open - cannot determine the prefix path to use for the given filesystem id /store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/707EC16C-DAAD-E64E-8B63-31FDD9957448.root; invalid argument
+
+Sample: TTbar_Semilept
+Initial number of events: 344932000
+Final number of events: 10828840
+Number of overlapped events removed: 334103160
+select good electrons
+================================//=================================
+Line : 83 Function : selectElectrons
+================================//=================================
+================================//=================================
+Line : 1123 Function : ElectronID
+================================//=================================
+ TIGHT Electron ID requested   == 4
+-------------------------------------------------------------------
+tightElectrons_4vecs column successfully defined.
+================================//=================================
+Line : 1123 Function : ElectronID
+================================//=================================
+ VETO Electron ID requested    == 1
+-------------------------------------------------------------------
+================================//=================================
+Line : 1123 Function : ElectronID
+================================//=================================
+ LOOSE Electron ID requested   == 2
+-------------------------------------------------------------------
+select good muons
+================================//=================================
+Line : 1162 Function : MuonID
+================================//=================================
+ TIGHT Muon ID requested as == 4
+-------------------------------------------------------------------
+================================//=================================
+Line : 1162 Function : MuonID
+================================//=================================
+ Veto Muon ID requested   == 1
+-------------------------------------------------------------------
+ VETO Muon ID requested == 1, but it doesn't exist in the nanoAOD branches. It is moved to loose MuonID. 1
+================================//=================================
+Line : 1162 Function : MuonID
+================================//=================================
+ LOOSE Muon ID requested  == 2
+-------------------------------------------------------------------
+
+================================//=================================
+Line : 69 Function : selectChannel
+================================//=================================
+select good jets
+Jet_hadronFlavour branch is found in the input file.
+================================//=================================
+Line : 1207 Function : JetID
+================================//=================================
+ JET ID requested  == 6
+Select good photons
+================================//=================================
+Line : 1093 Function : PhotonID
+================================//=================================
+MEDIUM Photon ID requested  == 2
+-------------------------------------------------------------------
+Checking overlaps between jets, muons, electrons, and photons
+Defining muonjetoverlap
+Defining electronjetoverlap
+Defining jetNoOverlapWithLeptons
+Defining cleanedJetsWithLeptons
+Defining Selected_jetpt
+Defining other jet properties
+BJet SF column name: btag_SF_central
+BJet SF column name: btag_SF_up
+BJet SF column name: btag_SF_down
+BJet SF column name: btag_SF_up_correlated
+BJet SF column name: btag_SF_down_correlated
+BJet SF column name: btag_SF_uncorrelated
+muon HLT SF for MC 
+Muon SF column name: muon_SF_central
+Muon SF column name: muon_SF_up
+Muon SF column name: muon_SF_down
+Muon SF column name: muon_SF_syst
+Electron SF column name: ele_SF_central
+Electron SF column name: ele_SF_up
+Electron SF column name: ele_SF_down
+================================//=================================
+Line : 708 Function : selectMET
+================================//=================================
+================================//=================================
+Line : 962 Function : setupAnalysis
+================================//=================================
+year====2017==runtype=== UL
+Error in <TNetXNGFile::Open>: [ERROR] Server responded with an error: [3000] Unable to open - cannot determine the prefix path to use for the given filesystem id /store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/9E859620-42D8-6245-A41E-21A913B44C1B.root; invalid argument
+
+Sum of genWeights = 103792931316.015320
+================================//=================================
+Line : 34 Function : defineCuts
+================================//=================================
+-------------------------------------------------------------------
+Usage of ranges:
+ - All entries: 240818 17:51:55 341402 secgsi_GetCACheck: CRL entry for '1e49ade3.0:1' needs refreshing: clean the related entry cache first (0x7fbd98032200)
+10827918
+-------------------------------------------------------------------
+================================//=================================
+Line : 727 Function : defineMoreVars
+================================//=================================
+Gen-level variables added.
+================================//=================================
+Line : 871 Function : bookHists
+================================//=================================
+setting up definitions, cuts, and histograms
+pho_SF_central not found at 
+pho_SF_id_sf not found at 
+pho_SF_id_sfup not found at 
+evWeight not found at 
+-------------------------------------------------------------------
+cut :  --writing branches
+-------------------------------------------------------------------
+_photonIsGenuine
+_photonIsMisIDEle
+_photonIsHadronicPhoton
+_photonIsHadronicFake
+run
+luminosityBlock
+event
+evWeight
+muonChannel
+electronChannel
+nElectron
+Electron_pt
+Electron_eta
+Electron_charge
+NgoodElectrons
+goodElectrons_pt
+goodElectrons_eta
+NtightElectrons
+tightElectrons_pt
+tightElectrons_eta
+nMuon
+Muon_charge
+Muon_pt
+Muon_eta
+Muon_mass
+NgoodMuons
+goodMuons_pt
+goodMuons_eta
+NtightMuons
+tightMuons_pt
+tightMuons_eta
+NgoodPhotons
+goodPhotons_pt
+goodPhotons_eta
+nJet
+Jet_pt
+NgoodJets
+goodJets_pt
+Selected_jetpt
+Selected_jeteta
+Selected_jetbtag
+good_bjetdeepcsvjet
+Ngood_bjets
+Selected_jethadflav
+goodJets_hadflav
+good_bjethadflav
+Selected_bjethadflav
+Jet_pt_corr
+Jet_pt_corr_up
+Jet_pt_corr_down
+Jet_pt_relerror
+MET_pt_corr
+MET_pt
+MET_phi
+btag_SF_central
+btag_SF_up
+btag_SF_down
+muon_SF_central
+muon_SF_id_sf
+muon_SF_id_syst
+muon_SF_id_systup
+muon_SF_id_systdown
+muon_SF_iso_sf
+ele_SF_central
+ele_SF_id_sf
+ele_SF_id_sfup
+ele_SF_id_sfdown
+GenPartpt
+GenParteta
+GenPartphi
+GenPartmass
+GenPartpdgId
+nGenPart
+240819 17:59:22 341402 secgsi_GetCACheck: CRL entry for '1e49ade3.0:1' needs refreshing: clean the related entry cache first (0x7fbd98032200)
+Error in <TNetXNGFile::Open>: [ERROR] Server responded with an error: [3000] Unable to open - cannot determine the prefix path to use for the given filesystem id /store/mc/RunIISummer20UL17NanoAODv9/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/NANOAODSIM/106X_mc2017_realistic_v9-v1/280000/151C6C08-782D-CB4A-9D49-E63A05F46C96.root; invalid argument
+

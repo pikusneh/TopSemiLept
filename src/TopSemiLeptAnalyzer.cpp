@@ -691,12 +691,16 @@ void TopSemiLeptAnalyzer::calculateEvWeight()
     //   _rlm = _rlm.Define("evWeight", " pugenWeight * muon_SF_central * ele_SF_central");
     //   _rlm = _rlm.Define("totbtagSF", "btag_SF_bcflav_central * btag_SF_lflav_central");
 
+    std::vector<std::string> Photon_vars_names = {"goodPhotons_eta", "goodPhotons_pt"};
+    std::string output_pho_column_name = "photon_SF_";
+    _rlm = calculatePhoSF(_rlm, Photon_vars_names, output_pho_column_name);
+
     // Prefiring Weight for 2016 and 2017
       _rlm = applyPrefiringWeight(_rlm);
 
     // Total event Weight:
     //   _rlm = _rlm.Define("evWeight", " pugenWeight *prefiring_SF_central * btag_SF_bcflav_central * btag_SF_lflav_central * muon_SF_central * ele_SF_central");
-    _rlm = _rlm.Define("evWeight", " pugenWeight*prefiring_SF_central * btag_SF_central * muon_SF_central * ele_SF_central");
+    _rlm = _rlm.Define("evWeight", " pugenWeight * prefiring_SF_central * btag_SF_central * muon_SF_central * ele_SF_central");
 }
 // MET
 
@@ -843,6 +847,10 @@ void TopSemiLeptAnalyzer::defineMoreVars()
         addVartoStore("pho_SF_central");
         addVartoStore("pho_SF_id_sf");
         addVartoStore("pho_SF_id_sfup");
+        addVartoStore("pho_SF_up");
+        addVartoStore("pho_SF_down");
+        addVartoStore("pugenWeight");
+        addVartoStore("prefiring_SF_central");
 
         addVartoStore("evWeight");
     }

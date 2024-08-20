@@ -21,6 +21,10 @@ def submit(jobconfmod):
 
     pass
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 12e37f66caa692fbb9dbaa31fe4537aa0a7cf06a
 
 if __name__ == "__main__":
     from argparse import ArgumentParser

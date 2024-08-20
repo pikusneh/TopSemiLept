@@ -142,17 +142,17 @@ floats btv_case1(std::unique_ptr<correction::CorrectionSet>& cset, std::string t
     //std::cout << "sys: " << sys << ", wp: " << wp << ", hadflav: " << hadflav[i] << ", etas: " << abs_etas[i] << ", pts: " << cast_pts[i] << '\n';
     if(abs_etas[i]<=2.4){
       if (hadflav[i] != 0) {
-	bc_jets *= cset->at("deepJet_mujets")->evaluate({sys, wp, hadflav[i], abs_etas[i], cast_pts[i]});
+	bc_jets *= cset->at("deepCSV_comb")->evaluate({sys, wp, hadflav[i], abs_etas[i], cast_pts[i]});
 	//scalefactors_case1.emplace_back(bc_jets);
-	//std::cout << "\njet SFs from deepJe_mujets at medium WP\n";
+	//std::cout << "\njet SFs from deepJet_mujets at medium WP\n";
 	//std::cout << "SF b/c jets : " << bc_jets << '\n';
       } else{ 
-	//const auto bc_jets = cset->at("deepJet_incl")->evaluate({sys, wp, hadflav[i], abs_etas[i], cast_pts[i]});
-	bc_jets *= cset->at("deepJet_incl")->evaluate({sys, wp, hadflav[i], abs_etas[i], cast_pts[i]});
+	//const auto bc_jets = cset->at("deepCSV_incl")->evaluate({sys, wp, hadflav[i], abs_etas[i], cast_pts[i]});
+	bc_jets *= cset->at("deepCSV_incl")->evaluate({sys, wp, hadflav[i], abs_etas[i], cast_pts[i]});
       }
     }
     scalefactors_case1.emplace_back(bc_jets);
-    //std::cout << "\njet SFs from deepJet_incl at medium WP\n";
+    //std::cout << "\njet SFs from deepCSV_incl at medium WP\n";
     //std::cout << "SF light jets : " << bc_jets << '\n';
     //}
     //
@@ -189,13 +189,13 @@ floats btv_case2(std::unique_ptr<correction::CorrectionSet>& cset, std::string t
      
     if (hadflav[i] != 0) {
       //std::string type = "deepJet_comb" ;
-      const auto bc_jets = cset->at("deepJet_comb")->evaluate({sys, wp, hadflav[i], abs_etas[i], cast_pts[i]});
+      const auto bc_jets = cset->at("deepCSV_mujets")->evaluate({sys, wp, hadflav[i], abs_etas[i], cast_pts[i]});
       bweight = bc_jets;
       //std::cout << "\njet SFs up_correlated for comb at tight WP\n";
       //std::cout << "SF b/c : " << bc_jets << '\n';
     } else{ 
       //std::string type = "depJet_incl" ;
-      const auto bc_jets = cset->at("deepJet_incl")->evaluate({sys, wp, hadflav[i], abs_etas[i], cast_pts[i]});
+      const auto bc_jets = cset->at("deepCSV_incl")->evaluate({sys, wp, hadflav[i], abs_etas[i], cast_pts[i]});
       bweight = bc_jets;
       
       //std::cout << "\njet up_correlated for comb at tight  WP\n";
