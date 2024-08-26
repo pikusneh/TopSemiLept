@@ -14,6 +14,7 @@
 #include "ROOT/RVec.hxx"
 
 #include "Math/Vector4D.h"
+#include "crossSections.h"
 
 #include "correction.h"
 

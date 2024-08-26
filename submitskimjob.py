@@ -10,10 +10,12 @@ def submit(jobconfmod):
     # get input directory, outputdirectory, stderrout file from the job configuration python module
     mod = import_module(jobconfmod)
     nanoaod_inputdir_outputdir_pairs= getattr(mod, 'nanoaod_inputdir_outputdir_pairs')
+    sample_names = getattr(mod, 'sample_names')
 
     # job configuation module name is to be passed to the skim namoaod main 
-    for indir,outdir,outfile in nanoaod_inputdir_outputdir_pairs:
-        command = f'./skimnanoaod.py {indir} {outdir} {jobconfmod} > {outfile} 2>&1 &'
+    for i, (indir, outdir, outfile) in enumerate(nanoaod_inputdir_outputdir_pairs):
+        sample_name = sample_names[i]
+        command = f'./skimnanoaod.py {indir} {outdir} {jobconfmod} {sample_name} > {outfile} 2>&1 &'
         # os.system('./skimnanoaod.py '+ indir + ' ' + outdir + ' ' + jobconfmod  + ' > ' + outfile + ' 2>&1 &') # submit background jobs
         print(f"Submitting job: {command}")
         # subprocess.run(command, shell=True)

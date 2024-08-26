@@ -67,6 +67,7 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "hist.C": "cpp"
+        "hist.C": "cpp",
+        "optional": "cpp"
     }
 }

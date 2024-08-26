@@ -53,7 +53,7 @@ def function_calling_PostProcessor(outdir, rootfileshere, jobconfmod, samplename
 
 
 class Nanoaodprocessor:
-    def __init__(self, indir, outdir, jobconfmod, procflags, config,samplename):
+    def __init__(self, indir, outdir, jobconfmod, procflags, config, samplename):
         self.outdir = outdir
         self.indir = indir
         self.jobconfmod = jobconfmod
@@ -88,6 +88,10 @@ class Nanoaodprocessor:
             print(rootfile)
 
     def _get_local_root_files(self, inputdirectory):
+        if not os.path.exists(inputdirectory):
+            print(f"Directory {inputdirectory} does not exist.")
+            return []
+
         flist = os.listdir(inputdirectory)
         rootfiles = []
         for fname in flist:
@@ -154,11 +158,13 @@ class Nanoaodprocessor:
         return filterediflist
 
 class Nanoaodprocessor_singledir:
-    def __init__(self, indir, outputroot, procflags, config):
+    def __init__(self, indir, outputroot, procflags, config, samplename):
         self.outputroot = outputroot
         self.indir = indir
         self.procflags = procflags
         self.config = config
+        self.samplename = samplename
+        self.nrootfiles = procflags['nrootfiles'] 
 
         if is_valid_das_path(indir):
             self.rootfiles = get_root_file_paths(indir)
@@ -168,6 +174,15 @@ class Nanoaodprocessor_singledir:
         if not self.rootfiles:
             print(f"No ROOT files found in {indir}")
             exit(1)
+
+        if procflags['nrootfiles'] != 'All':
+            try:
+                n_files_to_process = int(procflags['nrootfiles'])
+                self.rootfiles = self.rootfiles[:n_files_to_process]
+            except ValueError:
+                print(f"Invalid value for nrootfiles: {procflags['nrootfiles']}. Using all files.")
+            print(f"Processing {len(self.rootfiles)} files out of {len(self.rootfiles)} available.")
+
 
     def _get_local_root_files(self, inputdirectory):
         flist = os.listdir(inputdirectory)
@@ -181,7 +196,7 @@ class Nanoaodprocessor_singledir:
     def process(self):
         self._processROOTfiles(self.rootfiles, self.outputroot)
 
-    def _processROOTfiles(self, rootfiles, outputroot):
+    '''def _processROOTfiles(self, rootfiles, outputroot):
         intreename = self.config['intreename']
         outtreename = self.config['outtreename']
         saveallbranches = self.procflags['saveallbranches']
@@ -229,7 +244,93 @@ class Nanoaodprocessor_singledir:
         aproc.setupObjects()
         aproc.setupAnalysis()
         aproc.run(saveallbranches, outtreename)
-        print(f"Processing complete. Output saved to {outputroot}.")
+        print(f"Processing complete. Output saved to {outputroot}.")'''
+
+    def _processROOTfiles(self, rootfiles, outputdir):
+        # Handle job splitting
+        if self.procflags['split'] == 'Max':
+            njobs = len(rootfiles)
+            nfileperjob = 1
+        else:
+            njobs = self.procflags['split']
+            nfileperjob = len(rootfiles) * 1.0 / njobs
+            if len(rootfiles) < njobs:
+                njobs = len(rootfiles)
+                nfileperjob = 1
+
+        print(f"Splitting {len(rootfiles)} files into {njobs} jobs.")
+
+        ap = []
+        for i in range(njobs):
+            if i < njobs - 1:
+                filesforjob = rootfiles[int(i * nfileperjob):int((i + 1) * nfileperjob)]
+            else:
+                filesforjob = rootfiles[int(i * nfileperjob):]
+            
+            print(f"Job {i+1} will process {len(filesforjob)} files.")
+
+            job_output_file = os.path.join(outputdir, f"{self.samplename}_job{i+1}.root")
+
+            p = Process(target=self._process_files_in_job, args=(filesforjob, job_output_file))
+            p.start()
+            ap.append(p)
+        
+        for proc in ap:
+            proc.join()
+
+    def _process_files_in_job(self, filesforjob, outputroot):
+        intreename = self.config['intreename']
+        outtreename = self.config['outtreename']
+        saveallbranches = self.procflags['saveallbranches']
+
+        t = ROOT.TChain(intreename)
+        for afile in filesforjob:
+            t.Add(afile)
+        nevents = t.GetEntries()
+        print("-------------------------------------------------------------------")
+        print(f"Total Number of Entries: {nevents}")
+        print("-------------------------------------------------------------------")
+
+        # Pass the samplename to the TopSemiLeptAnalyzer
+        aproc = ROOT.TopSemiLeptAnalyzer(t, outputroot, self.samplename)
+        aproc.setParams(self.config['year'], self.config['runtype'], self.config['datatype'])
+
+        # Setup corrections and analysis as before
+        aproc.setupCorrections(
+        config['goodjson'],
+        config['pileupfname'],
+        config['pileuptag'],
+        config['btvfname'],
+        config['btvtype'],
+        config['muon_roch_fname'],
+        config['muon_fname'],
+        config['muon_HLT_type'],
+        config['muon_RECO_type'],
+        config['muon_ID_type'],
+        config['muon_ISO_type'],
+        config['electron_fname'],
+        config['electron_reco_type'],
+        config['electron_id_type'],
+        config['photon_fname'],
+        config['photon_id_type'],
+        config['jercfname'],
+        config['jerctag'],
+        config['jercunctag']
+    )
+
+
+        sys.stdout.flush()  # to force printout in the right order
+
+        print("Setting up objects...")
+        aproc.setupObjects()
+
+        print("Setting up analysis...")
+        aproc.setupAnalysis()
+        
+        print("Running the analysis...")
+        aproc.run(saveallbranches, outtreename)
+
+        print(f"Processing complete for job {outputroot}.")
 
 if __name__ == '__main__':
 
@@ -267,5 +368,5 @@ if __name__ == '__main__':
         n.process()
     else:
         print("Processing with Nanoaodprocessor_singledir")
-        Nanoaodprocessor_singledir(indir, outdir, procflags, config).process()
+        Nanoaodprocessor_singledir(indir, outdir, procflags, config,samplename).process()
 

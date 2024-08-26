@@ -36,6 +36,7 @@ public:
 	void removeOverlaps();
 	ROOT::RDF::RNode applyOverlapRemoval(ROOT::RDF::RNode df, const std::string &sample_name);
 	ROOT::RDF::RNode categorizePhotons(ROOT::RDF::RNode df);
+	double getlumiWeight(std::string sampleName, int year, double luminosity, double sumgenweight);
 
 	bool debug = true;
 	bool _jsonOK;

@@ -16,8 +16,8 @@ class SkimEvents: public NanoAODAnalyzerrdframe
 {
 public:
     // Constructor
-    SkimEvents(TTree *t, std::string outfilename);
-
+    SkimEvents(TTree *tree, std::string outfilename, std::string sampleName);
+    void setSampleName(const std::string &sampleName);
     // Define the cuts based on HLT triggers
     void defineCuts();
 
@@ -35,7 +35,7 @@ public:
 
 private:
     string _outfilename;  // Output filename
-
+    std::string sampleName;
     TFile *_outrootfile;  // Output ROOT file
     vector<string> _outrootfilenames;  // List of output filenames
 };

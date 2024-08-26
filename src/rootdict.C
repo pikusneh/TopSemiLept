@@ -57,7 +57,7 @@ namespace ROOT {
       ::NanoAODAnalyzerrdframe *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(::NanoAODAnalyzerrdframe));
       static ::ROOT::TGenericClassInfo 
-         instance("NanoAODAnalyzerrdframe", "NanoAODAnalyzerrdframe.h", 39,
+         instance("NanoAODAnalyzerrdframe", "NanoAODAnalyzerrdframe.h", 40,
                   typeid(::NanoAODAnalyzerrdframe), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &NanoAODAnalyzerrdframe_Dictionary, isa_proxy, 4,
                   sizeof(::NanoAODAnalyzerrdframe) );

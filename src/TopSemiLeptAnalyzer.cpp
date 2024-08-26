@@ -283,24 +283,27 @@ void TopSemiLeptAnalyzer::selectJets()
                .Define("good_bjet4vecs", ::generate_4vec, {"good_bjetpt", "good_bjeteta", "good_bjetphi", "good_bjetmass"});
 }
 
-
 void TopSemiLeptAnalyzer::removeOverlaps()
 {
 
     cout << "Checking overlaps between jets, muons, electrons, and photons" << endl;
 
     // Lambda function for checking overlapped jets with leptons (muons or electrons)
-    auto checkJetLeptonOverlap = [](const FourVectorVec &goodjets, const FourVectorVec &goodlep) {
+    auto checkJetLeptonOverlap = [](const FourVectorVec &goodjets, const FourVectorVec &goodlep)
+    {
         // cout << "Inside checkJetLeptonOverlap" << endl;
         ROOT::VecOps::RVec<int> overlapFlags(goodjets.size(), 1);
-        for (size_t i = 0; i < goodjets.size(); ++i) {
+        for (size_t i = 0; i < goodjets.size(); ++i)
+        {
             auto ajet = goodjets[i];
             auto mindr = 6.0;
-            for (size_t j = 0; j < goodlep.size(); ++j) {
+            for (size_t j = 0; j < goodlep.size(); ++j)
+            {
                 auto alepton = goodlep[j];
                 auto dr = ROOT::Math::VectorUtil::DeltaR(ajet, alepton);
                 // cout << "  dr between jet " << i << " and lepton " << j << ": " << dr << endl;
-                if (dr < mindr) mindr = dr;
+                if (dr < mindr)
+                    mindr = dr;
             }
             overlapFlags[i] = mindr > 0.4 ? 1 : 0;
             // cout << "  mindr for jet " << i << ": " << mindr << " -> " << overlapFlags[i] << endl;
@@ -366,15 +369,15 @@ void TopSemiLeptAnalyzer::removeOverlaps()
     _rlm = _rlm.Define("jetNoOverlapWithLeptons", "muonjetoverlap && electronjetoverlap");
 
     cout << "Defining cleanedJetsWithLeptons" << endl;
-    _rlm = _rlm.Define("cleanedJetsWithLeptons", [](const FourVectorVec &goodjets, const ROOT::VecOps::RVec<int> &overlapFlags) {
+    _rlm = _rlm.Define("cleanedJetsWithLeptons", [](const FourVectorVec &goodjets, const ROOT::VecOps::RVec<int> &overlapFlags)
+                       {
         FourVectorVec cleanedJets;
         for (size_t i = 0; i < goodjets.size(); ++i) {
             if (overlapFlags[i]) {
                 cleanedJets.push_back(goodjets[i]);
             }
         }
-        return cleanedJets;
-    }, {"goodJets_4vecs", "jetNoOverlapWithLeptons"});
+        return cleanedJets; }, {"goodJets_4vecs", "jetNoOverlapWithLeptons"});
 
     // cout << "Defining photonjetoverlap" << endl;
     // _rlm = _rlm.Define("photonjetoverlap", checkJetPhotonOverlap, {"goodJets_4vecs", "goodPhotons_4vecs"});
@@ -486,22 +489,43 @@ void TopSemiLeptAnalyzer::removeOverlaps()
 ROOT::RDF::RNode TopSemiLeptAnalyzer::applyOverlapRemoval(ROOT::RDF::RNode df, const std::string &sample_name)
 {
     bool verbose = false;
+    bool invertOverlap = true; // Invert the overlap removal condition
     auto initial_count = df.Count();
 
+    if (sample_name == "TTGamma_Dilept" || sample_name == "TTGamma_SingleLept" || sample_name == "TTGamma_Hadronic")
+    {
+        invertOverlap = false; // Invert overlap removal for TTGamma samples
+        df = df.Filter([verbose, sample_name, invertOverlap](const ROOT::RVec<float> &genPt, const ROOT::RVec<float> &genEta,
+                                                             const ROOT::RVec<float> &genPhi, const ROOT::RVec<int> &genPdgId,
+                                                             const ROOT::RVec<int> &genStatus, const ROOT::RVec<int> &genPartIdxMother)
+                       {
+                           bool result = overlapRemoval(genPt, genEta, genPhi, genPdgId, genStatus, genPartIdxMother, 10.0, 5.0, 0.1, verbose, sample_name);
+                           return invertOverlap ? !result : result; // Apply inverted logic
+                       },
+                       {"GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_pdgId", "GenPart_status", "GenPart_genPartIdxMother"});
+    }
+    //  --------Also need to add logic for other sample with photon to do the invertOverlap--------------------------------------------
+
+    // Apply overlap removal logic for TTbar samples
     if (sample_name == "TTbar_Hadronic" || sample_name == "TTbar_Semilept" || sample_name == "TTbar_Dilept")
     {
-        df = df.Filter([verbose, sample_name](const ROOT::RVec<float> &genPt, const ROOT::RVec<float> &genEta,
-                                              const ROOT::RVec<float> &genPhi, const ROOT::RVec<int> &genPdgId,
-                                              const ROOT::RVec<int> &genStatus, const ROOT::RVec<int> &genPartIdxMother)
-                       { return overlapRemoval(genPt, genEta, genPhi, genPdgId, genStatus, genPartIdxMother, 10.0, 5.0, 0.1, verbose, sample_name); },
+        df = df.Filter([verbose, sample_name, invertOverlap](const ROOT::RVec<float> &genPt, const ROOT::RVec<float> &genEta,
+                                                             const ROOT::RVec<float> &genPhi, const ROOT::RVec<int> &genPdgId,
+                                                             const ROOT::RVec<int> &genStatus, const ROOT::RVec<int> &genPartIdxMother)
+                       {
+                           bool result = overlapRemoval(genPt, genEta, genPhi, genPdgId, genStatus, genPartIdxMother, 10.0, 5.0, 0.1, verbose, sample_name);
+                           return invertOverlap ? !result : result; // Apply standard or inverted logic based on the flag
+                       },
                        {"GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_pdgId", "GenPart_status", "GenPart_genPartIdxMother"});
     }
     else if (sample_name == "WJets" || sample_name == "DYJets" || sample_name == "ST_t-channel")
     {
-        df = df.Filter([verbose, sample_name](const ROOT::RVec<float> &genPt, const ROOT::RVec<float> &genEta,
-                                              const ROOT::RVec<float> &genPhi, const ROOT::RVec<int> &genPdgId,
-                                              const ROOT::RVec<int> &genStatus, const ROOT::RVec<int> &genPartIdxMother)
-                       { return overlapRemoval(genPt, genEta, genPhi, genPdgId, genStatus, genPartIdxMother, 15.0, 2.6, 0.05, verbose, sample_name); },
+        df = df.Filter([verbose, sample_name, invertOverlap](const ROOT::RVec<float> &genPt, const ROOT::RVec<float> &genEta,
+                                                             const ROOT::RVec<float> &genPhi, const ROOT::RVec<int> &genPdgId,
+                                                             const ROOT::RVec<int> &genStatus, const ROOT::RVec<int> &genPartIdxMother)
+                       { 
+                        bool result = overlapRemoval(genPt, genEta, genPhi, genPdgId, genStatus, genPartIdxMother, 15.0, 2.6, 0.05, verbose, sample_name);
+                        return invertOverlap ? !result : result; },
                        {"GenPart_pt", "GenPart_eta", "GenPart_phi", "GenPart_pdgId", "GenPart_status", "GenPart_genPartIdxMother"});
     }
 
@@ -667,8 +691,106 @@ void TopSemiLeptAnalyzer::categorizeSinglePhoton(int phoInd, const ROOT::RVec<in
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+double TopSemiLeptAnalyzer::getlumiWeight(std::string sampleName, int year, double luminosity, double sumgenweight)
+{
+    double lumiWeight = -1.;
+
+    if (sampleName.substr(0, 4) == "Data")
+    {
+        lumiWeight = 1.;
+    }
+    else if (sampleName == "Test" || sampleName == "TestAll" || sampleName == "TestFull")
+    {
+        lumiWeight = 1.;
+    }
+    else
+    {
+        initCrossSections(); // Ensure cross-sections are initialized
+
+        if (crossSections.find(sampleName) != crossSections.end())
+        {
+            int index = _year - 2016; // Assuming 2016, 2017, 2018
+            lumiWeight = crossSections[sampleName][index] * luminosity / sumgenweight;
+        }
+        else
+        {
+            std::cout << "-------------------------------------------------" << std::endl;
+            std::cout << "-- Unable to find event weight for this sample --" << std::endl;
+            std::cout << "-- Sample will be saved with a weight of -1    --" << std::endl;
+            std::cout << "-------------------------------------------------" << std::endl;
+        }
+    }
+
+    std::cout << "Using event weight: " << lumiWeight << std::endl;
+    std::cout << "XS = " << lumiWeight * sumgenweight / luminosity << std::endl;
+    std::cout << "Lumi = " << luminosity << std::endl;
+    std::cout << "Sum of genWeights (nEvents_MC) = " << sumgenweight << std::endl;
+
+    return lumiWeight;
+}
+
 void TopSemiLeptAnalyzer::calculateEvWeight()
 {
+
+    
+    double luminosity;
+
+    if (_year == 2016)
+    {luminosity = 35921.875595;}
+    else if (_year == 2017)
+    {luminosity = 41529.548819;
+    std::cout << "Luminosity for 2017: " << luminosity << " selected" << std::endl;}
+    else if (_year == 2018)
+    {luminosity = 59740.565202;}
+    else
+    { std::cerr << "Error: Unsupported year " << _year << std::endl;
+    return;
+    }
+
+    auto sumgenweight = _rd.Sum("genWeight");
+    double totalGenWeight = *sumgenweight;
+    std::cout << "totalGenWeight: " << totalGenWeight << std::endl;
+
+    if (totalGenWeight == 0) 
+    {
+        // Fallback to positive-negative weight difference if necessary
+        auto positiveGenWeight = _rd.Filter("genWeight > 0").Sum("genWeight");
+        auto negativeGenWeight = _rd.Filter("genWeight < 0").Sum("genWeight");
+        totalGenWeight = *positiveGenWeight - *negativeGenWeight;
+
+        // Print totalGenWeight for debugging
+        std::cout << "Total Gen Weight (fallback): " << totalGenWeight << std::endl;
+    }
+
+    // Safety check to avoid division by zero
+    if (totalGenWeight == 0) {
+        totalGenWeight = 1.0; // Avoid division by zero
+    }
+
+    // Define the genEventSum column in the RDataFrame
+    _rlm = _rlm.Define("genEventSum", [totalGenWeight]() { return totalGenWeight; });
+
+    // Print the sum of generator weights
+    std::cout << "Sum of genWeights = " << totalGenWeight << std::endl;
+
+
+        //Calculate the luminosity weight 
+    double lumiWeight = getlumiWeight(sample_name, _year, luminosity, totalGenWeight);
+
+    // Define the lumiWeight column in the RDataFrame
+    _rlm = _rlm.Define("lumiWeight", [lumiWeight](){ return lumiWeight; });
+
+    // Apply the event weight calculation logic
+    /*  _rlm = _rlm.Define("eventWeight", [this, lumiWeight, useGenWeightScaling](float genWeight)
+                       {
+        float eventWeight = static_cast<float>(lumiWeight);  // Cast lumiWeight to float
+        
+        if (!this->_isData) 
+        {
+            if (useGenWeightScaling) {eventWeight *= genWeight;} 
+            else {eventWeight *= (genWeight >= 0) ? 1.0f : -1.0f;}
+        } else {eventWeight = 1.0f;}
+            return eventWeight; }, {"genWeight"});*/ 
 
     int _case = 1;
     std::vector<std::string> Jets_vars_names = {"Selected_jethadflav", "Selected_jeteta", "Selected_jetpt"};
@@ -696,11 +818,14 @@ void TopSemiLeptAnalyzer::calculateEvWeight()
     _rlm = calculatePhoSF(_rlm, Photon_vars_names, output_pho_column_name);
 
     // Prefiring Weight for 2016 and 2017
-      _rlm = applyPrefiringWeight(_rlm);
+    _rlm = applyPrefiringWeight(_rlm);
 
     // Total event Weight:
     //   _rlm = _rlm.Define("evWeight", " pugenWeight *prefiring_SF_central * btag_SF_bcflav_central * btag_SF_lflav_central * muon_SF_central * ele_SF_central");
-    _rlm = _rlm.Define("evWeight", " pugenWeight * prefiring_SF_central * btag_SF_central * muon_SF_central * ele_SF_central");
+    // _rlm = _rlm.Define("evWeight", " pugenWeight * prefiring_SF_central * btag_SF_central * muon_SF_central * ele_SF_central");
+    _rlm = _rlm.Define("evWeight", [lumiWeight](float puWeight, float prefiring_SF_central, float btag_SF_central, float muon_SF_central, float ele_SF_central) {
+            return static_cast<float>(lumiWeight) * puWeight * prefiring_SF_central * btag_SF_central * muon_SF_central * ele_SF_central;
+        }, {"puWeight", "prefiring_SF_central", "btag_SF_central", "muon_SF_central", "ele_SF_central"});
 }
 // MET
 
@@ -787,6 +912,10 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVartoStore("goodPhotons_pt");
     addVartoStore("goodPhotons_eta");
 
+    //HLT Trigger
+    addVartoStore("HLT_Ele32_WPTight_Gsf_L1DoubleEG");
+    addVartoStore("HLT_IsoMu27");
+
     // jet
     addVartoStore("nJet");
     addVartoStore("Jet_pt");
@@ -816,6 +945,8 @@ void TopSemiLeptAnalyzer::defineMoreVars()
     addVartoStore("MET_phi");
     // addVartoStore("Photon_pt");
 
+    // addVartoStore("Flag.*");
+
     if (!_isData)
     {
         // case1 btag correction- fixed wp
@@ -844,12 +975,12 @@ void TopSemiLeptAnalyzer::defineMoreVars()
         addVartoStore("ele_SF_id_sf");
         addVartoStore("ele_SF_id_sfup");
         addVartoStore("ele_SF_id_sfdown");
-        addVartoStore("pho_SF_central");
-        addVartoStore("pho_SF_id_sf");
-        addVartoStore("pho_SF_id_sfup");
-        addVartoStore("pho_SF_up");
-        addVartoStore("pho_SF_down");
+        addVartoStore("photon_SF_central");
+        addVartoStore("photon_SF_up");
+        addVartoStore("photon_SF_down");
         addVartoStore("pugenWeight");
+        addVartoStore("puWeight");
+        addVartoStore("lumiWeight");
         addVartoStore("prefiring_SF_central");
 
         addVartoStore("evWeight");

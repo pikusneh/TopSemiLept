@@ -20,10 +20,13 @@ if __name__=='__main__':
     parser.add_argument("infile")
     parser.add_argument("outfile")
     parser.add_argument("jobconfmod")
+    parser.add_argument("samplename", help="Name of the sample being processed")
+
     args = parser.parse_args()
     infile = args.infile
     outfile = args.outfile
     jobconfmod = args.jobconfmod
+    samplename = args.samplename
 
     # load job configuration python module and get bjects
     mod = import_module(jobconfmod)
@@ -49,7 +52,7 @@ if __name__=='__main__':
     t.Add(infile)
     print(f"Inside process one file..!! Added file: {infile}")
 
-    t.Print()
+    # t.Print()
     nevents = t.GetEntries()
     print("-------------------------------------------------------------------")
     print("Total Number of Entries:")
@@ -64,6 +67,7 @@ if __name__=='__main__':
     #aproc.setupCorrections(config['goodjson'], config['pileupfname'], config['pileuptag']\
     #    , config['btvfname'], config['btvtype'], config['jercfname'], config['jerctag'], config['jercunctag'])
     # prepare for processing
+    sys.stdout.flush() 
 
     print("Setting up objects...")
     aproc.setupObjects()

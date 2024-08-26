@@ -10,9 +10,21 @@
 #include "utility.h"
 
 // Constructor implementation
-SkimEvents::SkimEvents(TTree *t, std::string outfilename)
-    : NanoAODAnalyzerrdframe(t, outfilename) {
+SkimEvents::SkimEvents(TTree *tree, std::string outFileName,std::string sampleName)
+    : NanoAODAnalyzerrdframe(tree, outFileName), sampleName(sampleName) {
     setupAnalysis();  // Ensure setupAnalysis is called during construction
+}
+
+// SkimEvents::SkimEvents(TTree *tree, std::string outFileName, std::string sampleName)
+//     : _outfilename(outFileName), sampleName(sampleName) {
+//     setTree(tree, outFileName);
+//     setupAnalysis();  // Ensure setupAnalysis is called during construction
+// }
+
+
+void SkimEvents::setSampleName(const std::string &sampleName)
+{
+   this->sampleName = sampleName;
 }
 
 // Define your cuts here
@@ -158,10 +170,10 @@ void SkimEvents::setupAnalysis() {
 
     // Example debug output for year and run type
     std::cout << "year====" << _year << "==runtype=== " << _runtype << std::endl;
-
     // Define cuts, variables, histograms, and setup the tree
     defineCuts();
     defineMoreVars();
     bookHists();
     setupTree();
+    
 }
